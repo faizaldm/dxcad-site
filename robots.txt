@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dxcad.designmatix.co.uk/sitemap.xml

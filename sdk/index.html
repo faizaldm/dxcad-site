@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DX-CAD SDK: plugins, documentation and file format | DX-CAD by Designmatix</title>
+<meta name="description" content="The DX-CAD SDK for writing plugins, under the Apache License 2.0, with its documentation and the DX-CAD file format specification.">
+<link rel="canonical" href="https://dxcad.designmatix.co.uk/sdk/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1E2FE0">
+<meta name="author" content="Designmatix Ltd">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DX-CAD by Designmatix">
+<meta property="og:title" content="DX-CAD SDK: plugins, documentation and file format | DX-CAD by Designmatix">
+<meta property="og:description" content="The DX-CAD SDK for writing plugins, under the Apache License 2.0, with its documentation and the DX-CAD file format specification.">
+<meta property="og:url" content="https://dxcad.designmatix.co.uk/sdk/">
+<meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DX-CAD: 3D CAD for sheet metal, fabrication and 3D printing. Free for any use until 15 November 2026.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DX-CAD SDK: plugins, documentation and file format | DX-CAD by Designmatix">
+<meta name="twitter:description" content="The DX-CAD SDK for writing plugins, under the Apache License 2.0, with its documentation and the DX-CAD file format specification.">
+<meta name="twitter:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebPage",
+ "name": "DX-CAD SDK",
+ "url": "https://dxcad.designmatix.co.uk/sdk/",
+ "dateModified": "2026-10-05",
+ "publisher": {
+  "@type": "Organization",
+  "name": "Designmatix Ltd"
+ }
+}
+</script>
+<style>
+:root{--ink:#14213D;--ink-2:#4A5670;--blue:#1E2FE0;--blue-dark:#1624B8;--red:#C8201F;--line:#C9D1DC;--paper:#FFFFFF;--wash:#F3F5F9;
+--font:Bahnschrift,"DIN Alternate","Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+--cond:"Bahnschrift SemiCondensed","Bahnschrift","DIN Condensed","Arial Narrow","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+a{color:var(--blue)}a:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:2px}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:8px 12px;z-index:10}.skip:focus{left:8px}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.bar{border-bottom:1px solid var(--line)}.bar .wrap{display:flex;align-items:center;justify-content:space-between;min-height:72px;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.brand img{height:44px;width:auto;display:block}
+.brand .prod{font-family:var(--cond);font-weight:700;font-size:20px;border-left:1.5px solid var(--line);padding-left:14px}
+nav ul{list-style:none;display:flex;gap:24px;margin:0;padding:0;font-size:15px}nav a{color:var(--ink);text-decoration:none}nav a:hover{color:var(--blue)}
+@media (max-width:760px){nav ul{gap:14px;font-size:14px}nav li.opt{display:none}.brand img{height:36px}}
+.sheet{position:relative;margin:40px 0 0;border:1.5px solid var(--ink);padding:56px 48px 48px}
+.sheet::before{content:"";position:absolute;inset:8px;border:.75px solid var(--ink);pointer-events:none}
+@media (max-width:900px){.sheet{padding:40px 24px 32px}}
+h1,h2,h3{font-family:var(--cond);text-wrap:balance}
+.small{font-size:14px;color:var(--ink-2)}
+.btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:600;padding:12px 18px;border:0}
+.btn:hover{background:var(--blue-dark)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}.btn.ghost:hover{border-color:var(--blue);color:var(--blue)}
+section{padding:88px 0 0}
+h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;font-weight:700;margin:0 0 12px}
+.intro{color:var(--ink-2);max-width:62ch;margin:0 0 36px}
+code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:var(--wash);padding:2px 6px}
+.tb{margin:96px 0 40px;border:1.5px solid var(--ink);border-right:0;border-bottom:0;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;font-size:14px}
+@media (max-width:820px){.tb{grid-template-columns:1fr 1fr}}@media (max-width:480px){.tb{grid-template-columns:1fr}.tb .wide{grid-column:auto}}
+.tb div{min-width:0;overflow-wrap:anywhere;padding:10px 14px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.tb span{display:block;font-size:11.5px;color:var(--ink-2)}.tb strong{font-weight:600}.tb .wide{grid-column:span 2}.tb .full{grid-column:1/-1;font-size:13px;color:var(--ink-2)}.tb a{color:var(--ink)}
+
+.doc{max-width:74ch}
+.doc h1{font-size:clamp(30px,3.6vw,44px);line-height:1.08;font-weight:700;margin:0 0 8px}
+.doc .meta{color:var(--ink-2);font-size:15px;margin:0 0 32px}
+.doc h2{font-size:24px;margin:40px 0 10px;padding-top:10px;border-top:1px solid var(--line)}
+.doc h3{font-size:19px;margin:24px 0 6px}
+.doc p,.doc li{max-width:72ch}.doc ul,.doc ol{padding-left:22px}
+.doc .box{border:1px solid var(--ink);padding:16px 20px;margin:0 0 28px;background:var(--wash)}
+.doc table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0 16px}
+.doc th,.doc td{border-bottom:1px solid var(--line);padding:10px 12px 10px 0;text-align:left;vertical-align:top}
+.doc th{font-family:var(--cond);font-weight:700}
+.toc{border-left:3px solid var(--blue);padding:4px 0 4px 16px;margin:0 0 32px;font-size:15px}.toc ol{margin:6px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="DX-CAD home"><img src="data:image/png;base64,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" width="120" height="44" alt="Designmatix"><span class="prod">DX-CAD</span></a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="/#what">What it does</a></li>
+        <li class="opt"><a href="/#editions">Editions</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
+        <li><a href="/#download">Download</a></li>
+        <li class="opt"><a href="https://ai.designmatix.co.uk/">Designmatix</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main">
+
+  <div class="sheet">
+  <article class="doc">
+    <h1>DX-CAD SDK</h1>
+    <p class="meta">Designmatix Ltd. Last updated 16 October 2026.</p>
+    <div class="box"><strong>Get the SDK.</strong> The source is on GitHub at <a href="https://github.com/faizaldm/DX-CAD-SDK">github.com/faizaldm/DX-CAD-SDK</a>, the package is <code>pip install dxcad-sdk</code>, and the documentation, with the DX-CAD file format specification, is at <a href="https://faizaldm.github.io/DX-CAD-SDK/">faizaldm.github.io/DX-CAD-SDK</a>.</div>
+    <h2>What the SDK is</h2>
+    <p>The DX-CAD SDK lets you write plugins for DX-CAD in Python: new commands, menus and toolbars in the window, new kinds of part, tools for the Assistant and new drawing annotations. It contains the public plugin interface, a checker that tells you whether a plugin uses only that interface (<code>dxcad-sdk check</code>), a project template to start from, and its documentation.</p>
+    <p>DX-CAD's own add-ons, Fabrication and Drafting Pro, are built on the same interface.</p>
+    <h2>Licence</h2>
+    <p>The SDK is a separate work from DX-CAD, under the Apache License 2.0, given in its own LICENSE file. The <a href="/eula.html">DX-CAD licence agreement</a> does not cover it.</p>
+    <h2>The DX-CAD file format</h2>
+    <p>The specification of DX-CAD's files (parts, assemblies and drawings) is published here with the SDK, so that other programs can read and write them. Section 3 of the licence agreement explains how it relates to your rights under the law.</p>
+    <h2>Where to find it</h2>
+    <ul>
+      <li>SDK source code and releases: published at launch.</li>
+      <li>Documentation: published at launch.</li>
+      <li>File format specification: published at launch.</li>
+    </ul>
+    <h2>Contact</h2>
+    <p>Designmatix Ltd, 71-75 Shelton Street, London WC2H 9JQ, United Kingdom. Email: <a href="mailto:support@designmatix.co.uk">support@designmatix.co.uk</a>. Telephone: +44 (0) 20 8865 1947.</p>
+  </article>
+  </div>
+
+  <footer class="tb" aria-label="Company details">
+    <div><span>Product</span><strong>DX-CAD</strong></div>
+    <div><span>Made by</span><strong>Designmatix Ltd</strong></div>
+    <div><span>Company number</span><strong>12697280</strong></div>
+    <div><span>Registered in</span><strong>England and Wales</strong></div>
+    <div class="wide"><span>Registered office</span><strong>71-75 Shelton Street, London WC2H 9JQ, United Kingdom</strong></div>
+    <div><span>Email</span><strong><a href="mailto:support@designmatix.co.uk">support@designmatix.co.uk</a></strong></div>
+    <div><span>Telephone</span><strong><a href="tel:+442088651947">+44 (0) 20 8865 1947</a></strong></div>
+    <div><span>Licence</span><strong><a href="/eula.html">Licence agreement</a></strong></div>
+    <div><span>Refunds</span><strong><a href="/refunds.html">Refund policy</a></strong></div>
+    <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
+    <div><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/">Text-to-CAD</a></strong></div>
+    <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
+  </footer>
+</main>
+</body>
+</html>
