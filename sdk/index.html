@@ -32,7 +32,7 @@
  "@type": "WebPage",
  "name": "DX-CAD SDK",
  "url": "https://dxcad.designmatix.co.uk/sdk/",
- "dateModified": "2026-10-05",
+ "dateModified": "2026-10-30",
  "publisher": {
   "@type": "Organization",
   "name": "Designmatix Ltd"
@@ -105,20 +105,22 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
   <div class="sheet">
   <article class="doc">
     <h1>DX-CAD SDK</h1>
-    <p class="meta">Designmatix Ltd. Last updated 16 October 2026.</p>
+    <p class="meta">Designmatix Ltd. Last updated 30 October 2026.</p>
     <div class="box"><strong>Get the SDK.</strong> The source is on GitHub at <a href="https://github.com/faizaldm/DX-CAD-SDK">github.com/faizaldm/DX-CAD-SDK</a>, the package is <code>pip install dxcad-sdk</code>, and the documentation, with the DX-CAD file format specification, is at <a href="https://faizaldm.github.io/DX-CAD-SDK/">faizaldm.github.io/DX-CAD-SDK</a>.</div>
     <h2>What the SDK is</h2>
     <p>The DX-CAD SDK lets you write plugins for DX-CAD in Python: new commands, menus and toolbars in the window, new kinds of part, tools for the Assistant and new drawing annotations. It contains the public plugin interface, a checker that tells you whether a plugin uses only that interface (<code>dxcad-sdk check</code>), a project template to start from, and its documentation.</p>
     <p>DX-CAD's own add-ons, Fabrication and Drafting Pro, are built on the same interface.</p>
+    <p><strong><a href="/sdk/build-a-plugin.html">Build and publish a DX-CAD plugin</a></strong>: a step-by-step guide, from the template to a wheel your users install from Help &gt; Add-ons.</p>
     <h2>Licence</h2>
     <p>The SDK is a separate work from DX-CAD, under the Apache License 2.0, given in its own LICENSE file. The <a href="/eula.html">DX-CAD licence agreement</a> does not cover it.</p>
     <h2>The DX-CAD file format</h2>
     <p>The specification of DX-CAD's files (parts, assemblies and drawings) is published here with the SDK, so that other programs can read and write them. Section 3 of the licence agreement explains how it relates to your rights under the law.</p>
     <h2>Where to find it</h2>
     <ul>
-      <li>SDK source code and releases: published at launch.</li>
-      <li>Documentation: published at launch.</li>
-      <li>File format specification: published at launch.</li>
+      <li>SDK source code and releases: <a href="https://github.com/faizaldm/DX-CAD-SDK">github.com/faizaldm/DX-CAD-SDK</a>, and the package <a href="https://pypi.org/project/dxcad-sdk/">dxcad-sdk on PyPI</a>.</li>
+      <li>Documentation: <a href="https://faizaldm.github.io/DX-CAD-SDK/">faizaldm.github.io/DX-CAD-SDK</a>, with <a href="https://faizaldm.github.io/DX-CAD-SDK/plugins/">the plugins page</a>.</li>
+      <li>How to build and publish a plugin: <a href="/sdk/build-a-plugin.html">the guide</a>.</li>
+      <li>File format specification: in the SDK, as <code>docs/format.md</code>.</li>
     </ul>
     <h2>Contact</h2>
     <p>Designmatix Ltd, 71-75 Shelton Street, London WC2H 9JQ, United Kingdom. Email: <a href="mailto:support@designmatix.co.uk">support@designmatix.co.uk</a>. Telephone: +44 (0) 20 8865 1947.</p>
