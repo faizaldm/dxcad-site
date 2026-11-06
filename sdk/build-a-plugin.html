@@ -109,7 +109,7 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
   <div class="sheet">
   <article class="doc">
     <h1>Build and publish a DX-CAD plugin</h1>
-    <p class="meta">Designmatix Ltd. Last updated 30 October 2026. For DX-CAD 0.1.2, plugin API 2.</p>
+    <p class="meta">Designmatix Ltd. Last updated 3 November 2026. For DX-CAD 0.1.5, plugin API 6.</p>
     <div class="box"><strong>In short.</strong> Write a Python module with a <code>register(registry)</code> function, declare it as a <code>dxcad.plugins</code> entry point, check it with <code>dxcad-sdk check</code>, build it as a wheel (.whl) and publish the file. DX-CAD users install it from <strong>Help &gt; Add-ons &gt; Install from File</strong>. The SDK is free and open source under the Apache License 2.0; see the <a href="/sdk/">SDK page</a>.</div>
     <ol class="toc">
       <li><a href="#need">What you need</a></li>
@@ -187,7 +187,7 @@ dxcad-sdk sweep myplugin</code></pre>
     <p><code>dxcad-sdk sweep NAME</code> opens each of your window commands offscreen and checks its dialogs fit a 1366 x 768 screen at 100, 125 and 150 percent, that OK, Cancel, Esc and Enter work, and that every part it adds is a valid solid. Before you publish, install your wheel (step 7) into an installed DX-CAD as a user would (step 9) and run its <code>doctor --addons</code> (<code>dxcad.exe doctor --addons</code> on Windows): it imports every installed add-on's modules in the installed DX-CAD's own Python and names each that fails.</p>
 
     <h2 id="api">6. Say which plugin API it needs</h2>
-    <p>Each DX-CAD has a plugin API version: DX-CAD 0.1.2 has plugin API 2. Your <code>register</code> calls <code>registry.require(N)</code> with the version it was written for, and the <code>[project]</code> table of your <code>pyproject.toml</code> says the same with a classifier, which DX-CAD reads before it installs your wheel:</p>
+    <p>Each DX-CAD has a plugin API version: DX-CAD 0.1.5 has plugin API 6. Your <code>register</code> calls <code>registry.require(N)</code> with the version it was written for: the lower that number, the older the DX-CADs it loads in (the plugins page says which version brought each call), and the <code>[project]</code> table of your <code>pyproject.toml</code> says the same with a classifier, which DX-CAD reads before it installs your wheel:</p>
     <pre><code>classifiers = ["Framework :: DX-CAD :: Plugin API :: 2"]</code></pre>
     <p>DX-CAD refuses, with the reason, a wheel built for a later plugin API than it has, so a user is told before anything is installed. A wheel without the classifier is taken as built for API 1; <code>registry.require</code> still checks when it loads.</p>
 
