@@ -40,3 +40,21 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     and publishes (merge into main; GitHub Pages serves main).
   Accept: tests/test_build_pages.py: --all on a copy with a new release added to data/ adds its section to
   releases.html and nothing else changes; README.md names the three steps.
+
+- [ ] 4006. "Your first part in ten minutes": a tutorial page from the public SDK docs (S)
+  - tutorial.html: from installing DX-CAD to a bracket with four holes exported as STEP, every command and number as
+    data/ (the release notes and the public SDK docs) gives them; nothing from a private repository. Made by
+    scripts/build_pages.py, in the sitemap, linked from the index.
+  Accept: tests/test_build_pages.py: every command on the page appears in data/; --check passes; tests/test_pages.py
+  passes.
+
+- [ ] 4007. Every page carries Open Graph and Twitter card tags, and the checks hold them (S)
+  - og:title, og:description, og:url (its canonical address), og:image (a picture already in img/) and twitter:card on
+    every page, made by scripts/build_pages.py where it makes the page.
+  Accept: tests/test_pages.py fails on a page without them (made in a temporary folder) and passes on every page.
+
+- [ ] 4008. An Atom feed of the release pages (S)
+  - releases.xml: one entry per release from data/core/RELEASE_NOTES.md, newest first, linked from releases.html's
+    head; made by scripts/build_pages.py (standard library only).
+  Accept: tests/test_build_pages.py: the feed parses as Atom with its required elements, one entry per release with
+  its date; --check passes; tests/test_pages.py passes.
