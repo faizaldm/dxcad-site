@@ -34,7 +34,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     the sitemap. Made by scripts/build_pages.py.
   Accept: tests/test_build_pages.py: each page's trial and licence words are the ones in data/core/gui.md; every
   command named on a page is named in data/core/gui.md; --check passes; tests/test_pages.py passes.
-- [ ] 4005. A release refresh in one command, and how to publish, for the owner (S)
+- [x] 4005. A release refresh in one command, and how to publish, for the owner (S)
   - scripts/build_pages.py --all remakes every page made from data/ and the sitemap; README.md says, in plain words,
     how the owner refreshes data/ (DX-CAD's release notes and the public SDK's docs) after a release, runs the script and the tests,
     and publishes (merge into main; GitHub Pages serves main).

@@ -626,7 +626,7 @@ def address(rel):
 
 
 def build_sitemap(root, made):
-    """sitemap.xml: the pages here; each made page's date is its data's date."""
+    """sitemap.xml: the pages here, each with the date it last changed."""
     old = {}
     order = []
     path = os.path.join(root, "sitemap.xml")
@@ -638,8 +638,17 @@ def build_sitemap(root, made):
             order.append(loc)
     pages = set(page_files(root)) | {rel for rel in made if rel.endswith(".html")}
     wanted = {address(rel): rel for rel in pages}
-    dates = {address(rel): d.isoformat() for rel, (_, d) in made.items()
-             if rel.endswith(".html")}
+    # A made page is dated by its data, but a page that is already committed
+    # exactly as it is made keeps the date it has: only a page that changes
+    # (or is new) takes the newest release's date.
+    dates = {}
+    for rel, (content, d) in made.items():
+        if not rel.endswith(".html"):
+            continue
+        loc = address(rel)
+        if loc in old and not differences(root, {rel: content}):
+            continue
+        dates[loc] = d.isoformat()
     locs = [loc for loc in order if loc in wanted]
     locs += sorted(loc for loc in wanted if loc not in locs)
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
@@ -683,7 +692,9 @@ def differences(root, files):
 
 
 def write_files(root, files):
-    for rel, content in sorted(files.items()):
+    """Write the files that are not already as made; leave the others alone."""
+    for rel in differences(root, files):
+        content = files[rel]
         path = os.path.join(root, rel)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         data = content if isinstance(content, bytes) else content.encode("utf-8")

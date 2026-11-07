@@ -22,3 +22,10 @@
 - 4003: "how to open it in DX-CAD" gives only the commands data/core/gui.md and examples/README.md show:
   `dxcad examples NAME`, `dxcad gui NAME.py`, `dxcad run NAME.py --output NAME.dxcprt`, `dxcad describe NAME.dxcprt`.
 - 4003: the index's Made with DX-CAD paragraph gained one sentence linking /gallery.html (the footer has no room).
+- 4004: the Fabrication page uses the words of the site's own fabrication-layout-software.html; the Drafting Pro page
+  uses the words of the index's editions table; both list their commands, and give their trial and licence words,
+  straight from data/core/gui.md each time they are made. No price is on either page (gui.md gives none).
+  fabrication-y-piece.png is not used: no page of the site says what its picture shows.
+- 4005: the sitemap keeps the date of a made page that is unchanged; only a changed or new made page takes the newest
+  release's date. So --all with a new release changes releases.html and one date in sitemap.xml, nothing else.
+  write_files writes only files that differ, leaving every other file untouched (line endings included).

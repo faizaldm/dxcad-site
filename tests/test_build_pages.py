@@ -430,3 +430,65 @@ def test_missing_addon_section_in_gui_md_is_an_error(tmp_path):
     gui.write_bytes(read(gui).replace("### Fabrication\n", "### Fabricating\n").encode())
     result = run_script(root)
     assert result.returncode != 0 and "Fabrication" in result.stderr
+
+
+# ------------------------------------------------------------------- --all ---
+
+def snapshot(root):
+    """Every file under root (except data/, which the script never writes), by content."""
+    found = {}
+    for folder, dirs, files in os.walk(root):
+        for name in files:
+            path = Path(folder, name)
+            found[path.relative_to(root).as_posix()] = path.read_bytes()
+    return found
+
+
+def test_all_with_a_new_release_adds_its_section_and_changes_nothing_else(tmp_path):
+    root = copy_site(tmp_path / "site")
+    before = snapshot(root)
+    notes = Path(root, "data", "core", "RELEASE_NOTES.md")
+    new = ("## 0.1.6\n\nAn update to 0.1.5, 9 November 2026. It mends one thing.\n\n"
+           "### Install\n\n- A line that is new in 0.1.6.\n\n")
+    notes.write_bytes(read(notes).replace("## 0.1.5\n", new + "## 0.1.5\n", 1).encode())
+    assert run_script(root, "--all").returncode == 0
+    after = snapshot(root)
+    changed = sorted(k for k in after if before.get(k) != after[k])
+    assert changed == ["data/core/RELEASE_NOTES.md", "releases.html", "sitemap.xml"]
+    assert set(after) == set(before)
+    page = after["releases.html"].decode()
+    assert 'id="v0-1-6"' in page and "A line that is new in 0.1.6." in page
+    assert page.index('id="v0-1-6"') < page.index('id="v0-1-5"')
+    # the sitemap changed in one date only: releases.html's
+    old_lines = before["sitemap.xml"].decode().replace("\r\n", "\n").split("\n")
+    new_lines = after["sitemap.xml"].decode().split("\n")
+    diff = [(a, b) for a, b in zip(old_lines, new_lines) if a != b]
+    assert len(old_lines) == len(new_lines)
+    assert diff == [("    <lastmod>2026-11-03</lastmod>", "    <lastmod>2026-11-09</lastmod>")]
+    # and a second run has nothing more to do
+    assert run_script(root, "--check").returncode == 0
+
+
+def test_all_is_the_same_as_no_flag(tmp_path):
+    a = copy_site(tmp_path / "a")
+    b = copy_site(tmp_path / "b")
+    for root in (a, b):
+        notes = Path(root, "data", "core", "RELEASE_NOTES.md")
+        notes.write_bytes(read(notes).replace("3 November 2026", "5 November 2026").encode())
+    assert run_script(a, "--all").returncode == 0
+    assert run_script(b).returncode == 0
+    assert snapshot(a) == snapshot(b)
+
+
+def test_readme_names_the_three_steps():
+    text = read(ROOT / "README.md")
+    text.encode("ascii")
+    assert "Refresh `data/`" in text
+    assert "python scripts/build_pages.py --all" in text
+    assert "python -m pytest" in text
+    assert "merge" in text.lower() and "`main`" in text
+    assert re.search(r"(?m)^1\. \*\*Refresh", text)
+    assert re.search(r"(?m)^2\. \*\*Make the pages and run the tests", text)
+    assert re.search(r"(?m)^3\. \*\*Publish", text)
+    for name in ("RELEASE_NOTES.md", "gui.md", "latest.json", "limitations.md"):
+        assert name in text
