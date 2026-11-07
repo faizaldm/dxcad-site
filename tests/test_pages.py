@@ -64,7 +64,7 @@ def make_site(tmp_path, pages=None, sitemap=("", "about.html"), robots=True):
     """A site of two pages; pages maps a path to its body (or a whole page)."""
     pages = pages or {}
     bodies = {"index.html": '<a href="about.html">About</a>',
-              "about.html": '<a href="/">Home</a><img src="pic.png" alt="A picture">'}
+              "about.html": '<a href="/">Home</a><img src="pic.png" alt="A picture" width="10" height="10">'}
     bodies.update(pages)
     (tmp_path / "pic.png").write_bytes(b"x" * 100)
     (tmp_path / "img").mkdir(exist_ok=True)
@@ -182,13 +182,14 @@ def test_page_over_300_kb_with_its_pictures_fails(tmp_path):
 
 
 def test_lazy_pictures_count_one_by_one(tmp_path):
-    body = "".join('<img src="p%d.png" alt="p" loading="lazy">' % i for i in range(3))
+    body = "".join('<img src="p%d.png" alt="p" width="10" height="10"%s>' % (i, ' loading="lazy"' if i else "")
+                   for i in range(3))
     for i in range(3):
         (tmp_path / ("p%d.png" % i)).write_bytes(b"x" * (200 * 1024))
     root = make_site(tmp_path, {"index.html": body})
     assert pagecheck.check_site(root) == []
-    (tmp_path / "p0.png").write_bytes(b"x" * (301 * 1024))
-    assert any("p0.png" in r for r in reasons(root))
+    (tmp_path / "p1.png").write_bytes(b"x" * (301 * 1024))
+    assert any("p1.png" in r for r in reasons(root))
 
 
 def test_pages_in_folders_use_folder_canonicals(tmp_path):
@@ -349,7 +350,7 @@ def test_link_or_button_without_a_name_fails(tmp_path, body):
 @pytest.mark.parametrize("body", [
     '<a href="about.html">About</a>',
     '<a href="about.html" aria-label="About us"></a>',
-    '<a href="about.html"><img src="pic.png" alt="About"></a>',
+    '<a href="about.html"><img src="pic.png" alt="About" width="10" height="10"></a>',
     '<a href="about.html"><span class="vh">About</span></a>',
     "<button>Go</button>",
     '<button aria-label="Close"></button>',
@@ -366,7 +367,7 @@ def test_file_name_as_alt_fails(tmp_path, alt):
 
 
 def test_alt_that_is_a_sentence_passes(tmp_path):
-    body = '<img src="pic.png" alt="A bracket with four holes, in a CAD window">'
+    body = '<img src="pic.png" alt="A bracket with four holes, in a CAD window" width="10" height="10">'
     assert about_reasons(make_site(tmp_path, {"about.html": body})) == []
 
 
@@ -583,3 +584,104 @@ def test_a_docs_page_has_a_print_style_that_hides_the_chrome_and_shows_addresses
     assert "attr(href)" in css                                        # links say where they go
     assert "#000" in css and "background:#fff" in css                 # black on white
     assert "break-inside:avoid" in css
+
+
+# ---------------------------------------------------------------------------
+# Pictures sized for the web: width and height on each, lazy below the top.
+
+import struct
+import zlib
+
+
+def png_bytes(w, h):
+    """A real, tiny PNG of the size given (every pixel white)."""
+    def chunk(kind, data):
+        body = kind + data
+        return struct.pack(">I", len(data)) + body + struct.pack(">I", zlib.crc32(body))
+    raw = b"".join(b"\x00" + b"\xff\xff\xff" * w for _ in range(h))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b""))
+
+
+def sized_site(tmp_path, body, w=40, h=30):
+    root = make_site(tmp_path, {"about.html": body})
+    (tmp_path / "pic.png").write_bytes(png_bytes(w, h))      # after make_site, which writes its own
+    return root
+
+
+def test_img_without_width_and_height_fails_naming_the_page_and_picture(tmp_path):
+    root = sized_site(tmp_path, '<img src="pic.png" alt="A picture">')
+    found = about_reasons(root)
+    assert any("pic.png" in r and "no width and height" in r for r in found), found
+
+
+@pytest.mark.parametrize("tag", ['<img src="pic.png" alt="A" width="40">',
+                                 '<img src="pic.png" alt="A" height="30">',
+                                 '<img src="pic.png" alt="A" width="" height="30">',
+                                 '<img src="pic.png" alt="A" width="40px" height="30">',
+                                 '<img src="pic.png" alt="A" width="0" height="0">'])
+def test_img_with_half_a_size_fails(tmp_path, tag):
+    found = about_reasons(sized_site(tmp_path, tag))
+    assert any("no width and height" in r for r in found), found
+
+
+def test_img_that_gives_the_wrong_size_fails_saying_both(tmp_path):
+    root = sized_site(tmp_path, '<img src="pic.png" alt="A" width="400" height="300">')
+    found = about_reasons(root)
+    assert any("400x300" in r and "40x30" in r for r in found), found
+
+
+def test_img_with_the_files_size_passes(tmp_path):
+    root = sized_site(tmp_path, '<img src="pic.png" alt="A" width="40" height="30">')
+    assert about_reasons(root) == []
+
+
+def test_the_second_picture_must_be_lazy_and_the_first_must_not(tmp_path):
+    one = '<img src="pic.png" alt="A" width="40" height="30"%s>'
+    two = '<img src="two.png" alt="B" width="40" height="30"%s>'
+    (tmp_path / "two.png").write_bytes(png_bytes(40, 30))
+    root = sized_site(tmp_path, one % "" + two % "")
+    assert any("two.png" in r and 'not loading="lazy"' in r for r in about_reasons(root))
+    root = sized_site(tmp_path, one % ' loading="lazy"' + two % ' loading="lazy"')
+    assert any("first picture" in r and "pic.png" in r for r in about_reasons(root))
+    root = sized_site(tmp_path, one % "" + two % ' loading="lazy"')
+    assert about_reasons(root) == []
+
+
+def test_a_picture_written_into_the_page_is_left_out_of_both_rules(tmp_path):
+    logo = '<img src="data:image/png;base64,AAAA" alt="Logo">'
+    root = sized_site(tmp_path, logo + '<img src="pic.png" alt="A" width="40" height="30">')
+    assert about_reasons(root) == []
+
+
+def test_picture_dimensions_reads_png_gif_and_jpeg(tmp_path):
+    (tmp_path / "a.png").write_bytes(png_bytes(7, 5))
+    (tmp_path / "a.gif").write_bytes(b"GIF89a" + struct.pack("<HH", 11, 9) + b"\x00" * 10)
+    # a JPEG: SOI, an APP0 segment, then a baseline frame header 13 x 17
+    jpg = (b"\xff\xd8" + b"\xff\xe0" + struct.pack(">H", 6) + b"JFIF"
+           + b"\xff\xc0" + struct.pack(">H", 11) + b"\x08" + struct.pack(">HH", 17, 13) + b"\x01\x01\x11\x00")
+    (tmp_path / "a.jpg").write_bytes(jpg)
+    (tmp_path / "a.txt").write_bytes(b"not a picture")
+    assert pagecheck.picture_dimensions(str(tmp_path / "a.png")) == (7, 5)
+    assert pagecheck.picture_dimensions(str(tmp_path / "a.gif")) == (11, 9)
+    assert pagecheck.picture_dimensions(str(tmp_path / "a.jpg")) == (13, 17)
+    assert pagecheck.picture_dimensions(str(tmp_path / "a.txt")) is None
+
+
+def real_images(rel):
+    text = read_page(rel)
+    return [dict(re.findall(r'(\w[\w-]*)="([^"]*)"', tag)) for tag in re.findall(r"<img\b[^>]*>", text)
+            if 'src="data:' not in tag]
+
+
+@pytest.mark.parametrize("rel", PAGES)
+def test_every_picture_on_every_page_has_the_size_of_its_file_and_lazy_after_the_first(rel):
+    imgs = real_images(rel)
+    for i, img in enumerate(imgs):
+        w, h = pagecheck.picture_dimensions(str(ROOT / img["src"].lstrip("/")))
+        assert (img.get("width"), img.get("height")) == (str(w), str(h)), (rel, img["src"])
+        assert (img.get("loading") == "lazy") == (i > 0), (rel, img["src"])
+
+
+def test_the_site_has_pictures_for_these_rules_to_check():
+    assert sum(len(real_images(rel)) for rel in PAGES) > 60

@@ -13,7 +13,8 @@ Pages made here:
                       and, for its JSON-LD, data/core/latest.json
     index.html        stays hand-made; its JSON-LD takes the version and the
                       download address from data/core/latest.json
-    every page        the dark theme block (THEME_STYLE), last in its head
+    every page        the dark theme block (THEME_STYLE), last in its head, and
+                      every <img> with its width and height, lazy but the first
     gallery.html, examples/NAME.html, img/gallery/...
                       from data/core/examples and data/core/gallery
     fabrication.html, drafting-pro.html
@@ -1783,6 +1784,96 @@ def build_download(root, shell, date):
     return {"download.html": (download_page(root, shell), date)}
 
 
+# ----------------------------------------------------------------- images ---
+
+IMG_RE = re.compile(r"<img\b[^>]*>")
+ATTR_RE = re.compile(r'\s([a-zA-Z-]+)(?:="([^"]*)")?')
+
+
+def picture_size(data):
+    """(width, height) of a PNG, GIF or JPEG, read from its bytes; None if it is
+    none of these or is cut short."""
+    try:
+        if data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR":
+            return struct.unpack(">II", data[16:24])
+        if data[:6] in (b"GIF87a", b"GIF89a"):
+            return struct.unpack("<HH", data[6:10])
+        if data[:2] == b"\xff\xd8":
+            i = 2
+            while i + 9 < len(data):
+                if data[i] != 0xFF:
+                    i += 1
+                    continue
+                marker = data[i + 1]
+                if marker == 0xFF:
+                    i += 1
+                    continue
+                if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
+                    i += 2
+                    continue
+                length = struct.unpack(">H", data[i + 2:i + 4])[0]
+                if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+                    h, w = struct.unpack(">HH", data[i + 5:i + 9])
+                    return (w, h)
+                i += 2 + length
+    except struct.error:
+        pass
+    return None
+
+
+def finish_images(text, page, lookup):
+    """The page's <img> tags with a width and a height (read from the picture by
+    picture_size) and with loading="lazy" on every picture but the first: that one
+    is at the top of the page and loads at once.  A picture written into the
+    page as data: is part of the page and is left as it is.  lookup(page, src)
+    gives a picture's bytes, or None."""
+    seen = [0]
+
+    def fix(m):
+        tag = m.group(0)
+        attrs = dict((k.lower(), v) for k, v in ATTR_RE.findall(tag))
+        src = html.unescape(attrs.get("src", ""))
+        if not src or src.startswith("data:"):
+            return tag
+        first = seen[0] == 0
+        seen[0] += 1
+        if "width" not in attrs or "height" not in attrs:
+            data = lookup(page, src)
+            size = picture_size(data) if data else None
+            if size:
+                tag = re.sub(r"\s*/?>$", lambda e: ' width="%d" height="%d"%s' % (
+                    size[0], size[1], e.group(0).lstrip()), tag, count=1)
+        lazy = attrs.get("loading", "").lower() == "lazy"
+        if first and lazy:
+            tag = re.sub(r'\s+loading="lazy"', "", tag, count=1, flags=re.I)
+        elif not first and not lazy:
+            tag = re.sub(r'\s+loading="[^"]*"', "", tag, count=1, flags=re.I)
+            tag = re.sub(r"\s*/?>$", lambda e: ' loading="lazy"' + e.group(0).lstrip(),
+                         tag, count=1)
+        return tag
+    return IMG_RE.sub(fix, text)
+
+
+def picture_lookup(root, made):
+    """lookup(page, src) for finish_images: a picture this script makes (in made),
+    else the file in the site's folder."""
+    def lookup(page, src):
+        src = src.split("#")[0].split("?")[0]
+        if re.match(r"[a-z][a-z0-9+.-]*:|//", src, re.I):
+            return None
+        if src.startswith("/"):
+            rel = src.lstrip("/")
+        else:
+            rel = posixpath.normpath(posixpath.join(posixpath.dirname(page), src))
+        if rel in made:
+            content = made[rel]
+            content = content[0] if isinstance(content, tuple) else content
+            return content if isinstance(content, bytes) else None
+        path = os.path.join(root, *rel.split("/"))
+        return read_bytes(path) if os.path.isfile(path) else None
+    return lookup
+
+
 # --------------------------------------------------------- 404, footers ---
 
 NOT_FOUND_STYLE = """
@@ -1825,7 +1916,7 @@ def not_found_page(shell):
         "\n".join(out), NOT_FOUND_STYLE, robots="noindex, follow")
 
 
-def build_footers(root, made):
+def build_footers(root, made, lookup):
     """Every hand-made page with its footer replaced by FOOTER and its theme block
     in place: {path: text}."""
     out = {}
@@ -1837,7 +1928,7 @@ def build_footers(root, made):
             text = FOOTER_RE.sub(lambda m: FOOTER, text)
         if rel == "index.html":
             text = index_with_software(text, read_latest(root))
-        out[rel] = with_theme(text)
+        out[rel] = finish_images(with_theme(text), rel, lookup)
     return out
 
 
@@ -1914,8 +2005,12 @@ def build_all(root):
     made.update(build_download(root, shell, date))
     made["search.html"] = (search_page(shell), date)
     made["404.html"] = (not_found_page(shell), date)
+    lookup = picture_lookup(root, made)
+    for rel, (content, d) in list(made.items()):
+        if rel.endswith(".html"):
+            made[rel] = (finish_images(content, rel, lookup), d)
     files = {rel: content for rel, (content, _) in made.items()}
-    files.update(build_footers(root, made))
+    files.update(build_footers(root, made, lookup))
     files.update(search_files(root, made))
     files["sitemap.xml"] = build_sitemap(root, made)
     return files

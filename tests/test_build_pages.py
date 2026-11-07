@@ -1369,3 +1369,69 @@ def test_the_theme_block_and_the_print_style_are_ascii_and_fit_the_size_limit():
     bp.THEME_STYLE.encode("ascii")
     assert len(bp.THEME_STYLE) < 1500
     assert "@media print" in bp.DOCS_STYLE and "@media print" not in bp.THEME_STYLE
+
+
+# ----------------------------------------------------------------- images ---
+
+def png_of(w, h):
+    import struct as st
+    import zlib as zl
+
+    def chunk(kind, data):
+        body = kind + data
+        return st.pack(">I", len(data)) + body + st.pack(">I", zl.crc32(body))
+    raw = b"".join(b"\x00" + b"\xff\xff\xff" * w for _ in range(h))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", st.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zl.compress(raw)) + chunk(b"IEND", b""))
+
+
+def test_a_bare_picture_in_a_hand_made_page_is_given_its_size_and_lazy_loading(tmp_path):
+    root = copy_site(tmp_path / "site")
+    Path(root, "img", "wide.png").write_bytes(png_of(64, 48))
+    Path(root, "img", "tall.png").write_bytes(png_of(48, 64))
+    page = Path(root, "privacy.html")
+    text = read(page)
+    bare = ('<p><img src="/img/wide.png" alt="Wide" loading="lazy">'
+            '<img src="/img/tall.png" alt="Tall"></p>\n')
+    anchor = '<main class="wrap" id="main">\n'
+    assert anchor in text
+    page.write_bytes(text.replace(anchor, anchor + bare, 1).encode())
+    assert run_script(root, "--check").returncode == 1
+    assert run_script(root).returncode == 0
+    made = read(page)
+    assert ('<img src="/img/wide.png" alt="Wide" width="64" height="48">') in made    # the first: not lazy
+    assert ('<img src="/img/tall.png" alt="Tall" width="48" height="64" loading="lazy">') in made
+    assert run_script(root, "--check").returncode == 0
+    before = made
+    assert run_script(root).returncode == 0 and read(page) == before                  # nothing more to do
+    assert pagecheck.check_page(root, "privacy.html") == []
+
+
+def test_pictures_written_into_the_page_and_outside_the_site_are_left_alone():
+    def nothing(page, src):
+        raise AssertionError("looked up " + src)
+    tag = '<img src="data:image/png;base64,AAAA" alt="x" width="1" height="1">'
+    assert bp.finish_images(tag, "a.html", nothing) == tag
+    out = bp.finish_images('<img src="https://example.org/a.png" alt="x">', "a.html",
+                           lambda page, src: None)
+    assert out == '<img src="https://example.org/a.png" alt="x">'    # first picture: no size to read, no lazy
+
+
+def test_the_script_reads_the_size_of_a_gif_and_a_jpeg_too():
+    import struct as st
+    gif = b"GIF89a" + st.pack("<HH", 11, 9) + b"\x00" * 10
+    jpg = (b"\xff\xd8\xff\xe0" + st.pack(">H", 6) + b"JFIF"
+           + b"\xff\xc0" + st.pack(">H", 11) + b"\x08" + st.pack(">HH", 17, 13) + b"\x01\x01\x11\x00")
+    assert bp.picture_size(gif) == (11, 9) and bp.picture_size(jpg) == (13, 17)
+    assert bp.picture_size(png_of(7, 5)) == (7, 5)
+    assert bp.picture_size(b"nothing") is None and bp.picture_size(jpg[:12]) is None
+
+
+def test_the_gallery_the_add_on_pages_and_the_home_page_have_sized_pictures():
+    for rel in ("gallery.html", "fabrication.html", "drafting-pro.html", "index.html",
+                "examples/bracket.html"):
+        text = read(ROOT / rel)
+        imgs = [t for t in re.findall(r"<img\b[^>]*>", text) if 'src="data:' not in t]
+        assert imgs, rel
+        assert all(" width=" in t and " height=" in t for t in imgs), rel
+        assert 'loading="lazy"' not in imgs[0] and all('loading="lazy"' in t for t in imgs[1:]), rel

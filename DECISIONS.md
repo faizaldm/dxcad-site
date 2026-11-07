@@ -127,3 +127,15 @@
 - 4014: the print style is part of DOCS_STYLE, so only the docs pages carry it (as the item says): header, footer,
   skip link and contents are hidden, text is black on white, links to other sites print their address, code and
   tables do not break across pages.
+- 4015: nearly every picture already had its width and height and lazy loading, written by the gallery code or by
+  hand; three pages (gallery.html, fabrication.html, drafting-pro.html) had their first picture marked lazy, which
+  is wrong for the picture at the top, so it is now loaded at once. The build now finishes the <img> tags of every
+  page it makes and of every hand-made page on each run: a missing width or height is read from the file (PNG, GIF
+  or JPEG, standard library only) and added, a picture after the first with no loading="lazy" gets it, the first
+  loses it. The first picture is the first one that is a file; the Designmatix logo in each header is written into
+  the page as data: (no request to make, and already sized) and is left out of both rules.
+- 4015: tests/pagecheck.py gained the rules (width and height that are whole numbers, equal to the file's own size
+  where it is a PNG, GIF or JPEG; first picture eager, the rest lazy), so a page made wrong in a temporary folder
+  fails naming the picture. The small test site's pages and one test (lazy pictures counted one by one: the big one
+  is now the second, because the first is no longer lazy) were changed to match. No page is near 300 KB: the
+  largest stays within the rule, which is kept and tested as before.

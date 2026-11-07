@@ -6,6 +6,7 @@ should, on copies made in a temporary folder.  Standard library only.
 
 import os
 import re
+import struct
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.parse import unquote, urlsplit
@@ -274,6 +275,65 @@ def social_problems(root, rel, p, canon):
     return out
 
 
+def picture_dimensions(path):
+    """(width, height) of a PNG, GIF or JPEG file, or None if it is none of these."""
+    with open(path, "rb") as f:
+        data = f.read()
+    try:
+        if data[:8] == b"\x89PNG\r\n\x1a\n":
+            return struct.unpack(">II", data[16:24])
+        if data[:6] in (b"GIF87a", b"GIF89a"):
+            return struct.unpack("<HH", data[6:10])
+        if data[:2] == b"\xff\xd8":
+            i = 2
+            while i + 9 < len(data):
+                if data[i] != 0xFF or data[i + 1] in (0x00, 0xFF):
+                    i += 1
+                    continue
+                marker = data[i + 1]
+                if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
+                    i += 2
+                    continue
+                if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+                    h, w = struct.unpack(">HH", data[i + 5:i + 9])
+                    return (w, h)
+                i += 2 + struct.unpack(">H", data[i + 2:i + 4])[0]
+    except struct.error:
+        pass
+    return None
+
+
+def image_problems(root, rel, p):
+    """Every picture says its size, so the page does not jump as it loads; every
+    picture but the first (the one at the top) is loaded lazily.  A picture
+    written into the page as data: is part of the page and is left out."""
+    out = []
+    first = True
+    for img in p.imgs:
+        src = img.get("src", "")
+        if src.lower().startswith("data:"):
+            continue
+        name = src[:60]
+        w, h = img.get("width", ""), img.get("height", "")
+        if not (w.isdigit() and h.isdigit() and int(w) > 0 and int(h) > 0):
+            out.append("image %r has no width and height" % (name,))
+        else:
+            target = resolve(root, rel, src)
+            path = os.path.join(root, target) if target else None
+            real = picture_dimensions(path) if path and os.path.isfile(path) else None
+            if real and (int(w), int(h)) != tuple(real):
+                out.append("image %r says %sx%s but the file is %dx%d"
+                           % (name, w, h, real[0], real[1]))
+        lazy = img.get("loading", "").lower() == "lazy"
+        if first and lazy:
+            out.append("the first picture %r is loaded lazily, but it is at the top of the page"
+                       % (name,))
+        elif not first and not lazy:
+            out.append('image %r is not loading="lazy"' % (name,))
+        first = False
+    return out
+
+
 def check_page(root, rel):
     """Problems with one page, as a list of plain sentences."""
     out = []
@@ -312,6 +372,7 @@ def check_page(root, rel):
             ids = p.ids if target == rel else parse(root, target).ids
             if unquote(frag) not in ids:
                 out.append("link %r points to a missing anchor" % (value[:80],))
+    out.extend(image_problems(root, rel, p))
     out.extend(size_problems(root, rel, p))
     return out
 

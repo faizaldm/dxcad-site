@@ -102,7 +102,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_pages.py: the JSON-LD parses and names the version in data/; both themes reach AA contrast by
   4009's check; --check passes.
 
-- [ ] 4015. Pictures sized for the web: each img with its width and height, lazy loading below the fold (S)
+- [x] 4015. Pictures sized for the web: each img with its width and height, lazy loading below the fold (S)
   - Every img gets width and height (read from the file by the standard library), loading="lazy" except the first
     picture of a page, and no page over 300 KB with its pictures (4001's rule) kept.
   Accept: tests/test_pages.py fails on an img without width and height and passes on every page; --check passes.
