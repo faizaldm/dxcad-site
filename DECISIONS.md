@@ -108,3 +108,22 @@
   points to the home page's #download section and keeps doing so. 46 hand-made and made pages changed in that one
   line, and the footer in all of them through FOOTER. The page names "Licences from" and "Trial until" as latest.json
   words, with no explanation of its own. It also says "pip install dxcad", as the tutorial and the release notes do.
+- 4014: JSON-LD. index.html already had a SoftwareApplication in its own JSON-LD; the build now sets its
+  softwareVersion and downloadUrl from data/core/latest.json (the address is now the PyPI page latest.json names,
+  not the site's #download section) and leaves every other word as written. releases.html, which had none, gets one
+  SoftwareApplication made the same way: name, address, category and operating systems taken from the home page's
+  own JSON-LD (the site's words; data/ names no operating system list), version and download address from
+  latest.json, releaseNotes the page's own address. datePublished and the offers stay on the home page only.
+- 4014: the dark theme is one block (THEME_STYLE) that turns the site's CSS variables over (light text, dark paper,
+  paler blue and red), last in the head of every page: made pages get it from make_page, hand-made pages on every
+  run, so one place holds it. The few colours the pages write out in full (white text on buttons and the skip link,
+  the search highlight, the drawings' blue and red strokes, the Designmatix logo, which is dark on transparent and so
+  gets a white plate) are overridden in the same block. The dark theme was looked at only through the contrast
+  check, not in a browser (none here): the owner should look at the home page with the system set to dark.
+- 4014: tests/a11ycheck.py now reads the dark block apart from the light rules: the page is checked in the light
+  theme as before, and, if it has a dark block, again with that block cascaded over the rules of the same selector
+  (failures end "[dark theme]"). @media print rules are ignored by the screen checks, and a rule that sets only a
+  background on an img or svg is skipped (a picture has no text). Both themes reach 4.5 : 1 on every page.
+- 4014: the print style is part of DOCS_STYLE, so only the docs pages carry it (as the item says): header, footer,
+  skip link and contents are hidden, text is black on white, links to other sites print their address, code and
+  tables do not break across pages.

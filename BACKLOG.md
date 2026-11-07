@@ -95,7 +95,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: the page lists exactly latest.json's files with their sizes and checksums; a
   changed latest.json in a temporary folder changes the page; --check passes; tests/test_pages.py passes.
 
-- [ ] 4014. Structured data on the main and release pages, and a dark theme that follows the system (S)
+- [x] 4014. Structured data on the main and release pages, and a dark theme that follows the system (S)
   - JSON-LD (schema.org SoftwareApplication) on index.html and releases.html with the name, the operating systems, the
     version and the download address from data/; a prefers-color-scheme: dark style that keeps 4009's contrast; a
     print style for the docs pages.

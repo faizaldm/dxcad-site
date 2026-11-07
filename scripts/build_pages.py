@@ -10,6 +10,10 @@ Pages made here:
 
     releases.html, releases.xml
                       from data/core/RELEASE_NOTES.md (the page, and its Atom feed)
+                      and, for its JSON-LD, data/core/latest.json
+    index.html        stays hand-made; its JSON-LD takes the version and the
+                      download address from data/core/latest.json
+    every page        the dark theme block (THEME_STYLE), last in its head
     gallery.html, examples/NAME.html, img/gallery/...
                       from data/core/examples and data/core/gallery
     fabrication.html, drafting-pro.html
@@ -185,6 +189,34 @@ FOOTER_RE = re.compile(r'<footer class="tb".*?</footer>', re.S)
 NOT_LISTED = {"404.html"}
 
 
+# The dark theme: a visitor whose system asks for dark gets the same pages with
+# the same variables turned over.  It is one block, last in the head of every
+# page (made pages are given it by make_page, hand-made pages on every run, as
+# with the footer), so it overrides the page's own colours whatever the page
+# is.  Text is held to WCAG AA in both themes by tests/a11ycheck.py.
+THEME_STYLE = """<style id="theme">
+@media (prefers-color-scheme:dark){
+:root{color-scheme:dark;--ink:#E6EAF2;--ink-2:#AEB8CC;--blue:#9DAAFF;--blue-dark:#C2CBFF;--red:#FF8F8D;--line:#3B4766;--paper:#0E1526;--wash:#18223A}
+.skip{background:var(--ink);color:var(--paper)}
+.btn{background:var(--blue);color:var(--paper)}
+.results mark{background:#FFE88A;color:#14213D}
+.brand img{background:#FFFFFF;padding:2px 6px}
+svg [stroke="#1E2FE0"]{stroke:var(--blue)}
+svg [stroke="#C8201F"]{stroke:var(--red)}
+}
+</style>"""
+
+THEME_RE = re.compile(r'<style id="theme">.*?</style>\n?', re.S)
+
+
+def with_theme(text):
+    """A page with THEME_STYLE as the last thing in its head (one copy)."""
+    text = THEME_RE.sub("", text)
+    if "</head>" not in text:
+        return text
+    return text.replace("</head>", THEME_STYLE + "\n</head>", 1)
+
+
 def read_shell(root):
     """The style, header and icons a made page takes from the hand-made ones."""
     refunds = read_text(os.path.join(root, "refunds.html"))
@@ -240,6 +272,7 @@ def make_page(shell, path, title, description, body, extra_style="", head_extra=
     head.append(shell["style"])
     if extra_style:
         head.append("<style>\n%s\n</style>" % extra_style.strip("\n"))
+    head.append(THEME_STYLE)
     head.append('</head>')
     page = "\n".join(head) + "\n" + "\n".join([
         '<body>',
@@ -260,6 +293,63 @@ def make_page(shell, path, title, description, body, extra_style="", head_extra=
         '',
     ])
     return ascii_only(page)
+
+
+# ------------------------------------------------------- structured data ---
+
+LD_RE = re.compile(r'(<script type="application/ld\+json">\n)(.*?)(\n</script>)', re.S)
+
+
+def index_software(root):
+    """(whole JSON-LD of index.html, its SoftwareApplication node): the home page's
+    own words for what DX-CAD is and which systems it runs on."""
+    text = read_text(os.path.join(root, "index.html"))
+    m = LD_RE.search(text)
+    if not m:
+        raise ValueError("index.html has no JSON-LD block")
+    data = json.loads(m.group(2))
+    for node in data.get("@graph", []):
+        if node.get("@type") == "SoftwareApplication":
+            return data, node
+    raise ValueError("index.html's JSON-LD has no SoftwareApplication")
+
+
+def index_with_software(text, latest):
+    """index.html with its SoftwareApplication's version and download address those
+    of data/core/latest.json (the rest of its JSON-LD is left as written)."""
+    m = LD_RE.search(text)
+    if not m:
+        return text
+    data = json.loads(m.group(2))
+    for node in data.get("@graph", []):
+        if node.get("@type") == "SoftwareApplication":
+            node["softwareVersion"] = latest["version"]
+            if latest.get("url"):
+                node["downloadUrl"] = latest["url"]
+    body = json.dumps(data, indent=1)
+    return text[:m.start(2)] + body + text[m.end(2):]
+
+
+def releases_software(root):
+    """The JSON-LD block of releases.html: the same application, its version and
+    download address from latest.json, its systems from the home page."""
+    latest = read_latest(root)
+    _, node = index_software(root)
+    app = {
+        "@type": "SoftwareApplication",
+        "name": node["name"],
+        "url": node["url"],
+        "applicationCategory": node["applicationCategory"],
+        "operatingSystem": node["operatingSystem"],
+        "softwareVersion": latest["version"],
+        "releaseNotes": address("releases.html"),
+        "publisher": {"@type": "Organization", "name": "Designmatix Ltd",
+                      "url": "https://designmatix.co.uk/"},
+    }
+    if latest.get("url"):
+        app["downloadUrl"] = latest["url"]
+    data = dict({"@context": "https://schema.org"}, **app)
+    return '<script type="application/ld+json">\n%s\n</script>' % json.dumps(data, indent=1)
 
 
 # --------------------------------------------------------------- releases ---
@@ -369,7 +459,7 @@ def build_releases(root, shell):
         "%s, %s." % (latest["version"], long_date(latest["date"])),
         releases_body(releases),
         head_extra='<link rel="alternate" type="application/atom+xml" '
-                   'title="DX-CAD releases" href="/%s">' % FEED)
+                   'title="DX-CAD releases" href="/%s">\n%s' % (FEED, releases_software(root)))
     return {"releases.html": (page, latest["date"]),
             FEED: (releases_feed(releases), latest["date"])}
 
@@ -860,6 +950,17 @@ DOCS_STYLE = """
 @media (max-width:640px){.doc .toc ol{columns:1}}
 pre.script{overflow-x:auto;border:1px solid var(--ink);background:var(--wash);padding:16px 20px;font-size:14px;line-height:1.5;max-width:none;tab-size:4}
 pre.script code{background:none;padding:0;font-size:inherit}
+@media print{
+.skip,.bar,.tb,.toc{display:none!important}
+body{background:#fff;color:#000;font-size:11pt}
+.wrap{max-width:none;padding:0}
+.sheet{border:0;margin:0;padding:0}.sheet::before{display:none}
+.doc{max-width:none}.doc a{color:#000}
+.doc a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;overflow-wrap:anywhere}
+.doc h1,.doc h2,.doc h3{break-after:avoid}
+.doc pre,.doc table,.doc img,.doc blockquote{break-inside:avoid}
+pre.script{white-space:pre-wrap;overflow:visible;border:1px solid #000;background:#fff}
+}
 """
 
 LIST_RE = re.compile(r"^(\s*)([-*+]|\d+[.)])\s+(.*)$")
@@ -1725,14 +1826,18 @@ def not_found_page(shell):
 
 
 def build_footers(root, made):
-    """Every hand-made page with its footer replaced by FOOTER: {path: text}."""
+    """Every hand-made page with its footer replaced by FOOTER and its theme block
+    in place: {path: text}."""
     out = {}
     for rel in page_files(root):
         if rel in made:
             continue
         text = read_text(os.path.join(root, rel))
         if len(FOOTER_RE.findall(text)) == 1:
-            out[rel] = FOOTER_RE.sub(lambda m: FOOTER, text)
+            text = FOOTER_RE.sub(lambda m: FOOTER, text)
+        if rel == "index.html":
+            text = index_with_software(text, read_latest(root))
+        out[rel] = with_theme(text)
     return out
 
 

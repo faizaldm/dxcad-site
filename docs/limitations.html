@@ -81,6 +81,28 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
 @media (max-width:640px){.doc .toc ol{columns:1}}
 pre.script{overflow-x:auto;border:1px solid var(--ink);background:var(--wash);padding:16px 20px;font-size:14px;line-height:1.5;max-width:none;tab-size:4}
 pre.script code{background:none;padding:0;font-size:inherit}
+@media print{
+.skip,.bar,.tb,.toc{display:none!important}
+body{background:#fff;color:#000;font-size:11pt}
+.wrap{max-width:none;padding:0}
+.sheet{border:0;margin:0;padding:0}.sheet::before{display:none}
+.doc{max-width:none}.doc a{color:#000}
+.doc a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;overflow-wrap:anywhere}
+.doc h1,.doc h2,.doc h3{break-after:avoid}
+.doc pre,.doc table,.doc img,.doc blockquote{break-inside:avoid}
+pre.script{white-space:pre-wrap;overflow:visible;border:1px solid #000;background:#fff}
+}
+</style>
+<style id="theme">
+@media (prefers-color-scheme:dark){
+:root{color-scheme:dark;--ink:#E6EAF2;--ink-2:#AEB8CC;--blue:#9DAAFF;--blue-dark:#C2CBFF;--red:#FF8F8D;--line:#3B4766;--paper:#0E1526;--wash:#18223A}
+.skip{background:var(--ink);color:var(--paper)}
+.btn{background:var(--blue);color:var(--paper)}
+.results mark{background:#FFE88A;color:#14213D}
+.brand img{background:#FFFFFF;padding:2px 6px}
+svg [stroke="#1E2FE0"]{stroke:var(--blue)}
+svg [stroke="#C8201F"]{stroke:var(--red)}
+}
 </style>
 </head>
 <body>

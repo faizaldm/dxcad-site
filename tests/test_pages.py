@@ -448,3 +448,138 @@ def test_other_pages_must_still_be_in_the_sitemap_beside_a_404_page(tmp_path):
     found = reasons(root)
     assert any(r.startswith("extra.html ") and "missing from sitemap.xml" in r for r in found)
     assert not any(r.startswith("404.html ") for r in found)
+
+
+# ---------------------------------------------------------------------------
+# Structured data, and the dark theme.
+
+import json
+import re
+
+DARK_PAGE = ("body{color:var(--a);background:var(--b)}"
+             "@media (prefers-color-scheme:dark){:root{--a:#E6EAF2;--b:#0E1526;--c:#AEB8CC}%s}")
+
+
+def read_page(rel):
+    return (ROOT / rel).read_bytes().decode("utf-8").replace("\r\n", "\n")
+
+
+def json_ld(rel):
+    """The parsed JSON-LD blocks of a page."""
+    blocks = re.findall(r'<script type="application/ld\+json">\n(.*?)\n</script>', read_page(rel), re.S)
+    return [json.loads(b) for b in blocks]
+
+
+def software_nodes(rel):
+    out = []
+    for data in json_ld(rel):
+        out += [n for n in data.get("@graph", [data]) if n.get("@type") == "SoftwareApplication"]
+    return out
+
+
+LATEST = json.loads(read_page("data/core/latest.json"))
+
+
+@pytest.mark.parametrize("rel", ["index.html", "releases.html"])
+def test_software_json_ld_parses_and_names_the_version_in_data(rel):
+    nodes = software_nodes(rel)
+    assert len(nodes) == 1, rel
+    node = nodes[0]
+    assert node["name"] == "DX-CAD"
+    assert node["softwareVersion"] == LATEST["version"]
+    assert node["downloadUrl"] == LATEST["url"]
+    assert node["operatingSystem"].count("Windows") >= 1 and "macOS" in node["operatingSystem"]
+    assert node["url"] == "https://dxcad.designmatix.co.uk/"
+    assert node["applicationCategory"]
+
+
+def test_the_release_notes_and_the_json_ld_name_the_same_version():
+    notes = read_page("data/core/RELEASE_NOTES.md")
+    first = re.search(r"(?m)^## (\S+)", notes).group(1)
+    assert software_nodes("releases.html")[0]["softwareVersion"] == first
+
+
+def test_the_home_pages_own_json_ld_is_otherwise_kept():
+    graph = json_ld("index.html")[0]["@graph"]
+    assert [n["@type"] for n in graph] == ["Organization", "WebSite", "SoftwareApplication"]
+    app = graph[2]
+    assert app["offers"] and app["publisher"] == {"@id": "https://dxcad.designmatix.co.uk/#org"}
+
+
+@pytest.mark.parametrize("rel", PAGES)
+def test_every_page_has_the_dark_theme_block_last_in_its_head(rel):
+    text = read_page(rel)
+    head = text[:text.index("</head>")]
+    assert head.count('<style id="theme">') == 1, rel
+    assert head.rindex("<style") == head.index('<style id="theme">'), rel
+    assert "prefers-color-scheme:dark" in head[head.index('<style id="theme">'):]
+
+
+@pytest.mark.parametrize("rel", PAGES)
+def test_both_themes_reach_aa_contrast_on_every_page(rel):
+    import a11ycheck
+    p = pagecheck.Page()
+    p.feed(read_page(rel))
+    p.close()
+    assert a11ycheck.has_dark_theme(p), rel
+    assert a11ycheck._contrast_problems(p, False) == [], rel
+    assert a11ycheck._contrast_problems(p, True) == [], rel
+
+
+def test_the_dark_theme_is_held_to_contrast_naming_the_theme(tmp_path):
+    bad = DARK_PAGE % ".note{color:var(--c)}:root{--c:#3B4766}"
+    root = make_site(tmp_path, {"about.html": STYLE % bad + "<p>Words</p>"})
+    found = about_reasons(root)
+    assert any("contrast" in r and ".note" in r and "[dark theme]" in r for r in found), found
+
+
+def test_a_good_dark_theme_passes_and_the_light_theme_is_not_read_as_dark(tmp_path):
+    good = DARK_PAGE % ".note{color:var(--c)}"
+    root = make_site(tmp_path, {"about.html": STYLE % ("body{color:var(--a);background:var(--b)}"
+                                                         + good.split("}", 1)[1]) + "<p>Words</p>"})
+    assert about_reasons(root) == []
+
+
+def test_a_dark_rule_that_fails_in_light_does_not_fail_the_light_theme(tmp_path):
+    # --c is #9AA3B5 in the light theme (poor on white) but the .note rule is dark-only
+    bad_light = "body{color:var(--a);background:var(--b)}"
+    dark = "@media (prefers-color-scheme:dark){:root{--a:#E6EAF2;--b:#0E1526;--c:#AEB8CC}.note{color:var(--c)}}"
+    root = make_site(tmp_path, {"about.html": STYLE % (bad_light + dark) + "<p>Words</p>"})
+    assert about_reasons(root) == []
+
+
+def test_a_dark_rule_overrides_the_light_rule_of_the_same_selector(tmp_path):
+    # in light the button is white on blue; in dark its colour and background are turned over
+    css = (".btn{color:#fff;background:#1E2FE0}"
+           "@media (prefers-color-scheme:dark){.btn{color:#0E1526;background:#9DAAFF}}")
+    root = make_site(tmp_path, {"about.html": STYLE % css + "<p>Words</p>"})
+    assert about_reasons(root) == []
+    worse = css.replace("color:#0E1526", "color:#FFFFFF")
+    (tmp_path / "w").mkdir()
+    found = about_reasons(make_site(tmp_path / "w", {"about.html": STYLE % worse + "<p>Words</p>"}))
+    assert any(".btn" in r and "[dark theme]" in r for r in found), found
+
+
+def test_print_rules_are_not_read_as_screen_rules(tmp_path):
+    css = "body{color:#14213D;background:#fff}@media print{.x{color:#ccc}}"
+    root = make_site(tmp_path, {"about.html": STYLE % css + "<p>Words</p>"})
+    assert about_reasons(root) == []
+
+
+DOC_PAGES = [p for p in PAGES if p.startswith("docs/")]
+
+
+def test_there_are_docs_pages():
+    assert "docs/index.html" in DOC_PAGES and len(DOC_PAGES) >= 3
+
+
+@pytest.mark.parametrize("rel", DOC_PAGES)
+def test_a_docs_page_has_a_print_style_that_hides_the_chrome_and_shows_addresses(rel):
+    text = read_page(rel)
+    m = re.search(r"@media print\{(.*?)\n\}\n", text, re.S)
+    assert m, rel
+    css = m.group(1)
+    assert ".bar" in css and ".tb" in css and ".skip" in css          # header, footer, skip link gone
+    assert "attr(href)" in css                                        # links say where they go
+    assert "#000" in css and "background:#fff" in css                 # black on white
+    assert "break-inside:avoid" in css

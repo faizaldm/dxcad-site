@@ -1313,3 +1313,59 @@ def test_download_page_is_in_the_sitemap_the_search_list_and_every_header_and_fo
 def test_download_page_is_sound_and_loads_nothing_from_elsewhere():
     assert pagecheck.check_page(str(ROOT), "download.html") == []
     assert "<script" not in read(ROOT / "download.html")
+
+
+# ------------------------------------------------- structured data, theme ---
+
+def test_a_changed_latest_json_changes_the_json_ld_of_the_home_and_release_pages(tmp_path):
+    root = copy_site(tmp_path / "site")
+    put_latest(root, version="0.1.6", date="2026-11-09", url="https://pypi.org/project/dxcad/0.1.6/")
+    assert run_script(root).returncode == 0
+    import json
+    for rel in ("index.html", "releases.html"):
+        text = read(Path(root, rel))
+        blocks = re.findall(r'<script type="application/ld\+json">\n(.*?)\n</script>', text, re.S)
+        nodes = []
+        for b in blocks:
+            data = json.loads(b)
+            nodes += [n for n in data.get("@graph", [data]) if n.get("@type") == "SoftwareApplication"]
+        assert [n["softwareVersion"] for n in nodes] == ["0.1.6"], rel
+        assert [n["downloadUrl"] for n in nodes] == ["https://pypi.org/project/dxcad/0.1.6/"], rel
+    assert run_script(root, "--check").returncode == 0
+
+
+def test_the_home_page_keeps_every_other_word_of_its_json_ld_when_the_version_changes(tmp_path):
+    import json
+    root = copy_site(tmp_path / "site")
+    put_latest(root, version="0.1.6", date="2026-11-09")
+    run_script(root)
+
+    def ld(path):
+        return json.loads(re.search(r'<script type="application/ld\+json">\n(.*?)\n</script>',
+                                    read(path), re.S).group(1))
+    old, new = ld(ROOT / "index.html"), ld(Path(root, "index.html"))
+    for data in (old, new):
+        for node in data["@graph"]:
+            if node["@type"] == "SoftwareApplication":
+                node.pop("softwareVersion")
+                node.pop("downloadUrl")
+    assert old == new
+
+
+def test_the_theme_block_is_put_back_once_on_a_hand_made_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    page = Path(root, "privacy.html")
+    text = read(page)
+    page.write_bytes(re.sub(r'<style id="theme">.*?</style>\n', "", text, flags=re.S).encode())
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "privacy.html" in result.stdout
+    assert run_script(root).returncode == 0
+    assert read(page) == text and text.count('<style id="theme">') == 1
+    page.write_bytes(text.replace("</head>", bp.THEME_STYLE + "\n</head>", 1).encode())    # a second copy
+    assert run_script(root).returncode == 0 and read(page) == text
+
+
+def test_the_theme_block_and_the_print_style_are_ascii_and_fit_the_size_limit():
+    bp.THEME_STYLE.encode("ascii")
+    assert len(bp.THEME_STYLE) < 1500
+    assert "@media print" in bp.DOCS_STYLE and "@media print" not in bp.THEME_STYLE

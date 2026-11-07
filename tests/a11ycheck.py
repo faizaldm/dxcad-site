@@ -136,8 +136,22 @@ def parse_declarations(text):
     return out
 
 
-def parse_css(text):
-    """[(selector, {property: value})], with @media and @supports flattened."""
+def media_kind(prelude):
+    """"dark" for a prefers-color-scheme: dark query, "print" for a print one, else ""."""
+    low = prelude.lower().replace(" ", "")
+    if "prefers-color-scheme:dark" in low:
+        return "dark"
+    if "print" in low:
+        return "print"
+    return ""
+
+
+def parse_css(text, keep="light"):
+    """[(selector, {property: value})], with @media and @supports flattened.
+
+    keep="light": the page as it is without a dark preference (the prefers-color-
+    scheme: dark blocks are left out); keep="dark": only what those blocks hold.
+    A print block is never kept: the checks are of the page on a screen."""
     text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
     rules = []
     i, n = 0, len(text)
@@ -162,8 +176,15 @@ def parse_css(text):
         inner = text[j + 1:k - 1]
         if prelude.startswith("@"):
             if prelude.lower().startswith(("@media", "@supports")):
-                rules.extend(parse_css(inner))
-        else:
+                kind = media_kind(prelude)
+                if kind == "print":
+                    pass
+                elif kind == "dark":
+                    if keep == "dark":
+                        rules.extend(parse_css(inner, "everything"))
+                else:
+                    rules.extend(parse_css(inner, keep))
+        elif keep != "dark":
             for sel in prelude.split(","):
                 rules.append((" ".join(sel.split()), parse_declarations(inner)))
         i = k
@@ -203,7 +224,19 @@ def show(rgb):
     return "#%02X%02X%02X" % rgb
 
 
+def has_dark_theme(p):
+    return any(parse_css(css, "dark") for css in p.styles)
+
+
 def contrast_problems(p):
+    """Contrast in the light theme and, where the page has a dark one, in that."""
+    out = _contrast_problems(p, False)
+    if has_dark_theme(p):
+        out += [m + " [dark theme]" for m in _contrast_problems(p, True)]
+    return out
+
+
+def _contrast_problems(p, dark):
     """Each text colour the page's CSS sets, on the background it sits on.
 
     A rule that sets a colour and a background is checked as a pair.  A rule
@@ -215,6 +248,17 @@ def contrast_problems(p):
     rules = []
     for css in p.styles:
         rules.extend(parse_css(css))
+    if dark:     # the dark blocks cascade over the rules of the same selector
+        over = []
+        for css in p.styles:
+            over.extend(parse_css(css, "dark"))
+        merged = []
+        for sel, decls in rules:
+            for osel, odecls in over:
+                if osel == sel:
+                    decls = dict(decls, **odecls)
+            merged.append((sel, decls))
+        rules = merged + over
     for inline in p.inline_styles:
         rules.append(("style=" + inline[:30], parse_declarations(inline)))
     variables = {}
@@ -241,7 +285,11 @@ def contrast_problems(p):
     page_fg = body.get("fg", (0, 0, 0))
     surfaces = [page_bg]
     for _, e in entries:
-        if "bg" in e and luminance(e["bg"]) > 0.5 and e["bg"] not in surfaces:
+        if "bg" not in e or e["bg"] in surfaces:
+            continue
+        # light theme: every light surface; dark theme: every dark surface that
+        # carries no colour of its own (a button with its own text is a pair)
+        if (luminance(e["bg"]) > 0.5) if not dark else (luminance(e["bg"]) < 0.5 and "fg" not in e):
             surfaces.append(e["bg"])
     base = {s: e["fg"] for s, e in entries if "fg" in e}
     for sel, e in entries:
@@ -251,6 +299,8 @@ def contrast_problems(p):
         elif fg:
             pairs = [(fg, s) for s in surfaces]
         elif bg:
+            if re.search(r"(^|[\s>+~])(img|svg)(:[\w-]+)*$", sel):
+                continue      # a picture has no text of its own
             stem = re.sub(r":(hover|focus|focus-visible|active)\b", "", sel)
             pairs = [(base.get(stem, page_fg), bg)]
         else:
