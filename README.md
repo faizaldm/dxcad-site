@@ -15,6 +15,8 @@ hand (the next run would write over the edit):
   from the examples and their pictures
 - `fabrication.html` and `drafting-pro.html`, from the window's help
   (`gui.md`) and the site's own words
+- `docs/NAME.html`, one page for each public SDK doc in `data/core/` (`index.md`
+  is `docs/index.html`), and the pictures a doc names that are in `data/core/`
 - `sitemap.xml`, which lists every page
 
 ## After a DX-CAD release: three steps

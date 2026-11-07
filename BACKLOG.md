@@ -67,7 +67,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_pages.py passes on every page and fails, naming the page and the rule, on a page made wrong in a
   temporary folder for each rule.
 
-- [ ] 4010. The public SDK's docs as pages of the site, made from data/ (M)
+- [x] 4010. The public SDK's docs as pages of the site, made from data/ (M)
   - docs/NAME.html for each public SDK doc in data/ (its index, gui, limitations and the rest copied there), made by
     scripts/build_pages.py with a small Markdown reader of its own (standard library only: headings, paragraphs,
     lists, code blocks, links, emphasis), in the site's style, links between them made to work, a docs index linked

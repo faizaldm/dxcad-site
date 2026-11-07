@@ -53,5 +53,20 @@
   with a colour and a background is one pair; a rule with only a colour is tried on the page background and on every
   light surface the CSS declares; a rule with only a background takes the colour of the same selector (so a hover rule
   is held to its button's text colour). A colour it cannot read (hsl() and the like) is reported, not passed over.
+- 4010: the docs are every .md under data/core except RELEASE_NOTES.md (it is releases.html): today index, gui,
+  limitations, examples/README, examples/bracket and examples/dimensions. Names: docs/NAME.html, a folder's slash made
+  a hyphen and README dropped (examples/README.md is docs/examples.html); index.md is docs/index.html, linked as /docs/.
+  A new doc in data/ gets its page on the next run with no change to the script.
+- 4010: the reader also reads tables, block quotes and nested lists, because gui.md, limitations.md and the examples
+  are mostly tables. A link to a doc the site has goes to its page; a link to a script that is an example goes to that
+  example's page; a link to anything else the site lacks (install.md, cli.md, bracket.jsonl, ...) is its words alone,
+  as in the release notes; web links stay links. The docs index leaves out the table rows that only point at docs the
+  public set does not hold. A picture named in a doc is copied to img/docs/ if data/core has it; limitations.md names
+  ten that data/ does not have, so each shows as its description in brackets.
+- 4010: a heading that would skip a level is shown one level below the one before it, and a second top heading is an
+  h2, so every page keeps the order 4009 asks for. The docs' words are shown as written, including lines such as
+  index.md's about its own test suite; the site does not edit data/.
+- 4010: make_page now takes the canonical and og:url from the same address() the sitemap uses, so docs/index.html
+  is https://dxcad.designmatix.co.uk/docs/. The index's Download paragraph gained one sentence linking /docs/.
 - 4009: the small test site's page template gained the skip link and a main element, and its one heading test now
   starts at h1, because the new rules apply to it as to every page.

@@ -14,6 +14,9 @@ Pages made here:
                       from data/core/examples and data/core/gallery
     fabrication.html, drafting-pro.html
                       from data/core/gui.md and the site's own words
+    tutorial.html     from the public docs and the bracket example
+    docs/NAME.html    one page for each public SDK doc in data/core (index.md is
+                      docs/index.html), through the small Markdown reader below
 
 The look of a made page is the look of the pages that are written by hand: its
 style and its header are those of refunds.html, its footer is the index's.
@@ -25,6 +28,7 @@ import ast
 import datetime
 import html
 import os
+import posixpath
 import re
 import struct
 import sys
@@ -163,7 +167,7 @@ def read_shell(root):
 
 def make_page(shell, path, title, description, body, extra_style="", head_extra=""):
     """A whole page, as text.  path is the page's file name, e.g. releases.html."""
-    url = SITE + path
+    url = address(path)
     image = SITE + SOCIAL_IMAGE
     t, d = html.escape(title), html.escape(description)
     head = [
@@ -802,6 +806,394 @@ def build_tutorial(root, shell, date):
     return {"tutorial.html": (tutorial_page(root, shell), date)}
 
 
+# ------------------------------------------------------------------- docs ---
+
+# The public SDK's docs (every .md under data/core except the release notes,
+# which have their own page) become docs/NAME.html.  The reader below is small
+# and ours: ATX headings, paragraphs, bullet and numbered lists (nested by
+# indent), block quotes, fenced code, tables, links, pictures, emphasis and
+# `code`.  HTML comments in the source are dropped; other HTML is shown as text.
+
+DOCS_STYLE = """
+.doc .tw{overflow-x:auto;margin:8px 0 16px}.doc .tw table{margin:0;min-width:520px}
+.doc td,.doc th{overflow-wrap:anywhere}
+.doc blockquote{margin:0 0 16px;padding:4px 0 4px 16px;border-left:3px solid var(--line);color:var(--ink-2)}
+.doc blockquote p{margin:8px 0}
+.doc img.fig{display:block;max-width:100%;height:auto;border:1px solid var(--line);margin:0 0 16px}
+.doc .toc p{margin:0}
+.doc .toc ol{columns:2;column-gap:32px}.doc .toc li{break-inside:avoid}
+@media (max-width:640px){.doc .toc ol{columns:1}}
+pre.script{overflow-x:auto;border:1px solid var(--ink);background:var(--wash);padding:16px 20px;font-size:14px;line-height:1.5;max-width:none;tab-size:4}
+pre.script code{background:none;padding:0;font-size:inherit}
+"""
+
+LIST_RE = re.compile(r"^(\s*)([-*+]|\d+[.)])\s+(.*)$")
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
+TABLE_SEP_RE = re.compile(r"^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$")
+
+
+def doc_sources(root):
+    """{path under data/core, with '/': text} of every public SDK doc."""
+    base = os.path.join(root, "data", "core")
+    found = {}
+    for folder, dirs, files in os.walk(base):
+        dirs[:] = sorted(dirs)
+        for name in sorted(files):
+            if not name.endswith(".md"):
+                continue
+            rel = os.path.relpath(os.path.join(folder, name), base).replace(os.sep, "/")
+            if rel != "RELEASE_NOTES.md":
+                found[rel] = read_text(os.path.join(folder, name))
+    return found
+
+
+def doc_name(src):
+    """examples/README.md -> examples; examples/bracket.md -> examples-bracket."""
+    stem = src[:-len(".md")]
+    if stem.endswith("/README"):
+        stem = stem[:-len("/README")]
+    return stem.replace("/", "-")
+
+
+def doc_path(src):
+    return "docs/%s.html" % doc_name(src)
+
+
+def doc_href(src):
+    return "/docs/" if doc_name(src) == "index" else "/" + doc_path(src)
+
+
+def md_plain(text):
+    """Markdown text with its marks taken off: what a reader sees, as one line."""
+    text = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)
+    text = re.sub(r"`+", "", text)
+    text = re.sub(r"\*\*|(?<![\w])_|_(?![\w])", "", text)
+    text = re.sub(r"(?<![\w*])\*(?=\S)|(?<=\S)\*(?![\w*])", "", text)
+    return " ".join(html.unescape(text).split())
+
+
+def slugify(text):
+    """GitHub's anchor for a heading: lower case, no punctuation, spaces to hyphens."""
+    return re.sub(r"[^\w\- ]", "", md_plain(text).lower()).replace(" ", "-")
+
+
+def md_blocks(lines):
+    """Lines of markdown -> blocks: ("h", level, text), ("p", text), ("code", lang, text),
+    ("ul"|"ol", [item]), ("quote", blocks), ("table", header, rows), ("hr",).
+    A list item is {"text": str, "kids": [list block]}."""
+    blocks = []
+    i, n = 0, len(lines)
+
+    def starts_block(k):
+        s = lines[k]
+        return (s.startswith(("```", ">", "<!--")) or HEADING_RE.match(s) is not None
+                or LIST_RE.match(s) is not None or re.match(r"^\s*(-{3,}|\*{3,})\s*$", s)
+                or (s.lstrip().startswith("|") and k + 1 < n and TABLE_SEP_RE.match(lines[k + 1])))
+
+    while i < n:
+        line = lines[i]
+        if not line.strip():
+            i += 1
+        elif line.startswith("```"):
+            lang = line[3:].strip()
+            i += 1
+            code = []
+            while i < n and not lines[i].startswith("```"):
+                code.append(lines[i])
+                i += 1
+            i += 1
+            blocks.append(("code", lang, "\n".join(code)))
+        elif line.lstrip().startswith("<!--"):
+            while i < n and "-->" not in lines[i]:
+                i += 1
+            i += 1
+        elif HEADING_RE.match(line):
+            m = HEADING_RE.match(line)
+            blocks.append(("h", len(m.group(1)), m.group(2)))
+            i += 1
+        elif re.match(r"^\s*(-{3,}|\*{3,})\s*$", line):
+            blocks.append(("hr",))
+            i += 1
+        elif line.startswith(">"):
+            inner = []
+            while i < n and lines[i].startswith(">"):
+                inner.append(re.sub(r"^> ?", "", lines[i]))
+                i += 1
+            blocks.append(("quote", md_blocks(inner)))
+        elif line.lstrip().startswith("|") and i + 1 < n and TABLE_SEP_RE.match(lines[i + 1]):
+            header = split_row(line)
+            i += 2
+            rows = []
+            while i < n and lines[i].lstrip().startswith("|"):
+                rows.append(split_row(lines[i]))
+                i += 1
+            blocks.append(("table", header, rows))
+        elif LIST_RE.match(line):
+            items = []
+            while i < n:
+                s = lines[i]
+                m = LIST_RE.match(s)
+                if not s.strip():
+                    k = i
+                    while k < n and not lines[k].strip():
+                        k += 1
+                    if k < n and (LIST_RE.match(lines[k]) or lines[k].startswith("  ")):
+                        i = k
+                        continue
+                    break
+                if (m and items and len(m.group(1)) <= items[0]["indent"]
+                        and m.group(2)[0].isdigit() != items[0]["ordered"]):
+                    break       # a numbered list after a bullet list, or the other way
+                if m:
+                    items.append({"indent": len(m.group(1)), "ordered": m.group(2)[0].isdigit(),
+                                  "text": m.group(3).strip()})
+                elif items and (s.startswith(" ") or not starts_block(i)):
+                    items[-1]["text"] += " " + s.strip()
+                else:
+                    break
+                i += 1
+            blocks.append(list_tree(items))
+        else:
+            para = [line.strip()]
+            i += 1
+            while i < n and lines[i].strip() and not starts_block(i):
+                para.append(lines[i].strip())
+                i += 1
+            blocks.append(("p", "\n".join(para)))
+    return blocks
+
+
+def split_row(line):
+    line = line.strip()
+    if line.startswith("|"):
+        line = line[1:]
+    if line.endswith("|") and not line.endswith("\\|"):
+        line = line[:-1]
+    return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", line)]
+
+
+def list_tree(items):
+    """Flat items with indents -> ("ul"|"ol", [{"text", "kids": [list block]}])."""
+    root = {"indent": -1, "kids": [], "ordered": items[0]["ordered"]}
+    stack = [root]
+    for item in items:
+        node = {"indent": item["indent"], "text": item["text"], "kids": [],
+                "ordered": item["ordered"]}
+        while len(stack) > 1 and stack[-1]["indent"] >= node["indent"]:
+            stack.pop()
+        stack[-1]["kids"].append(node)
+        stack.append(node)
+
+    def freeze(parent):
+        kind = "ol" if parent["kids"][0]["ordered"] else "ul"
+        return (kind, [{"text": k["text"], "kids": [freeze(k)] if k["kids"] else []}
+                       for k in parent["kids"]])
+    return freeze(root)
+
+
+def md_target(url, ctx):
+    """Where a link in a doc goes on this site, or None if it goes nowhere here."""
+    if re.match(r"https?://", url):
+        return url
+    path, _, frag = url.partition("#")
+    if not path:
+        return "#" + frag if frag in ctx["slugs"][ctx["src"]] else None
+    target = posixpath.normpath(posixpath.join(posixpath.dirname(ctx["src"]), path))
+    if target in ctx["slugs"]:
+        href = doc_href(target)
+        return href + "#" + frag if frag in ctx["slugs"][target] else href
+    m = re.fullmatch(r"examples/([\w-]+)\.py", target)
+    if m and m.group(1) in ctx["examples"]:
+        return "/examples/%s.html" % m.group(1)
+    return None
+
+
+def md_inline(text, ctx):
+    stash = []
+
+    def keep(markup):
+        stash.append(markup)
+        return "\x00%d\x00" % (len(stash) - 1)
+
+    text = re.sub(r"(`+)(.+?)\1", lambda m: keep("<code>%s</code>" % esc(m.group(2).strip())),
+                  text, flags=re.S)
+    text = esc(html.unescape(text))
+
+    def picture(m):
+        alt, url = m.group(1), html.unescape(m.group(2))
+        base = posixpath.normpath(posixpath.join(posixpath.dirname(ctx["src"]), url))
+        data = ctx["assets"].get(base)
+        if data is None:
+            return keep("<em>(Picture: %s)</em>" % alt)
+        ctx["used"].add(base)
+        return keep('<img class="fig" src="/img/docs/%s" alt="%s" loading="lazy" decoding="async">'
+                    % (base, alt))
+
+    def link(m):
+        href = md_target(html.unescape(m.group(2)), ctx)
+        inner = emphasis(m.group(1))
+        return keep('<a href="%s">%s</a>' % (html.escape(href), inner)) if href else inner
+
+    def emphasis(t):
+        t = re.sub(r"\*\*(?=\S)(.+?)(?<=\S)\*\*", lambda m: keep("<strong>%s</strong>" % m.group(1)), t)
+        t = re.sub(r"(?<![\w*])\*(?=[^\s*])(.+?)(?<=[^\s*])\*(?![\w*])",
+                   lambda m: keep("<em>%s</em>" % m.group(1)), t)
+        t = re.sub(r"(?<![\w])_(?=[^\s_])(.+?)(?<=[^\s_])_(?![\w])",
+                   lambda m: keep("<em>%s</em>" % m.group(1)), t)
+        return t
+
+    text = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", picture, text)
+    text = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, text)
+    text = emphasis(text)
+    while "\x00" in text:
+        text = re.sub(r"\x00(\d+)\x00", lambda m: stash[int(m.group(1))], text)
+    return text
+
+
+def doc_blocks_html(blocks, ctx, out, state):
+    """Append HTML lines for blocks.  state: heading levels and the ids used."""
+    for b in blocks:
+        kind = b[0]
+        if kind == "h":
+            level = 1 if state["last"] == 0 else max(2, min(b[1], state["last"] + 1))
+            state["last"] = level
+            sid = slugify(b[2])
+            n = state["ids"].get(sid, 0)
+            state["ids"][sid] = n + 1
+            sid = sid if n == 0 else "%s-%d" % (sid, n)
+            state["heading"] = md_plain(b[2])
+            if level == 2:
+                state["toc"].append((sid, md_inline(b[2], ctx)))
+            state["marks"].append(len(out))
+            out.append('    <h%d id="%s">%s</h%d>' % (level, sid, md_inline(b[2], ctx), level))
+        elif kind == "p":
+            out.append("    <p>%s</p>" % md_inline(b[1], ctx))
+        elif kind == "code":
+            out.append('    <pre class="script"><code>%s</code></pre>' % esc(b[2]))
+        elif kind == "hr":
+            out.append("    <hr>")
+        elif kind == "quote":
+            out.append("    <blockquote>")
+            doc_blocks_html(b[1], ctx, out, state)
+            out.append("    </blockquote>")
+        elif kind in ("ul", "ol"):
+            out.extend(list_html(b, ctx, "    "))
+        elif kind == "table":
+            head, rows = b[1], b[2]
+            width = len(head)
+            out.append('    <div class="tw" role="region" tabindex="0" aria-label="%s">'
+                       % html.escape("Table: " + (state["heading"] or "this page")))
+            out.append("    <table>")
+            out.append("      <thead><tr>%s</tr></thead>" % "".join(
+                '<th scope="col">%s</th>' % md_inline(c, ctx) for c in head))
+            out.append("      <tbody>")
+            for row in rows:
+                if dead_page_row(row, ctx):
+                    continue
+                row = (row + [""] * width)[:width]
+                out.append("        <tr>%s</tr>" % "".join(
+                    "<td>%s</td>" % md_inline(c, ctx) for c in row))
+            out.append("      </tbody>")
+            out.append("    </table>")
+            out.append("    </div>")
+
+
+def dead_page_row(row, ctx):
+    """A table row that is only a link to another doc this site does not have
+    (the index lists pages the public docs do not include): left out."""
+    m = re.fullmatch(r"\[[^\]]+\]\(([^)\s#]+\.md)(#[^)\s]*)?\)", row[0].strip()) if row else None
+    return bool(m) and md_target(m.group(1) + (m.group(2) or ""), ctx) is None
+
+
+def list_html(block, ctx, pad):
+    kind, items = block
+    out = ["%s<%s>" % (pad, kind)]
+    for item in items:
+        if item["kids"]:
+            out.append("%s  <li>%s" % (pad, md_inline(item["text"], ctx)))
+            for kid in item["kids"]:
+                out.extend(list_html(kid, ctx, pad + "    "))
+            out.append("%s  </li>" % pad)
+        else:
+            out.append("%s  <li>%s</li>" % (pad, md_inline(item["text"], ctx)))
+    out.append("%s</%s>" % (pad, kind))
+    return out
+
+
+def doc_description(blocks, title):
+    """The first paragraph, in whole sentences up to about 160 characters."""
+    for b in blocks:
+        if b[0] == "p":
+            text = md_plain(b[1])
+            if len(text) <= 160:
+                return text
+            cut = ""
+            for sentence in re.findall(r".+?(?:[.!?](?=\s|$)|$)", text):
+                if len(cut) + len(sentence) > 160:
+                    break
+                cut += sentence
+            if cut.strip():
+                return cut.strip()
+            return text[:157].rsplit(" ", 1)[0] + "..."
+    return title
+
+
+def doc_page(shell, src, blocks, ctx):
+    out = []
+    state = {"last": 0, "ids": {}, "toc": [], "heading": "", "marks": []}
+    if doc_name(src) != "index":
+        out.append('    <p class="small"><a href="/docs/">DX-CAD documentation</a></p>')
+    doc_blocks_html(blocks, ctx, out, state)
+    if len(state["toc"]) >= 5:
+        toc = ['    <nav class="toc" aria-label="On this page">',
+               "    <p><strong>On this page</strong></p>", "    <ol>"]
+        toc += ['      <li><a href="#%s">%s</a></li>' % (sid, text) for sid, text in state["toc"]]
+        toc += ["    </ol>", "    </nav>"]
+        first = next(m for m in state["marks"] if out[m].startswith("    <h2"))
+        out[first:first] = toc
+    title = next((md_plain(b[2]) for b in blocks if b[0] == "h"), doc_name(src))
+    out.append('    <p class="small">From the DX-CAD documentation, <code>%s</code>. '
+               '<a href="/docs/">All the pages</a>.</p>' % esc(src))
+    return make_page(
+        shell, doc_path(src),
+        "%s | DX-CAD documentation | DX-CAD by Designmatix" % title,
+        doc_description(blocks, title), "\n".join(out), DOCS_STYLE)
+
+
+def build_docs(root, shell, date):
+    sources = doc_sources(root)
+    base = os.path.join(root, "data", "core")
+    assets = {}
+    for folder, dirs, files in os.walk(base):
+        dirs[:] = sorted(dirs)
+        for name in files:
+            if name.lower().endswith((".png", ".svg", ".jpg", ".jpeg", ".gif")):
+                rel = os.path.relpath(os.path.join(folder, name), base).replace(os.sep, "/")
+                assets[rel] = read_bytes(os.path.join(folder, name))
+    parsed = {src: md_blocks(text.split("\n")) for src, text in sources.items()}
+    slugs = {}
+    for src, blocks in parsed.items():
+        seen = {}
+        slugs[src] = set()
+        for b in blocks:
+            if b[0] == "h":
+                sid = slugify(b[2])
+                n = seen.get(sid, 0)
+                seen[sid] = n + 1
+                slugs[src].add(sid if n == 0 else "%s-%d" % (sid, n))
+    examples = {p[:-3] for p in os.listdir(os.path.join(base, "examples")) if p.endswith(".py")} \
+        if os.path.isdir(os.path.join(base, "examples")) else set()
+    made = {}
+    used = set()
+    for src, blocks in parsed.items():
+        ctx = {"src": src, "slugs": slugs, "examples": examples, "assets": assets, "used": used}
+        made[doc_path(src)] = (doc_page(shell, src, blocks, ctx), date)
+    for rel in sorted(used):
+        made["img/docs/" + rel] = (assets[rel], date)
+    return made
+
+
 # ---------------------------------------------------------------- sitemap ---
 
 def page_files(root):
@@ -870,6 +1262,7 @@ def build_all(root):
     made.update(build_gallery(root, shell, date))
     made.update(build_addons(root, shell, date))
     made.update(build_tutorial(root, shell, date))
+    made.update(build_docs(root, shell, date))
     files = {rel: content for rel, (content, _) in made.items()}
     files["sitemap.xml"] = build_sitemap(root, made)
     return files

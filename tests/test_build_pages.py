@@ -669,3 +669,244 @@ def test_readme_names_the_three_steps():
     assert re.search(r"(?m)^3\. \*\*Publish", text)
     for name in ("RELEASE_NOTES.md", "gui.md", "latest.json", "limitations.md"):
         assert name in text
+
+
+# ------------------------------------------------------------------- docs ---
+
+CORE = ROOT / "data" / "core"
+DOC_SOURCES = sorted(p.relative_to(CORE).as_posix() for p in CORE.rglob("*.md")
+                     if p.name != "RELEASE_NOTES.md")
+
+
+def doc_page_path(src):
+    """docs/NAME.html for a source, written out here, not taken from the script."""
+    stem = src[:-3]
+    if stem.endswith("/README"):
+        stem = stem[:-7]
+    return "docs/%s.html" % stem.replace("/", "-")
+
+
+def source_headings_and_code(text):
+    """(heading texts, code block texts) of a markdown source, by a plain scan."""
+    import html as htmllib
+    headings, blocks, cur = [], [], None
+    for line in text.replace("\r\n", "\n").split("\n"):
+        if line.startswith("```"):
+            if cur is None:
+                cur = []
+            else:
+                blocks.append("\n".join(cur))
+                cur = None
+        elif cur is not None:
+            cur.append(line)
+        else:
+            m = re.match(r"^#{1,6}\s+(.*?)\s*$", line)
+            if m:
+                headings.append(" ".join(htmllib.unescape(m.group(1).replace("`", "")).split()))
+    return headings, blocks
+
+
+def page_headings_and_code(page):
+    import html as htmllib
+    p = pagecheck.Page()
+    p.feed(page)
+    p.close()
+    code = [htmllib.unescape(c) for c in re.findall(r"<pre[^>]*><code>(.*?)</code></pre>",
+                                                   page, re.S)]
+    return [t for _, t in p.headings], code
+
+
+def test_there_are_public_docs():
+    assert {"index.md", "gui.md", "limitations.md"} <= set(DOC_SOURCES)
+    assert "RELEASE_NOTES.md" not in DOC_SOURCES
+
+
+@pytest.mark.parametrize("src", DOC_SOURCES)
+def test_each_doc_has_a_page_with_every_heading_and_code_block(src):
+    page = read(ROOT / doc_page_path(src))
+    want_headings, want_code = source_headings_and_code(read(CORE / src))
+    got_headings, got_code = page_headings_and_code(page)
+    assert want_headings
+    for h in want_headings:
+        assert h in got_headings, "%s: heading %r is not on the page" % (src, h)
+    for block in want_code:
+        assert block.rstrip("\n") in got_code, "%s: a code block is missing: %.60r" % (src, block)
+    assert len(got_headings) == len(want_headings)
+    assert len(got_code) == len(want_code)
+
+
+@pytest.mark.parametrize("src", DOC_SOURCES)
+def test_each_doc_page_has_one_h1_and_headings_in_order(src):
+    p = pagecheck.parse(str(ROOT), doc_page_path(src))
+    levels = [lv for lv, _ in p.headings]
+    assert levels[0] == 1 and levels.count(1) == 1
+    assert all(b - a <= 1 for a, b in zip(levels, levels[1:]))
+
+
+def test_every_table_row_of_the_docs_is_on_the_pages():
+    """The tables of gui.md, limitations.md and the examples keep every row."""
+    for src in ("gui.md", "limitations.md", "examples/README.md", "examples/dimensions.md"):
+        rows = [l for l in read(CORE / src).split("\n") if l.startswith("|")]
+        rows = [r for r in rows if not re.match(r"^\|[\s:|-]+\|$", r)]
+        page = read(ROOT / doc_page_path(src))
+        assert page.count("<tr>") == len(rows), src
+
+
+def test_docs_index_is_linked_from_the_main_page_and_lists_the_pages():
+    assert doc_page_path("index.md") == "docs/index.html"
+    assert 'href="/docs/"' in read(ROOT / "index.html")
+    page = read(ROOT / "docs" / "index.html")
+    for name in ("gui.html", "limitations.html", "examples.html", "examples-bracket.html"):
+        assert 'href="/docs/%s"' % name in page
+    locs = pagecheck.sitemap_locs(str(ROOT))
+    assert "https://dxcad.designmatix.co.uk/docs/" in locs
+    for src in DOC_SOURCES:
+        rel = doc_page_path(src).replace("docs/index.html", "docs/")
+        assert "https://dxcad.designmatix.co.uk/" + rel in locs
+
+
+def test_docs_links_between_pages_work():
+    page = read(ROOT / "docs" / "gui.html")
+    assert 'href="#the-flange-dialog"' in page and 'id="the-flange-dialog"' in page
+    bracket = read(ROOT / "docs" / "examples-bracket.html")
+    assert 'href="/examples/bracket.html"' in bracket     # bracket.py is the example's page
+    assert not [h for h in re.findall(r'href="([^"]*)"', bracket) if "agents" in h]
+    readme = read(ROOT / "docs" / "examples.html")
+    assert 'href="/docs/examples-bracket.html"' in readme
+    assert 'href="/docs/examples-dimensions.html"' in readme
+
+
+def test_docs_pages_are_ascii_and_load_nothing_from_elsewhere():
+    for src in DOC_SOURCES:
+        page = read(ROOT / doc_page_path(src))
+        page.encode("ascii")
+        assert "<script src" not in page and "<iframe" not in page
+        assert not re.search(r'(src|srcset)="https?://', page)
+
+
+def test_docs_pages_are_made_by_the_script_and_check_passes():
+    assert run_script(ROOT, "--check").returncode == 0
+
+
+def test_changing_a_heading_and_a_code_block_of_a_doc_changes_its_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    gui = Path(root, "data", "core", "gui.md")
+    text = read(gui)
+    assert "## Opening it\n" in text and "dxcad gui bracket.py\n```" in text
+    gui.write_bytes(text.replace("## Opening it\n", "## Starting it\n", 1)
+                    .replace("dxcad gui bracket.py\n```", "dxcad gui plate.py\n```", 1).encode())
+    assert run_script(root, "--check").returncode == 1
+    assert run_script(root).returncode == 0
+    page = read(Path(root, "docs", "gui.html"))
+    assert 'id="starting-it"' in page and "Opening it" not in page
+    assert "dxcad gui plate.py" in page
+    assert pagecheck.check_site(root) == []
+
+
+def test_a_new_doc_gets_a_page_and_nothing_else_changes_but_the_sitemap(tmp_path):
+    root = copy_site(tmp_path / "site")
+    before = snapshot(root)
+    Path(root, "data", "core", "faq.md").write_bytes(
+        b"# Questions\n\nFirst, see [the menus](gui.md#the-menus).\n\n## One\n\n```\ndxcad doctor\n```\n")
+    assert run_script(root, "--all").returncode == 0
+    after = snapshot(root)
+    changed = sorted(k for k in after if before.get(k) != after[k])
+    assert changed == ["data/core/faq.md", "docs/faq.html", "sitemap.xml"]
+    page = after["docs/faq.html"].decode()
+    assert 'href="/docs/gui.html#the-menus"' in page and "dxcad doctor" in page
+    assert pagecheck.check_site(root) == []
+
+
+def test_a_doc_picture_in_data_is_copied_and_one_that_is_not_becomes_its_words(tmp_path):
+    root = copy_site(tmp_path / "site")
+    base = Path(root, "data", "core")
+    (base / "pics").mkdir()
+    shutil.copyfile(base / "gallery" / "tray.png", base / "pics" / "tray.png")
+    (base / "pics.md").write_bytes(
+        b"# Pictures\n\n![A tray, flat.](pics/tray.png)\n\n![Not here at all.](pics/none.svg)\n")
+    assert run_script(root).returncode == 0
+    page = read(Path(root, "docs", "pics.html"))
+    assert 'src="/img/docs/pics/tray.png" alt="A tray, flat."' in page
+    assert Path(root, "img", "docs", "pics", "tray.png").exists()
+    assert "(Picture: Not here at all.)" in page and "none.svg" not in page
+    assert pagecheck.check_site(root) == []
+
+
+# The reader on its own.
+
+def md(text, src="a.md", slugs=None, assets=None, examples=()):
+    ctx = {"src": src, "slugs": slugs or {src: {"here"}, "b.md": {"there"}},
+           "examples": set(examples), "assets": assets or {}, "used": set()}
+    out = []
+    state = {"last": 0, "ids": {}, "toc": [], "heading": "", "marks": []}
+    bp.doc_blocks_html(bp.md_blocks(text.split("\n")), ctx, out, state)
+    return "\n".join(out)
+
+
+def test_reader_headings_paragraphs_emphasis_and_code():
+    out = md("# Title\n\nSome *slanted* and **bold** words, `a < b`, and snake_case_name.\nTwo lines.")
+    assert '<h1 id="title">Title</h1>' in out
+    assert "<em>slanted</em>" in out and "<strong>bold</strong>" in out
+    assert "<code>a &lt; b</code>" in out
+    assert "snake_case_name" in out and "<em>case" not in out
+    assert "Two lines." in out
+
+
+def test_reader_heading_levels_never_skip_and_ids_are_github_style():
+    out = md("# One\n\n### Deep\n\n## What's New?\n\n## What's New?\n\n# Another top")
+    assert '<h2 id="deep">' in out
+    assert 'id="whats-new"' in out and 'id="whats-new-1"' in out
+    assert out.count("<h1 ") == 1
+
+
+def test_reader_lists_nest_by_indent_and_keep_their_kind():
+    out = md("- one\n- two\n  - inner a\n  - inner b\n- three\n\n1. first\n2. second")
+    assert out.index("<ul>") < out.index("inner a") < out.index("three")
+    assert out.count("<ul>") == 2 and out.count("</ul>") == 2
+    assert "<ol>" in out and "<li>second</li>" in out
+
+
+def test_reader_list_item_continues_on_the_next_line():
+    assert "<li>the first goes on here</li>" in md("- the first\n  goes on here\n- second")
+
+
+def test_reader_tables_have_header_cells_and_escaped_pipes():
+    out = md("| A | B |\n| --- | --- |\n| `x` | a \\| b |\n| 1 | 2 |")
+    assert out.count("<tr>") == 3 and '<th scope="col">A</th>' in out
+    assert "<td>a | b</td>" in out
+
+
+def test_reader_quote_and_fence_keep_their_text_and_escape_it():
+    out = md('> Make a thing\n> with holes.\n\n```json\n{"a": "<b>"}\n```')
+    assert "<blockquote>" in out and "Make a thing with holes." in out.replace("\n", " ")
+    assert '<pre class="script"><code>{"a": "&lt;b&gt;"}</code></pre>' in out
+
+
+def test_reader_html_comments_are_dropped_and_other_html_is_text():
+    out = md("<!-- generated -->\n\nA <b>word</b> & more.")
+    assert "generated" not in out and "&lt;b&gt;word&lt;/b&gt; &amp; more." in out
+
+
+def test_reader_links_go_where_the_site_has_a_page_and_nowhere_else():
+    slugs = {"a.md": {"here"}, "b.md": {"there"}}
+    out = md("[in](#here) [gone](#nope) [other](b.md#there) [far](c.md) "
+             "[out](https://example.org/x?a=1&b=2)", slugs=slugs)
+    hrefs = re.findall(r'href="([^"]*)"', out)
+    assert hrefs == ["#here", "/docs/b.html#there", "https://example.org/x?a=1&amp;b=2"]
+    assert "gone" in out and "far" in out
+    out = md("[s](bolt.py) [t](missing.py)", src="examples/README.md",
+             slugs={"examples/README.md": set()}, examples=("bolt",))
+    assert re.findall(r'href="([^"]*)"', out) == ["/examples/bolt.html"]
+
+
+def test_doc_names():
+    assert bp.doc_name("index.md") == "index" and bp.doc_href("index.md") == "/docs/"
+    assert bp.doc_name("examples/README.md") == "examples"
+    assert bp.doc_name("examples/bracket.md") == "examples-bracket"
+    assert bp.doc_path("tutorials/first-part.md") == "docs/tutorials-first-part.html"
+
+
+def test_doc_description_is_whole_sentences_and_short():
+    text = "A first sentence of the page. A second one that is long " + "and long " * 30 + "end."
+    d = bp.doc_description(bp.md_blocks([text]), "T")
+    assert d == "A first sentence of the page." and len(d) <= 160
