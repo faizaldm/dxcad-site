@@ -299,7 +299,7 @@ def test_gallery_lists_every_example_with_its_picture():
     for name in NAMES:
         assert 'href="/examples/%s.html"' % name in page
         assert 'src="/img/gallery/%s.png"' % name in page
-    assert len(re.findall(r'<li><a href="/examples/', page)) == len(NAMES)
+    assert len(re.findall(r'<li data-tags="[^"]*"><a href="/examples/', page)) == len(NAMES)
 
 
 def test_gallery_is_linked_from_the_index_and_in_the_sitemap():
@@ -1672,3 +1672,201 @@ def test_the_build_stops_and_says_why_when_the_shortcuts_table_is_gone(tmp_path)
     path.write_bytes(read(path).replace("## Keyboard shortcuts", "## Keys", 1).encode())
     result = run_script(root, "--check")
     assert result.returncode != 0 and "Keyboard shortcuts" in result.stderr
+
+
+# ------------------------------------------------------------ gallery tags ---
+
+import io as _io
+import tokenize as _tokenize
+
+# What each tag is, written out again here from the item's own words and not read from the
+# script: the calls of the model language that show it, and a file ending beside the script.
+TAG_CALLS = {
+    "sketch": ["Sketch"],
+    "sheet-metal": ["SheetSpec", "base_flange", "flange", "bend_cut"],
+    "assembly": ["place", "use", "mate"],
+    "mates": ["mate"],
+    "revolve": ["revolve"],
+    "sweep": ["sweep"],
+    "loft": ["loft"],
+    "pattern": ["linear_pattern", "circular_pattern"],
+    "fillet": ["fillet", "fillet_all", "chamfer"],
+    "hollow": ["hollow", "hollow_facing"],
+    "text": ["text3d"],
+}
+
+
+def code_of(source):
+    """A script's code with its strings and comments taken out (so a word in a docstring is
+    not a call)."""
+    keep = []
+    for tok in _tokenize.generate_tokens(_io.StringIO(source).readline):
+        if tok.type not in (_tokenize.STRING, _tokenize.COMMENT):
+            keep.append(tok.string)
+            keep.append(" ")
+    return "".join(keep)
+
+
+def expected_tags(name):
+    """The tags the calls in examples/NAME.py give, by a plain scan of its code."""
+    source = read(ROOT / "data" / "core" / "examples" / (name + ".py"))
+    code = code_of(source)
+    tags = []
+    for key, names in TAG_CALLS.items():
+        for call in names:
+            if re.search(r"(?<![\w])%s\s*\(" % call, code) and not re.search(r"\bdef %s\b" % call, code):
+                tags.append(key)
+                break
+    if re.search(r"\.dxcdrg\b", source):
+        tags.append("drawing")
+    return tags
+
+
+def gallery_tags_of(page):
+    """{example name: [tag]} from the data-tags of each item of the gallery page."""
+    found = {}
+    for tags, name in re.findall(r'<li data-tags="([^"]*)"><a href="/examples/([^"]+)\.html"', page):
+        found[name] = tags.split()
+    return found
+
+
+def test_each_examples_tags_match_the_calls_in_its_script():
+    shown = gallery_tags_of(read(ROOT / "gallery.html"))
+    names = sorted(p.stem for p in (ROOT / "data" / "core" / "examples").glob("*.py"))
+    assert sorted(shown) == names
+    for name in names:
+        assert sorted(shown[name]) == sorted(expected_tags(name)), name
+
+
+def test_the_tags_of_some_known_examples():
+    shown = gallery_tags_of(read(ROOT / "gallery.html"))
+    assert shown["tray"] == ["sheet-metal"]
+    assert shown["bracket"] == ["sketch", "pattern"]
+    assert shown["bolt_mate"] == ["assembly", "mates"]
+    assert shown["door"] == ["assembly"]
+    assert shown["drawn_bracket"] == ["drawing"]
+    assert shown["funnel"] == ["sketch", "revolve"]
+    assert shown["handle"] == ["sketch", "sweep"]
+    assert shown["enclosure"] == ["hollow"]
+    assert "sheet-metal" in shown["sheet_door"] and "mates" in shown["sheet_door"]
+    assert "text" in shown["gearbox"] and "loft" in shown["gearbox"]
+
+
+def test_a_tag_is_on_the_example_page_in_words_and_on_the_gallery_card():
+    gallery = read(ROOT / "gallery.html")
+    assert '<p class="tags">Uses: sheet metal</p>' in gallery
+    assert "<p>Uses: sheet metal.</p>" in read(ROOT / "examples" / "tray.html")
+    assert "<p>Uses: assembly, mates.</p>" in read(ROOT / "examples" / "bolt_mate.html")
+
+
+def test_the_filter_has_a_button_for_each_tag_in_use_and_for_all():
+    page = read(ROOT / "gallery.html")
+    used = sorted({t for tags in gallery_tags_of(page).values() for t in tags})
+    buttons = re.findall(r'<button type="button" data-tag="([^"]*)" aria-pressed="(true|false)">(.+?)</button>',
+                         page)
+    assert buttons[0] == ("", "true", "All")
+    assert sorted(b[0] for b in buttons[1:]) == used
+    assert all(b[1] == "false" and b[2].strip() for b in buttons[1:])
+
+
+def test_with_no_javascript_every_example_shows_and_the_buttons_stay_hidden():
+    page = read(ROOT / "gallery.html")
+    # the filter is hidden in the page itself and only the script shows it
+    assert '<div class="filter" id="filter" hidden>' in page
+    assert "bar.hidden = false;" in page
+    # nothing in the list is hidden, or needs a script to be read
+    items = re.findall(r"<li data-tags=[^>]*>", page)
+    assert len(items) == len(gallery_tags_of(page)) >= 20
+    assert not any("hidden" in i for i in items)
+    for name in gallery_tags_of(page):
+        assert 'href="/examples/%s.html"' % name in page
+    assert ".shots li[hidden]" in page
+
+
+def test_the_gallery_script_is_inline_plain_and_loads_nothing_from_elsewhere():
+    page = read(ROOT / "gallery.html")
+    scripts = re.findall(r"<script\b([^>]*)>", page)
+    assert scripts == [""]
+    assert not re.search(r"https?://", page[page.index("<script>"):page.index("</script>")])
+    for word in ("fetch(", "XMLHttpRequest", "import(", "eval("):
+        assert word not in page
+
+
+def run_filter(page, tag):
+    """The gallery's script run against its own page by a tiny model of the DOM: the names of
+    the examples left showing, the pressed buttons and the count line."""
+    items = [{"name": n, "tags": " ".join(t), "hidden": False}
+             for n, t in gallery_tags_of(page).items()]
+    script = page[page.index("<script>") + len("<script>"):page.index("</script>")]
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed: the script is checked by reading it instead")
+    import json
+    program = """
+const items = %s.map(i => ({_h:false, getAttribute(k){return k==='data-tags'?i.tags:null}, name:i.name,
+  set hidden(v){this._h=v}, get hidden(){return this._h}}));
+const buttons = %s.map(t => {let a={'data-tag':t,'aria-pressed':'false'}; return {
+  getAttribute(k){return a[k]}, setAttribute(k,v){a[k]=v}, addEventListener(e,f){this.click=f}, a}});
+const count = {textContent:''};
+const bar = {hidden:true, querySelectorAll(){return buttons}};
+global.document = {getElementById(id){return id==='filter'?bar:id==='filter-count'?count:null},
+  querySelectorAll(){return items}};
+%s
+const target = buttons.find(b => b.a['data-tag'] === %s);
+if (%s) target.click.call(target);
+console.log(JSON.stringify({shown: items.filter(i=>!i.hidden).map(i=>i.name), count: count.textContent,
+  barHidden: bar.hidden, pressed: buttons.filter(b=>b.a['aria-pressed']==='true').map(b=>b.a['data-tag'])}));
+""" % (json.dumps([{"tags": i["tags"], "name": i["name"]} for i in items]),
+       json.dumps([m for m in re.findall(r'data-tag="([^"]*)"', page)]),
+       script, json.dumps(tag), "true" if tag else "false")
+    out = subprocess.run([node, "-e", program], capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    return json.loads(out.stdout)
+
+
+def test_the_filter_script_shows_the_matching_examples_and_all_again():
+    page = read(ROOT / "gallery.html")
+    shown = gallery_tags_of(page)
+    start = run_filter(page, "")
+    assert sorted(start["shown"]) == sorted(shown) and start["barHidden"] is False
+    assert start["pressed"] == [""]
+    assert start["count"] == "Showing %d of %d examples." % (len(shown), len(shown))
+    for tag in ("sheet-metal", "mates", "drawing"):
+        got = run_filter(page, tag)
+        want = sorted(n for n, t in shown.items() if tag in t)
+        assert want and sorted(got["shown"]) == want
+        assert got["pressed"] == [tag]
+        assert got["count"] == "Showing %d of %d examples." % (len(want), len(shown))
+
+
+def test_a_changed_script_in_a_copy_of_the_data_changes_its_tags(tmp_path):
+    root = copy_site(tmp_path / "site")
+    path = Path(root, "data", "core", "examples", "tray.py")
+    path.write_bytes((read(path) + "\nlabel = text3d('TRAY', 5, 1)\n").encode())
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "gallery.html" in result.stdout
+    assert run_script(root, "--all").returncode == 0
+    assert gallery_tags_of(read(Path(root, "gallery.html")))["tray"] == ["sheet-metal", "text"]
+    assert "<p>Uses: sheet metal, text.</p>" in read(Path(root, "examples", "tray.html"))
+    assert "text" in re.findall(r'data-tag="([^"]*)"', read(Path(root, "gallery.html")))
+    assert pagecheck.check_page(root, "gallery.html") == []
+
+
+def test_a_call_the_script_defines_itself_is_not_a_tag():
+    assert bp.example_tags("def fillet(x):\n    return x\n\nfillet(1)\n", []) == []
+    assert bp.example_tags("s = Sketch()\ns.revolve(3)\n", []) == ["sketch", "revolve"]
+    assert bp.example_tags("'''mate( and Sketch(\n'''\nx = 1\n", []) == []
+    assert bp.example_tags("x = 1\n", ["a.dxcdrg"]) == ["drawing"]
+
+
+def test_the_filter_script_reads_the_tags_the_page_writes_and_sets_what_the_page_styles():
+    # Where node is not installed run_filter is skipped, so the script is held to the page's
+    # own names by reading it: the attributes it reads and writes are the ones written above.
+    page = read(ROOT / "gallery.html")
+    script = page[page.index("<script>"):page.index("</script>")]
+    for name in ('"filter"', '"filter-count"', ".shots li", "data-tags", "data-tag",
+                 "aria-pressed", ".hidden = "):
+        assert name in script, name
+    assert 'id="filter"' in page and 'id="filter-count"' in page
+    assert "[aria-pressed=\"true\"]" in page and ".shots li[hidden]" in page
+    assert script.count("(") == script.count(")") and script.count("{") == script.count("}")

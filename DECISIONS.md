@@ -151,3 +151,14 @@
   each menu. The intro keeps gui.md's own sentences except the one about how the table is generated, which is a note
   for the docs' writers. The menu tables elsewhere in gui.md are not read for shortcuts. "Shortcuts" is added to the
   footer's Learn line and to the 404 page's list.
+- 4018: a tag is shown when the script makes one of the model-language calls listed in GALLERY_TAGS (read with the
+  ast module; a name the script defines itself is not a call to the language). Twelve tags: sketch, sheet metal,
+  assembly (place, use or mate), mates, drawing, revolve, sweep, loft, pattern, fillet and chamfer, shell, text.
+  Drawing is the one tag that is not a call: drawn_bracket.py only names its drawing file, so the file beside the
+  script (ending .dxcdrg, as the build already reads companions) gives it. Cards show their tags in words and each
+  example page says 'Uses: ...', so the tags are not a script-only feature. The filter bar is written hidden and the
+  script shows it, so with no JavaScript there are no buttons that do nothing and every example shows. The
+  buttons have no hover style: the contrast check cannot read a pressed button's hover colours, and a pressed
+  button already shows. Node is not installed here, so the script's behaviour was not run: the test that runs it
+  against the page is skipped without node, and the script is checked by reading it. The owner should try the
+  buttons in a browser.

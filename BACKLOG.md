@@ -119,7 +119,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: the page lists exactly the shortcuts in gui.md; --check passes;
   tests/test_pages.py passes.
 
-- [ ] 4018. The gallery filtered by what each example shows (S)
+- [x] 4018. The gallery filtered by what each example shows (S)
   - Each example in gallery.html gets tags from its script (sketch, sheet metal, assembly, mates, drawing ...), read
     by scripts/build_pages.py from the calls the script makes; buttons filter the gallery in plain JavaScript; with no
     JavaScript every example still shows.

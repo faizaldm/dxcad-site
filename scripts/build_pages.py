@@ -480,6 +480,43 @@ GALLERY_STYLE = """
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:0 0 24px}.pair .shot{margin:0}
 pre.script{overflow-x:auto;border:1px solid var(--ink);background:var(--wash);padding:16px 20px;font-size:14px;line-height:1.5;max-width:none;tab-size:4}
 pre.script code{background:none;padding:0;font-size:inherit}
+.shots li[hidden],.filter[hidden]{display:none}
+.shots .tags{font-size:14px;color:var(--ink-2);margin:2px 0 0}
+.filter{margin:16px 0 0;max-width:none}
+.filter p{margin:0 0 6px;max-width:none}
+.filter .row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.filter button{font:inherit;font-family:var(--cond);font-weight:700;font-size:16px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:4px 12px;cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+"""
+
+# Plain JavaScript for the gallery's filter: the buttons are hidden until it runs, so with none
+# every example shows and there is nothing that does not work.
+GALLERY_SCRIPT = r"""
+(function () {
+  var bar = document.getElementById("filter");
+  var count = document.getElementById("filter-count");
+  var items = document.querySelectorAll(".shots li");
+  if (!bar || !count || !items.length) { return; }
+  var buttons = bar.querySelectorAll("button");
+  function show(tag) {
+    var shown = 0;
+    for (var i = 0; i < items.length; i++) {
+      var tags = " " + (items[i].getAttribute("data-tags") || "") + " ";
+      var on = tag === "" || tags.indexOf(" " + tag + " ") !== -1;
+      items[i].hidden = !on;
+      if (on) { shown++; }
+    }
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].setAttribute("aria-pressed", buttons[j].getAttribute("data-tag") === tag ? "true" : "false");
+    }
+    count.textContent = "Showing " + shown + " of " + items.length + " examples.";
+  }
+  for (var k = 0; k < buttons.length; k++) {
+    buttons[k].addEventListener("click", function () { show(this.getAttribute("data-tag")); });
+  }
+  bar.hidden = false;
+  show("");
+})();
 """
 
 DARK = "dark"
@@ -501,6 +538,54 @@ def first_docstring_line(source, name):
     if not doc or not doc.strip():
         raise ValueError("examples/%s.py has no docstring" % name)
     return doc.strip().split("\n")[0].strip()
+
+
+# What each example shows, read from the calls its script makes to the model language (a name the
+# script defines itself is not a call to it).  (key, label, calls that show it, companion file
+# endings that show it): a tag is shown when the script makes any of its calls, or names a file
+# beside it that ends as listed.  Every tag is one button on the gallery page.
+GALLERY_TAGS = [
+    ("sketch", "Sketch", {"Sketch"}, ()),
+    ("sheet-metal", "Sheet metal", {"SheetSpec", "base_flange", "flange", "bend_cut"}, ()),
+    ("assembly", "Assembly", {"place", "use", "mate"}, ()),
+    ("mates", "Mates", {"mate"}, ()),
+    ("drawing", "Drawing", set(), (".dxcdrg",)),
+    ("revolve", "Revolve", {"revolve"}, ()),
+    ("sweep", "Sweep", {"sweep"}, ()),
+    ("loft", "Loft", {"loft"}, ()),
+    ("pattern", "Pattern", {"linear_pattern", "circular_pattern"}, ()),
+    ("fillet", "Fillet and chamfer", {"fillet", "fillet_all", "chamfer"}, ()),
+    ("hollow", "Shell", {"hollow", "hollow_facing"}, ()),
+    ("text", "Text", {"text3d"}, ()),
+]
+
+
+def script_calls(source):
+    """The names a script calls that it does not define itself: a plain name, or the name
+    after a dot."""
+    tree = ast.parse(source)
+    own = {n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
+    own |= {t.id for n in ast.walk(tree) if isinstance(n, ast.Assign)
+            for t in n.targets if isinstance(t, ast.Name)}
+    calls = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Call):
+            if isinstance(n.func, ast.Name) and n.func.id not in own:
+                calls.add(n.func.id)
+            elif isinstance(n.func, ast.Attribute):
+                calls.add(n.func.attr)
+    return calls
+
+
+def example_tags(source, companions):
+    """The keys of GALLERY_TAGS an example shows, in the list's order."""
+    calls = script_calls(source)
+    return [key for key, _, names, endings in GALLERY_TAGS
+            if calls & names or any(c.endswith(endings) for c in companions if endings)]
+
+
+def tag_label(key):
+    return next(label for k, label, _, _ in GALLERY_TAGS if k == key)
 
 
 def read_examples(root):
@@ -527,6 +612,7 @@ def read_examples(root):
             "light": read_bytes(light),
             "dark": read_bytes(dark) if os.path.exists(dark) else None,
             "companions": companions,
+            "tags": example_tags(source, companions),
         })
     if not found:
         raise ValueError("data/core/examples has no example")
@@ -557,8 +643,10 @@ def example_page(shell, ex):
         '    <p class="small"><a href="/gallery.html">All the examples</a></p>',
         '    <h1>%s</h1>' % esc(title_of(name)),
         '    <p class="lead">%s</p>' % esc(desc),
-        '    <div class="pair">',
     ]
+    if ex["tags"]:
+        out.append('    <p>Uses: %s.</p>' % esc(", ".join(tag_label(k).lower() for k in ex["tags"])))
+    out.append('    <div class="pair">')
     out += ["    " + p for p in pics]
     out += [
         '    </div>',
@@ -593,17 +681,35 @@ def gallery_page(shell, examples):
         'whole script.</p>',
         '    <p>Open any of them in DX-CAD, change a number and run it again. %d examples:</p>'
         % len(examples),
-        '    <ul class="shots">',
     ]
+    used = [key for key, _, _, _ in GALLERY_TAGS if any(key in ex["tags"] for ex in examples)]
+    if used:
+        out += ['    <div class="filter" id="filter" hidden>',
+                '      <p id="filter-label">Show only the examples that use:</p>',
+                '      <div class="row" role="group" aria-labelledby="filter-label">',
+                '        <button type="button" data-tag="" aria-pressed="true">All</button>']
+        out += ['        <button type="button" data-tag="%s" aria-pressed="false">%s</button>'
+                % (key, esc(tag_label(key))) for key in used]
+        out += ['      </div>',
+                '      <p id="filter-count" role="status">Showing all %d examples.</p>'
+                % len(examples),
+                '    </div>']
+    out.append('    <ul class="shots">')
     for ex in examples:
         name = ex["name"]
+        tags = ""
+        if ex["tags"]:
+            tags = '<p class="tags">Uses: %s</p>' % esc(", ".join(
+                tag_label(k).lower() for k in ex["tags"]))
         out.append(
-            '      <li><a href="/examples/%s.html">%s<strong>%s</strong><span>%s</span></a></li>'
-            % (name,
+            '      <li data-tags="%s"><a href="/examples/%s.html">%s<strong>%s</strong><span>%s</span></a>%s</li>'
+            % (" ".join(ex["tags"]), name,
                img_tag("/img/gallery/%s.png" % name,
                        "%s: %s" % (title_of(name), ex["description"]), ex["light"]),
-               esc(title_of(name)), esc(ex["description"])))
+               esc(title_of(name)), esc(ex["description"]), tags))
     out.append('    </ul>')
+    if used:
+        out += ['    <script>', GALLERY_SCRIPT.strip("\n"), '    </script>']
     return make_page(
         shell, "gallery.html",
         "Examples: every DX-CAD part is a script | DX-CAD by Designmatix",
