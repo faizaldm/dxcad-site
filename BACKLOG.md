@@ -113,7 +113,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: every answer's link goes to a page here; every limitation in limitations.md has
   its question; --check passes; tests/test_pages.py passes.
 
-- [ ] 4017. A keyboard shortcuts page from the public gui.md (S)
+- [x] 4017. A keyboard shortcuts page from the public gui.md (S)
   - shortcuts.html: every shortcut gui.md names, grouped as gui.md groups them, made by scripts/build_pages.py; in the
     sitemap and the footer.
   Accept: tests/test_build_pages.py: the page lists exactly the shortcuts in gui.md; --check passes;

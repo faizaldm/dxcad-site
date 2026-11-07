@@ -146,3 +146,8 @@
   limitation is never left out. Answers are the docs' own words with the private item numbers the docs carry
   taken out; each links to its section of the docs page. 'Questions' is added to the footer's Learn line (so all
   pages changed) and to the 404 page's list.
+- 4017: shortcuts.html is made from the table under "## Keyboard shortcuts" in data/core/gui.md (the table gui.md says
+  lists every action that has a shortcut), grouped by its Menu column in the order gui.md has them, one table for
+  each menu. The intro keeps gui.md's own sentences except the one about how the table is generated, which is a note
+  for the docs' writers. The menu tables elsewhere in gui.md are not read for shortcuts. "Shortcuts" is added to the
+  footer's Learn line and to the 404 page's list.

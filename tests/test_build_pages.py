@@ -1570,3 +1570,105 @@ def test_the_build_stops_and_says_why_when_a_section_the_questions_need_is_gone(
     path.write_bytes(read(path).replace("## Tabs", "## Pages", 1).encode())
     result = run_script(root, "--check")
     assert result.returncode != 0 and "Tabs" in result.stderr
+
+
+# -------------------------------------------------------------- shortcuts ---
+
+def gui_shortcuts(root=ROOT):
+    """[(menu, action, keys)] read from the table under '## Keyboard shortcuts' by a plain scan."""
+    text = read(Path(root) / "data" / "core" / "gui.md")
+    part = text.split("\n## Keyboard shortcuts\n", 1)[1].split("\n## ", 1)[0]
+    found = []
+    for line in part.split("\n"):
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if line.startswith("|") and len(cells) == 3 and cells[0] not in ("Menu", "---"):
+            found.append((cells[0], cells[1], cells[2].strip("`")))
+    return found
+
+
+def page_shortcuts(page):
+    """[(menu, action, keys)] read from the page: a menu's heading, then its table rows."""
+    found, menu = [], None
+    for m in re.finditer(r'<h2 id="menu-[^"]*">(.*?) menu</h2>'
+                         r'|<tr><th scope="row">(.*?)</th><td>(.*?)</td></tr>', page):
+        if m.group(1) is not None:
+            menu = _html.unescape(m.group(1))
+        else:
+            keys = " or ".join(re.findall(r"<kbd>(.*?)</kbd>", m.group(3)))
+            found.append((menu, _html.unescape(m.group(2)), _html.unescape(keys)))
+    return found
+
+
+def test_shortcuts_page_is_what_the_script_makes():
+    assert read(ROOT / "shortcuts.html") == bp.build_all(str(ROOT))["shortcuts.html"]
+
+
+def test_shortcuts_page_lists_exactly_the_shortcuts_in_gui_md():
+    expected = gui_shortcuts()
+    assert len(expected) >= 20
+    shown = page_shortcuts(read(ROOT / "shortcuts.html"))
+    assert sorted(shown) == sorted(expected)
+    assert len(shown) == len(set(shown))
+
+
+def test_shortcuts_are_grouped_by_menu_in_the_order_gui_md_has_them():
+    expected = gui_shortcuts()
+    page = read(ROOT / "shortcuts.html")
+    assert page_shortcuts(page) == expected, "the page's order is not gui.md's"
+    menus = []
+    for menu, _, _ in expected:
+        if menu not in menus:
+            menus.append(menu)
+    shown = [_html.unescape(m) for m in re.findall(r'<h2 id="menu-[^"]*">(.*?) menu</h2>', page)]
+    assert shown == menus
+
+
+def test_every_menu_group_of_the_shortcuts_page_is_one_table_with_a_caption_and_headers():
+    page = read(ROOT / "shortcuts.html")
+    assert page.count('<table class="keys">') == page.count("<caption")
+    assert page.count('<table class="keys">') == len(re.findall(r'<h2 id="menu-', page))
+    assert 'scope="col">Action</th>' in page and 'scope="col">Keys</th>' in page
+
+
+def test_shortcuts_page_says_what_ctrl_is_on_a_mac_and_leaves_out_the_docs_build_notes():
+    page = read(ROOT / "shortcuts.html")
+    assert "Ctrl is Cmd on a Mac." in page
+    assert "docsgen" not in page and "a test fails" not in page
+
+
+def test_shortcuts_page_is_sound_in_the_sitemap_the_search_list_the_footer_and_the_404_page():
+    assert pagecheck.check_page(str(ROOT), "shortcuts.html") == []
+    assert "https://dxcad.designmatix.co.uk/shortcuts.html" in pagecheck.sitemap_locs(str(ROOT))
+    assert "/shortcuts.html" in {e["url"] for e in search_list()}
+    assert 'href="/shortcuts.html"' in bp.FOOTER
+    for rel in pagecheck.page_files(str(ROOT)):
+        assert 'href="/shortcuts.html"' in footer_of(read(ROOT / rel)), rel
+    assert 'href="/shortcuts.html"' in read(ROOT / "404.html")
+    assert "<script" not in read(ROOT / "shortcuts.html")
+
+
+def test_a_changed_shortcut_in_a_copy_of_the_data_changes_the_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    path = Path(root, "data", "core", "gui.md")
+    text = read(path)
+    assert "| Model | Run Script | `F5` |" in text
+    text = text.replace("| Model | Run Script | `F5` |", "| Model | Run Script | `F6` |", 1)
+    text = text.replace("| Window | Next Tab | `Ctrl+Tab` |",
+                        "| Window | Next Tab | `Ctrl+Tab` |\n| Window | Close Tab | `Ctrl+W` |", 1)
+    path.write_bytes(text.encode())
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "shortcuts.html" in result.stdout
+    assert run_script(root, "--all").returncode == 0
+    shown = page_shortcuts(read(Path(root, "shortcuts.html")))
+    assert ("Model", "Run Script", "F6") in shown and ("Model", "Run Script", "F5") not in shown
+    assert ("Window", "Close Tab", "Ctrl+W") in shown
+    assert sorted(shown) == sorted(gui_shortcuts(root))
+    assert pagecheck.check_page(root, "shortcuts.html") == []
+
+
+def test_the_build_stops_and_says_why_when_the_shortcuts_table_is_gone(tmp_path):
+    root = copy_site(tmp_path / "site")
+    path = Path(root, "data", "core", "gui.md")
+    path.write_bytes(read(path).replace("## Keyboard shortcuts", "## Keys", 1).encode())
+    result = run_script(root, "--check")
+    assert result.returncode != 0 and "Keyboard shortcuts" in result.stderr

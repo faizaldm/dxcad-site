@@ -178,7 +178,7 @@ FOOTER = """<footer class="tb" aria-label="Company details">
     <div><span>Refunds</span><strong><a href="/refunds.html">Refund policy</a></strong></div>
     <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
     <div><span>Releases</span><strong><a href="/releases.html">What is new in each release</a></strong></div>
-    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a> &middot; <a href="/faq.html">Questions</a></strong></div>
+    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a> &middot; <a href="/faq.html">Questions</a> &middot; <a href="/shortcuts.html">Shortcuts</a></strong></div>
     <div><span>Find</span><strong><a href="/search.html">Search</a> &middot; <a href="/download.html">All downloads</a></strong></div>
     <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
     <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
@@ -1948,6 +1948,90 @@ def build_faq(root, shell, date):
     return {"faq.html": (faq_page(root, shell), date)}
 
 
+# --------------------------------------------------------------- shortcuts ---
+
+SHORTCUTS_STYLE = """
+.doc .lead{font-size:19px;max-width:62ch;margin:0 0 24px}
+.doc .keys{width:100%;max-width:640px;border-collapse:collapse;margin:0 0 24px}
+.doc .keys th,.doc .keys td{border:1px solid var(--ink);padding:6px 10px;text-align:left;vertical-align:top}
+.doc .keys kbd{font-family:Consolas,"Cascadia Mono",monospace;background:var(--wash);font-size:15px;border:1px solid var(--ink-2);padding:1px 6px;white-space:nowrap}
+"""
+
+
+def shortcut_rows(root):
+    """([(menu, action, [key])] in the order gui.md has them, its intro sentences).  The
+    rows are the table under '## Keyboard shortcuts' in data/core/gui.md."""
+    gui = doc_sources(root).get("gui.md")
+    if gui is None:
+        raise ValueError("data/core/gui.md is missing; the shortcuts page is made from it")
+    blocks = md_blocks(gui.split("\n"))
+    start = next((i for i, b in enumerate(blocks)
+                  if b[0] == "h" and md_plain(b[2]) == "Keyboard shortcuts"), None)
+    if start is None:
+        raise ValueError("data/core/gui.md has no '## Keyboard shortcuts' section")
+    intro, table = [], None
+    for b in blocks[start + 1:]:
+        if b[0] == "h":
+            break
+        if b[0] == "p":
+            intro.append(b[1])
+        elif b[0] == "table" and table is None:
+            table = b
+    if table is None:
+        raise ValueError("data/core/gui.md: no table under '## Keyboard shortcuts'")
+    head = [md_plain(c) for c in table[1]]
+    if head != ["Menu", "Action", "Keys"]:
+        raise ValueError("data/core/gui.md: the shortcuts table has the columns %s, not "
+                         "Menu, Action, Keys" % head)
+    rows = []
+    for row in table[2]:
+        if len(row) != 3:
+            raise ValueError("data/core/gui.md: a shortcuts row is not Menu, Action, Keys: %s" % row)
+        keys = re.findall(r"`([^`]+)`", row[2]) or [md_plain(row[2])]
+        rows.append((md_plain(row[0]), md_plain(row[1]), keys))
+    if not rows:
+        raise ValueError("data/core/gui.md: the shortcuts table has no rows")
+    sentences = []
+    for para in intro:
+        for s in SENTENCE_RE.split(ITEM_RE.sub("", " ".join(para.split()))):
+            if "docsgen" not in s and "a test fails" not in s:
+                sentences.append(s)
+    return rows, sentences
+
+
+def shortcuts_page(root, shell):
+    rows, sentences = shortcut_rows(root)
+    ctx = {"src": "gui.md", "slugs": {"gui.md": set()}, "examples": set(), "assets": {},
+           "used": set()}
+    out = ['    <h1>Keyboard shortcuts</h1>']
+    if sentences:
+        out.append('    <p class="lead">%s</p>' % md_inline(" ".join(sentences), ctx))
+    out.append('    <p>More about each menu is in <a href="/docs/gui.html">the page of the '
+               'documentation about the window</a>.</p>')
+    groups = {}
+    for menu, action, keys in rows:
+        groups.setdefault(menu, []).append((action, keys))
+    for menu, items in groups.items():
+        out += ['    <h2 id="%s">%s menu</h2>' % ("menu-" + slugify(menu), esc(menu)),
+                '    <table class="keys">',
+                '      <caption class="vh">Keyboard shortcuts of the %s menu</caption>' % esc(menu),
+                '      <thead><tr><th scope="col">Action</th><th scope="col">Keys</th></tr></thead>',
+                '      <tbody>']
+        for action, keys in items:
+            cell = " or ".join("<kbd>%s</kbd>" % esc(k) for k in keys)
+            out.append('      <tr><th scope="row">%s</th><td>%s</td></tr>' % (esc(action), cell))
+        out += ['      </tbody>', '    </table>']
+    return make_page(
+        shell, "shortcuts.html", "Keyboard shortcuts | DX-CAD by Designmatix",
+        "Every keyboard shortcut of the DX-CAD window, grouped by menu, as the public "
+        "documentation lists them.",
+        "\n".join(out), SHORTCUTS_STYLE)
+
+
+def build_shortcuts(root, shell, date):
+    return {"shortcuts.html": (shortcuts_page(root, shell), date)}
+
+
 # ----------------------------------------------------------------- images ---
 
 IMG_RE = re.compile(r"<img\b[^>]*>")
@@ -2057,6 +2141,7 @@ MAIN_PAGES = [
     ("/gallery.html", "Examples", "Every example part, with its picture and its script."),
     ("/releases.html", "Releases", "What each DX-CAD release brought."),
     ("/faq.html", "Questions", "What DX-CAD does and does not do, in short answers."),
+    ("/shortcuts.html", "Shortcuts", "Every keyboard shortcut of the window."),
     ("/search.html", "Search", "Find a word anywhere on the site."),
     ("/fabrication.html", "Fabrication", "The add-on for sheet and plate layout."),
     ("/drafting-pro.html", "Drafting Pro", "The add-on for drawings."),
@@ -2169,6 +2254,7 @@ def build_all(root):
     made.update(build_docs(root, shell, date))
     made.update(build_download(root, shell, date))
     made.update(build_faq(root, shell, date))
+    made.update(build_shortcuts(root, shell, date))
     made["search.html"] = (search_page(shell), date)
     made["404.html"] = (not_found_page(shell), date)
     lookup = picture_lookup(root, made)
