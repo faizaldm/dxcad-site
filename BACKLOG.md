@@ -139,7 +139,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: REPORT.md has the audit as a table (commit, finding, what was done); nothing loosened, skipped or excluded
   without a reason written there; both full passes pass; the flaky tests found, if any, are named and mended.
 
-- [ ] 4020. The owner's test list for the website: what tests cannot see, step by step (S)
+- [x] 4020. The owner's test list for the website: what tests cannot see, step by step (S)
   - docs/qa/owner-checks.md (new or added to): every manual check this run's items left under REVIEW in REPORT.md,
     each with exact steps, what should be seen, and where; a second list of what is already checked automatically (by
     which test), so the owner spends his time only where a test cannot look; the checks ordered by risk, the riskiest
