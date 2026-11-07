@@ -106,3 +106,22 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   - Every img gets width and height (read from the file by the standard library), loading="lazy" except the first
     picture of a page, and no page over 300 KB with its pictures (4001's rule) kept.
   Accept: tests/test_pages.py fails on an img without width and height and passes on every page; --check passes.
+
+- [ ] 4016. A questions page from the public docs: what DX-CAD does and does not do, in plain words (S)
+  - faq.html made by scripts/build_pages.py from data/'s limitations.md and gui.md only: a question and a short answer
+    each, linked to the docs page that says more; in the sitemap and the footer.
+  Accept: tests/test_build_pages.py: every answer's link goes to a page here; every limitation in limitations.md has
+  its question; --check passes; tests/test_pages.py passes.
+
+- [ ] 4017. A keyboard shortcuts page from the public gui.md (S)
+  - shortcuts.html: every shortcut gui.md names, grouped as gui.md groups them, made by scripts/build_pages.py; in the
+    sitemap and the footer.
+  Accept: tests/test_build_pages.py: the page lists exactly the shortcuts in gui.md; --check passes;
+  tests/test_pages.py passes.
+
+- [ ] 4018. The gallery filtered by what each example shows (S)
+  - Each example in gallery.html gets tags from its script (sketch, sheet metal, assembly, mates, drawing ...), read
+    by scripts/build_pages.py from the calls the script makes; buttons filter the gallery in plain JavaScript; with no
+    JavaScript every example still shows.
+  Accept: tests/test_build_pages.py: each example's tags match the calls in its script; --check passes;
+  tests/test_pages.py passes.
