@@ -35,3 +35,6 @@
   File > Export Parts... (gui.md), and `dxcad export` is named without arguments because data/ gives none.
   Numbers (the script's, the volumes and hole centres) are read from bracket.py and bracket.md each time.
 - 4006: the index's Download paragraph gained one sentence linking /tutorial.html.
+- 4007: every hand-written page already carried the Open Graph and Twitter tags, and build_pages.py's make_page writes
+  them on every page it makes (og:image is img/og-dxcad.png), so no page needed mending; the checks now hold them: all
+  five tags present and filled, og:url equal to the canonical address, og:image a picture in img/ that exists.

@@ -38,6 +38,11 @@ PAGE = """<!doctype html>
 <title>{title}</title>
 <meta name="description" content="A page.">
 <link rel="canonical" href="https://dxcad.designmatix.co.uk/{path}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="A page.">
+<meta property="og:url" content="https://dxcad.designmatix.co.uk/{path}">
+<meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 {body}
@@ -59,6 +64,8 @@ def make_site(tmp_path, pages=None, sitemap=("", "about.html"), robots=True):
               "about.html": '<a href="/">Home</a><img src="pic.png" alt="A picture">'}
     bodies.update(pages)
     (tmp_path / "pic.png").write_bytes(b"x" * 100)
+    (tmp_path / "img").mkdir(exist_ok=True)
+    (tmp_path / "img" / "og.png").write_bytes(b"x" * 100)
     for rel, body in bodies.items():
         target = tmp_path / rel
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -203,3 +210,65 @@ def test_copy_of_real_site_with_a_link_broken_fails(tmp_path):
     os.rename(tmp_path / "img" / "channel.png", tmp_path / "img" / "channel-old.png")
     found = reasons(str(tmp_path))
     assert any(r.startswith("index.html ") and "img/channel.png" in r for r in found)
+
+
+# Open Graph and Twitter card tags.
+
+OG_TAGS = {
+    "og:title": '<meta property="og:title" content="T">',
+    "og:description": '<meta property="og:description" content="A page.">',
+    "og:url": '<meta property="og:url" content="https://dxcad.designmatix.co.uk/about.html">',
+    "og:image": '<meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og.png">',
+    "twitter:card": '<meta name="twitter:card" content="summary_large_image">',
+}
+
+
+@pytest.mark.parametrize("tag", sorted(OG_TAGS))
+def test_page_without_a_social_tag_fails(tmp_path, tag):
+    root = make_site(tmp_path)
+    page = tmp_path / "about.html"
+    text = page.read_text(encoding="utf-8")
+    assert OG_TAGS[tag] in text
+    page.write_text(text.replace(OG_TAGS[tag], ""), encoding="utf-8")
+    found = [r for r in reasons(root) if r.startswith("about.html ")]
+    assert any("no %s tag" % tag in r for r in found), found
+
+
+def test_og_url_must_be_the_canonical_address(tmp_path):
+    root = make_site(tmp_path)
+    page = tmp_path / "about.html"
+    text = page.read_text(encoding="utf-8")
+    page.write_text(text.replace(OG_TAGS["og:url"],
+                    '<meta property="og:url" content="https://dxcad.designmatix.co.uk/x.html">'),
+                    encoding="utf-8")
+    assert any("og:url" in r and r.startswith("about.html ") for r in reasons(root))
+
+
+def test_og_image_must_be_a_picture_in_img(tmp_path):
+    root = make_site(tmp_path)
+    page = tmp_path / "about.html"
+    text = page.read_text(encoding="utf-8")
+    good = OG_TAGS["og:image"]
+    page.write_text(text.replace(good, good.replace("img/og.png", "img/gone.png")),
+                    encoding="utf-8")
+    assert any("og:image" in r and "does not resolve" in r for r in reasons(root))
+    page.write_text(text.replace(good, good.replace("img/og.png", "pic.png")),
+                    encoding="utf-8")
+    assert any("og:image" in r and "img/" in r for r in reasons(root))
+
+
+def test_empty_social_tag_fails(tmp_path):
+    root = make_site(tmp_path)
+    page = tmp_path / "about.html"
+    text = page.read_text(encoding="utf-8")
+    page.write_text(text.replace(OG_TAGS["og:title"], '<meta property="og:title" content="">'),
+                    encoding="utf-8")
+    assert any("og:title tag is empty" in r for r in reasons(root))
+
+
+def test_every_real_page_has_the_social_tags():
+    for rel in PAGES:
+        p = pagecheck.parse(str(ROOT), rel)
+        keys = {m.get("property") or m.get("name") for m in p.metas}
+        for key in OG_TAGS:
+            assert key in keys, "%s lacks %s" % (rel, key)

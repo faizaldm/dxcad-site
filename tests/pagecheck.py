@@ -176,6 +176,37 @@ def size_problems(root, rel, p=None):
     return out
 
 
+def social_problems(root, rel, p, canon):
+    """Open Graph and Twitter card tags: present, filled, and true to the page."""
+    out = []
+    tags = {}
+    for m in p.metas:
+        key = m.get("property") or m.get("name") or ""
+        if key.startswith(("og:", "twitter:")):
+            tags.setdefault(key, []).append(m.get("content", ""))
+    for key in ("og:title", "og:description", "og:url", "og:image", "twitter:card"):
+        values = tags.get(key, [])
+        if not values:
+            out.append("has no %s tag" % key)
+        elif len(values) > 1:
+            out.append("has %s more than once" % key)
+        elif not values[0].strip():
+            out.append("its %s tag is empty" % key)
+    url = tags.get("og:url", [""])[0]
+    if url and url != canonical_for(rel):
+        out.append("og:url is %r, should be its canonical address %r"
+                   % (url, canonical_for(rel)))
+    image = tags.get("og:image", [""])[0]
+    if image:
+        if not image.startswith(SITE + "img/"):
+            out.append("og:image %r is not a picture in img/ on this site" % image)
+        elif not os.path.isfile(os.path.join(root, image[len(SITE):])):
+            out.append("og:image %r does not resolve to a file" % image)
+    if tags.get("twitter:card", [""])[0] not in ("", "summary", "summary_large_image"):
+        out.append("twitter:card is %r" % tags["twitter:card"][0])
+    return out
+
+
 def check_page(root, rel):
     """Problems with one page, as a list of plain sentences."""
     out = []
@@ -197,6 +228,7 @@ def check_page(root, rel):
     elif canon[0].get("href") != canonical_for(rel):
         out.append("canonical link is %r, should be %r"
                    % (canon[0].get("href"), canonical_for(rel)))
+    out.extend(social_problems(root, rel, p, canon))
     for img in p.imgs:
         if not img.get("alt", "").strip():
             out.append("image %r has no alt text" % (img.get("src", "")[:60],))

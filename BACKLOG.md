@@ -48,7 +48,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: every command on the page appears in data/; --check passes; tests/test_pages.py
   passes.
 
-- [ ] 4007. Every page carries Open Graph and Twitter card tags, and the checks hold them (S)
+- [x] 4007. Every page carries Open Graph and Twitter card tags, and the checks hold them (S)
   - og:title, og:description, og:url (its canonical address), og:image (a picture already in img/) and twitter:card on
     every page, made by scripts/build_pages.py where it makes the page.
   Accept: tests/test_pages.py fails on a page without them (made in a temporary folder) and passes on every page.
