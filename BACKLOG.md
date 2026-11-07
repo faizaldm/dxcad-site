@@ -88,7 +88,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: every page's footer is the same and has the main links; 404.html exists and is
   left out of the sitemap; --check passes; tests/test_pages.py passes.
 
-- [ ] 4013. A download page from the public latest.json: version, files, sizes and checksums (S)
+- [x] 4013. A download page from the public latest.json: version, files, sizes and checksums (S)
   - download.html made by scripts/build_pages.py from data/'s latest.json: the current version and date, each file
     with its size and its SHA-256 where latest.json gives one, and what to do with each; linked from every header; in
     the sitemap.

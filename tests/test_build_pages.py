@@ -1165,3 +1165,151 @@ def test_a_missing_404_page_is_made_again(tmp_path):
     assert run_script(root).returncode == 0
     assert read(Path(root, "404.html")) == read(ROOT / "404.html")
     assert "404.html" not in read(Path(root, "sitemap.xml"))
+
+
+# --------------------------------------------------------------- download ---
+
+import json as _json
+from html.parser import HTMLParser as _HTMLParser
+
+SHA_A = "a" * 63 + "1"
+SHA_B = hashlib.sha256(b"dxcad").hexdigest()
+
+
+class _Rows(_HTMLParser):
+    """The rows of the page's files table: [[cell text, ...], ...]."""
+
+    def __init__(self):
+        super().__init__()
+        self.rows, self._row, self._cell = [], None, None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "tr":
+            self._row = []
+        elif tag in ("td", "th") and self._row is not None:
+            self._cell = []
+
+    def handle_data(self, data):
+        if self._cell is not None:
+            self._cell.append(data)
+
+    def handle_endtag(self, tag):
+        if tag in ("td", "th") and self._cell is not None:
+            self._row.append("".join(self._cell).strip())
+            self._cell = None
+        elif tag == "tr" and self._row is not None:
+            self.rows.append(self._row)
+            self._row = None
+
+
+def files_rows(page):
+    """The body rows of the files table (its header row is dropped)."""
+    if 'class="files"' not in page:
+        return []
+    table = page[page.index('class="files"'):page.index("</table>")]
+    p = _Rows()
+    p.feed(table)
+    return [r for r in p.rows if r and r[0] != "File"]
+
+
+def latest_data(root=ROOT):
+    return _json.loads(read(Path(root) / "data" / "core" / "latest.json"))
+
+
+def put_latest(root, **changes):
+    path = Path(root) / "data" / "core" / "latest.json"
+    data = _json.loads(read(path))
+    data.update(changes)
+    path.write_bytes((_json.dumps(data, indent=2) + "\n").encode())
+
+
+def test_download_page_is_what_the_script_makes():
+    assert read(ROOT / "download.html") == bp.build_all(str(ROOT))["download.html"]
+
+
+def test_download_page_gives_latest_jsons_version_date_and_address():
+    latest = latest_data()
+    page = read(ROOT / "download.html")
+    y, m, d = (int(x) for x in latest["date"].split("-"))
+    assert "<strong>%s</strong>" % latest["version"] in page
+    assert "%d %s %d" % (d, bp.MONTHS[m - 1], y) in page
+    assert 'datetime="%s"' % latest["date"] in page
+    assert 'href="%s"' % latest["url"] in page
+    assert latest["version"] in re.search(r"<title>(.*?)</title>", page).group(1)
+    assert latest["version"] == notes_releases()[0][0]       # the notes and latest.json agree
+
+
+def test_download_page_lists_exactly_latest_jsons_files():
+    latest = latest_data()
+    listed = [f.get("name") or f.get("file") or f.get("filename")
+              or f.get("url", "").rsplit("/", 1)[-1] for f in latest.get("files") or []]
+    page = read(ROOT / "download.html")
+    assert [r[0] for r in files_rows(page)] == listed
+    if not listed:      # latest.json names no file: the page says so, in place of a table
+        assert "names no downloadable file" in page
+
+
+def test_download_page_lists_files_with_their_sizes_and_checksums(tmp_path):
+    root = copy_site(tmp_path / "site")
+    put_latest(root, files=[
+        dict(name="dxcad-0.1.5-setup.exe", size=123456789, sha256=SHA_A,
+             url="https://example.org/dxcad-0.1.5-setup.exe"),
+        dict(name="dxcad-0.1.5-portable.zip", size=2048, sha256=SHA_B.upper()),
+        dict(name="dxcad-0.1.5.tar.gz"),
+    ])
+    assert run_script(root).returncode == 0
+    page = read(Path(root, "download.html"))
+    rows = files_rows(page)
+    assert [r[0] for r in rows] == ["dxcad-0.1.5-setup.exe", "dxcad-0.1.5-portable.zip",
+                                    "dxcad-0.1.5.tar.gz"]
+    assert rows[0][1] == "123,456,789 bytes (117.7 MB)" and rows[0][2] == SHA_A
+    assert rows[1][1] == "2,048 bytes (2.0 KB)" and rows[1][2] == SHA_B     # lower case
+    assert rows[2][1] == "not given" and rows[2][2] == "not given"          # nothing invented
+    assert 'href="https://example.org/dxcad-0.1.5-setup.exe"' in page
+    assert "Check a download" in page and "shasum -a 256" in page
+    assert "names no downloadable file" not in page
+    assert pagecheck.check_page(root, "download.html") == []
+
+
+def test_a_changed_latest_json_changes_the_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    before = read(Path(root, "download.html"))
+    put_latest(root, version="0.1.6", date="2026-11-09")
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "download.html" in result.stdout
+    assert run_script(root, "--all").returncode == 0
+    after = read(Path(root, "download.html"))
+    assert after != before
+    assert "<strong>0.1.6</strong>" in after and "9 November 2026" in after
+    assert "<strong>0.1.5</strong>" not in after
+    assert run_script(root, "--check").returncode == 0
+
+
+@pytest.mark.parametrize("changes, words", [
+    (dict(files=[dict(name="a.zip", sha256="abc")]), "sha256"),
+    (dict(files=[dict(name="a.zip", size="big")]), "size"),
+    (dict(files=[dict(size=1)]), "no name"),
+    (dict(date="3 November"), "date"),
+])
+def test_a_bad_latest_json_stops_the_build_and_says_why(tmp_path, changes, words):
+    root = copy_site(tmp_path / "site")
+    put_latest(root, **changes)
+    result = run_script(root)
+    assert result.returncode != 0
+    assert "latest.json" in result.stderr and words in result.stderr
+
+
+def test_download_page_is_in_the_sitemap_the_search_list_and_every_header_and_footer():
+    assert "https://dxcad.designmatix.co.uk/download.html" in pagecheck.sitemap_locs(str(ROOT))
+    assert "/download.html" in {e["url"] for e in search_list()}
+    for rel in pagecheck.page_files(str(ROOT)):
+        text = read(ROOT / rel)
+        header = text[text.index('<header class="bar">'):text.index("</header>")]
+        footer = text[text.index('<footer class="tb"'):text.index("</footer>")]
+        assert 'href="/download.html"' in header, rel
+        assert 'href="/download.html"' in footer, rel
+
+
+def test_download_page_is_sound_and_loads_nothing_from_elsewhere():
+    assert pagecheck.check_page(str(ROOT), "download.html") == []
+    assert "<script" not in read(ROOT / "download.html")

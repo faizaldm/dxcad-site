@@ -19,6 +19,7 @@ Pages made here:
                       docs/index.html), through the small Markdown reader below
     search.html, search.json
                       the search page, and the list of every page it searches
+    download.html     from data/core/latest.json: the version, its date, its files
     404.html          the page GitHub Pages shows for an address that is not here
     footer            FOOTER, below, is the footer of every page: made pages are
                       given it, and in the hand-made pages it replaces the footer
@@ -173,7 +174,7 @@ FOOTER = """<footer class="tb" aria-label="Company details">
     <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
     <div><span>Releases</span><strong><a href="/releases.html">What is new in each release</a></strong></div>
     <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a></strong></div>
-    <div><span>Find</span><strong><a href="/search.html">Search</a></strong></div>
+    <div><span>Find</span><strong><a href="/search.html">Search</a> &middot; <a href="/download.html">All downloads</a></strong></div>
     <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
     <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
   </footer>"""
@@ -1539,6 +1540,148 @@ def search_files(root, made):
     return {SEARCH_JSON: body}
 
 
+# --------------------------------------------------------------- download ---
+
+DOWNLOAD_STYLE = """
+.doc .lead{font-size:19px;max-width:62ch;margin:0 0 24px}
+.doc dl.facts{display:grid;grid-template-columns:max-content 1fr;gap:6px 24px;margin:0 0 24px;max-width:none}
+.doc dl.facts dt{font-family:var(--cond);font-weight:700}
+.doc dl.facts dd{margin:0}
+.doc .files{width:100%;border-collapse:collapse;margin:0 0 24px}
+.doc .files th,.doc .files td{border:1px solid var(--ink);padding:8px 10px;text-align:left;vertical-align:top}
+.doc .files code{word-break:break-all}
+pre.script{overflow-x:auto;border:1px solid var(--ink);background:var(--wash);padding:16px 20px;font-size:14px;line-height:1.5;max-width:none;tab-size:4}
+pre.script code{background:none;padding:0;font-size:inherit}
+"""
+
+LATEST = "latest.json"
+SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+
+
+def read_latest(root):
+    """data/core/latest.json as a dict, with its files as a list of
+    {name, size, sha256, url, what} (a key the file does not give is None)."""
+    path = os.path.join(root, "data", "core", LATEST)
+    try:
+        data = json.loads(read_text(path))
+    except (OSError, ValueError) as e:
+        raise ValueError("data/core/%s cannot be read: %s" % (LATEST, e))
+    if not isinstance(data, dict):
+        raise ValueError("data/core/%s is not a JSON object" % LATEST)
+    for key in ("version", "date"):
+        if not isinstance(data.get(key), str) or not data[key]:
+            raise ValueError("data/core/%s has no %r" % (LATEST, key))
+    try:
+        data["when"] = datetime.date.fromisoformat(data["date"])
+    except ValueError:
+        raise ValueError("data/core/%s: date %r is not YYYY-MM-DD" % (LATEST, data["date"]))
+    raw = data.get("files") or []
+    if isinstance(raw, dict):
+        raw = [dict(v if isinstance(v, dict) else {"url": v}, name=k) for k, v in raw.items()]
+    files = []
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ValueError("data/core/%s: a file entry is not an object" % LATEST)
+        name = item.get("name") or item.get("file") or item.get("filename")
+        url = item.get("url")
+        if not name and url:
+            name = url.rstrip("/").rsplit("/", 1)[-1]
+        if not name:
+            raise ValueError("data/core/%s: a file entry has no name" % LATEST)
+        size = item.get("size", item.get("bytes"))
+        if size is not None and (isinstance(size, bool) or not isinstance(size, int) or size < 0):
+            raise ValueError("data/core/%s: the size of %s is not a whole number of bytes"
+                             % (LATEST, name))
+        sha = item.get("sha256")
+        if sha is not None and not SHA256_RE.match(str(sha)):
+            raise ValueError("data/core/%s: the sha256 of %s is not 64 hex digits" % (LATEST, name))
+        files.append({"name": str(name), "size": size, "url": url,
+                      "sha256": str(sha).lower() if sha else None,
+                      "what": item.get("what") or item.get("description")})
+    data["files"] = files
+    return data
+
+
+def size_words(n):
+    """12345678 -> '12,345,678 bytes (11.8 MB)'."""
+    out = "{:,} bytes".format(n)
+    for unit, step in (("GB", 1 << 30), ("MB", 1 << 20), ("KB", 1 << 10)):
+        if n >= step:
+            return "%s (%.1f %s)" % (out, n / step, unit)
+    return out
+
+
+def download_page(root, shell):
+    d = read_latest(root)
+    version, when = d["version"], d["when"]
+    out = [
+        '    <h1>Download DX-CAD</h1>',
+        '    <p class="lead">The current version is <strong>%s</strong>, released on %s.</p>'
+        % (esc(version), long_date(when)),
+    ]
+    if d.get("note"):
+        out.append('    <p>%s</p>' % esc(d["note"]))
+    out += ['    <h2>This version</h2>', '    <dl class="facts">',
+            '      <dt>Version</dt><dd>%s</dd>' % esc(version),
+            '      <dt>Released</dt><dd><time datetime="%s">%s</time></dd>'
+            % (when.isoformat(), long_date(when))]
+    for key, label in (("licences_from", "Licences from"), ("trial_until", "Trial until")):
+        v = d.get(key)
+        if isinstance(v, str):
+            try:
+                v = long_date(datetime.date.fromisoformat(v))
+            except ValueError:
+                pass
+            out.append('      <dt>%s</dt><dd>%s</dd>' % (label, esc(str(v))))
+    out.append('    </dl>')
+    out += ['    <h2>Install with Python</h2>',
+            '    <pre class="script"><code>pip install dxcad</code></pre>']
+    if d.get("url"):
+        out.append('    <p>This version\'s page on PyPI: <a href="%s">%s</a>.</p>'
+                   % (esc(d["url"]), esc(d["url"])))
+    out.append('    <p>The installer for Windows, the builds for macOS and Linux and what they need '
+               'are on the <a href="/#download">home page</a>; the first steps are in the '
+               '<a href="/tutorial.html">tutorial</a>.</p>')
+    out.append('    <h2>Files</h2>')
+    files = d["files"]
+    if not files:
+        out.append('    <p>The public record of this release names no downloadable file, so none is '
+                   'listed here with a size or a checksum. Use the install above, or the '
+                   '<a href="/#download">home page</a>.</p>')
+    else:
+        out += ['    <table class="files">',
+                '      <caption class="vh">Files of DX-CAD %s, with their sizes and SHA-256 '
+                'checksums</caption>' % esc(version),
+                '      <thead><tr><th scope="col">File</th><th scope="col">Size</th>'
+                '<th scope="col">SHA-256</th><th scope="col">What to do with it</th></tr></thead>',
+                '      <tbody>']
+        for f in files:
+            name = esc(f["name"])
+            cell = '<a href="%s">%s</a>' % (esc(f["url"]), name) if f["url"] else name
+            size = size_words(f["size"]) if f["size"] is not None else "not given"
+            sha = "<code>%s</code>" % f["sha256"] if f["sha256"] else "not given"
+            what = esc(f["what"]) if f["what"] else (
+                "Download it, check its SHA-256 as described below, then run it "
+                "or unpack it.")
+            out.append('      <tr><th scope="row">%s</th><td>%s</td><td>%s</td><td>%s</td></tr>'
+                       % (cell, size, sha, what))
+        out += ['      </tbody>', '    </table>']
+        out += ['    <h2>Check a download</h2>',
+                '    <p>A checksum shows that the file you have is the file listed. On Windows, '
+                'run <code>certutil -hashfile FILE SHA256</code>; on macOS or Linux, run '
+                '<code>shasum -a 256 FILE</code>. The digits must be the same as the ones above.</p>']
+    out.append('    <p>See <a href="/releases.html">what is new in each release</a>.</p>')
+    return make_page(
+        shell, "download.html", "Download DX-CAD %s | DX-CAD by Designmatix" % version,
+        "Download DX-CAD %s, released on %s: the install, and each file with its size and "
+        "checksum where the public record gives one." % (version, long_date(when)),
+        "\n".join(out), DOWNLOAD_STYLE)
+
+
+def build_download(root, shell, date):
+    return {"download.html": (download_page(root, shell), date)}
+
+
 # --------------------------------------------------------- 404, footers ---
 
 NOT_FOUND_STYLE = """
@@ -1663,6 +1806,7 @@ def build_all(root):
     made.update(build_addons(root, shell, date))
     made.update(build_tutorial(root, shell, date))
     made.update(build_docs(root, shell, date))
+    made.update(build_download(root, shell, date))
     made["search.html"] = (search_page(shell), date)
     made["404.html"] = (not_found_page(shell), date)
     files = {rel: content for rel, (content, _) in made.items()}

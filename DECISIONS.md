@@ -96,3 +96,15 @@
   site's top folder for a missing address.
 - 4009: the small test site's page template gained the skip link and a main element, and its one heading test now
   starts at h1, because the new rules apply to it as to every page.
+- 4013: data/core/latest.json has no files, sizes or checksums today: it gives version, date, note, url (PyPI),
+  licences_from and trial_until. download.html shows exactly those, and says plainly that the public record names no
+  downloadable file, so it lists none and invents no size or checksum. If a later latest.json carries a "files" list
+  (name, size, sha256, url, and optionally what), the page lists exactly those files with their sizes and checksums,
+  says "not given" for a key that is missing, and adds how to check a checksum; a bad entry (a sha256 that is not 64
+  hex digits, a size that is not a whole number, no name, a date that is not YYYY-MM-DD) stops the build and names
+  latest.json. The owner should add "files" to the public latest.json once there is a file to name.
+- 4013: the header of every page gained "All downloads" (class opt, so it is hidden on small screens like the other
+  optional items; the footer's Find cell carries it for them), because the header's "Download" item already
+  points to the home page's #download section and keeps doing so. 46 hand-made and made pages changed in that one
+  line, and the footer in all of them through FOOTER. The page names "Licences from" and "Trial until" as latest.json
+  words, with no explanation of its own. It also says "pip install dxcad", as the tutorial and the release notes do.
