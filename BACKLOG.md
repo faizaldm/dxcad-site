@@ -58,3 +58,32 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     head; made by scripts/build_pages.py (standard library only).
   Accept: tests/test_build_pages.py: the feed parses as Atom with its required elements, one entry per release with
   its date; --check passes; tests/test_pages.py passes.
+
+- [ ] 4009. Accessibility checks on every page: headings in order, contrast, a skip link, named links and buttons (S)
+  - tests/test_pages.py also checks: headings never skip a level; the text and background colours the site's CSS gives
+    each kind of text reach WCAG AA contrast (computed in the test); every page starts with a "Skip to content" link;
+    every link and button has a name a screen reader can say; no img alt is a file name. Whatever fails is mended in
+    the pages or in scripts/build_pages.py, each mend named in REPORT.md.
+  Accept: tests/test_pages.py passes on every page and fails, naming the page and the rule, on a page made wrong in a
+  temporary folder for each rule.
+
+- [ ] 4010. The public SDK's docs as pages of the site, made from data/ (M)
+  - docs/NAME.html for each public SDK doc in data/ (its index, gui, limitations and the rest copied there), made by
+    scripts/build_pages.py with a small Markdown reader of its own (standard library only: headings, paragraphs,
+    lists, code blocks, links, emphasis), in the site's style, links between them made to work, a docs index linked
+    from the main page, all in the sitemap. Public material only.
+  Accept: tests/test_build_pages.py: a page for each doc in data/, each heading and code block of the source there;
+  --check passes; tests/test_pages.py passes.
+
+- [ ] 4011. A search page that works with no server and no library (M)
+  - search.json made by scripts/build_pages.py (each page's title, address, headings and words), and search.html with
+    plain JavaScript: results as you type, the matching words shown in their sentence; it works offline from the files
+    alone. Linked from every page's header.
+  Accept: tests/test_build_pages.py: search.json lists every page in the sitemap with its title and headings; the page
+  loads no script from elsewhere; --check passes; tests/test_pages.py passes.
+
+- [ ] 4012. A 404 page and one footer on every page, made by the build (S)
+  - 404.html in the site's style with links to the main pages (GitHub Pages serves it for a missing address); every
+    page's footer the same, from one place in scripts/build_pages.py.
+  Accept: tests/test_build_pages.py: every page's footer is the same and has the main links; 404.html exists and is
+  left out of the sitemap; --check passes; tests/test_pages.py passes.
