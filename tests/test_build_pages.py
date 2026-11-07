@@ -387,7 +387,7 @@ def test_addon_page_trial_and_licence_words_are_guis(file, name):
 def test_addon_page_has_no_price(file, name):
     page = read(ROOT / file)
     body = page[page.index("<article"):page.index("</article>")]
-    assert "&pound;" not in body and "£" not in body and "249" not in body
+    assert "&pound;" not in body and "\u00a3" not in body and "249" not in body
 
 
 def test_addon_pages_use_pictures_already_in_img_with_alt_text():
@@ -631,7 +631,7 @@ def test_all_with_a_new_release_adds_its_section_and_changes_nothing_else(tmp_pa
     changed = sorted(k for k in after if before.get(k) != after[k])
     # the release notes (the test's own edit), the page, its Atom feed (4008), the sitemap
     assert changed == ["data/core/RELEASE_NOTES.md", "releases.html", "releases.xml",
-                       "sitemap.xml"]
+                       "search.json", "sitemap.xml"]
     assert set(after) == set(before)
     page = after["releases.html"].decode()
     assert 'id="v0-1-6"' in page and "A line that is new in 0.1.6." in page
@@ -811,7 +811,7 @@ def test_a_new_doc_gets_a_page_and_nothing_else_changes_but_the_sitemap(tmp_path
     assert run_script(root, "--all").returncode == 0
     after = snapshot(root)
     changed = sorted(k for k in after if before.get(k) != after[k])
-    assert changed == ["data/core/faq.md", "docs/faq.html", "sitemap.xml"]
+    assert changed == ["data/core/faq.md", "docs/faq.html", "search.json", "sitemap.xml"]
     page = after["docs/faq.html"].decode()
     assert 'href="/docs/gui.html#the-menus"' in page and "dxcad doctor" in page
     assert pagecheck.check_site(root) == []
@@ -910,3 +910,142 @@ def test_doc_description_is_whole_sentences_and_short():
     text = "A first sentence of the page. A second one that is long " + "and long " * 30 + "end."
     d = bp.doc_description(bp.md_blocks([text]), "T")
     assert d == "A first sentence of the page." and len(d) <= 160
+
+
+# ----------------------------------------------------------------- search ---
+
+def search_list():
+    import json
+    return json.loads(read(ROOT / "search.json"))
+
+
+def url_of(rel):
+    if rel == "index.html":
+        return "/"
+    if rel.endswith("/index.html"):
+        return "/" + rel[:-len("index.html")]
+    return "/" + rel
+
+
+def test_search_json_lists_every_page_in_the_sitemap_with_title_and_headings():
+    entries = search_list()
+    by_url = {e["url"]: e for e in entries}
+    assert len(by_url) == len(entries)
+    locs = pagecheck.sitemap_locs(str(ROOT))
+    assert sorted("/" + loc[len("https://dxcad.designmatix.co.uk/"):] for loc in locs) \
+        == sorted(by_url)
+    for rel in pagecheck.page_files(str(ROOT)):
+        entry = by_url[url_of(rel)]
+        page = pagecheck.parse(str(ROOT), rel)
+        assert entry["title"] == " ".join(page.titles[0].split()), rel
+        have = [h["t"] for h in entry["headings"]]
+        for _, text in page.headings:
+            assert text in have, "%s: heading %r is not in search.json" % (rel, text)
+        assert entry["text"].strip(), rel
+
+
+def test_search_json_holds_the_words_of_pages_and_links_headings_by_id():
+    by_url = {e["url"]: e for e in search_list()}
+    gui = by_url["/docs/gui.html"]
+    assert "Opening it" in [h["t"] for h in gui["headings"]]
+    assert {"t": "Opening it", "id": "opening-it"} in gui["headings"]
+    assert "opens the viewer" in gui["text"]
+    assert "Registered office" not in gui["text"]          # the footer is not searched
+    assert "createElement" not in by_url["/search.html"]["text"]    # nor is a script
+    assert "Skip to content" not in gui["text"]
+    # a long example script is left out, its description and its commands are not
+    source = read(EXAMPLES / "gearbox.py")
+    longest = max(source.split("\n"), key=len).strip()
+    assert len(source.split("\n")) > 40 and len(longest) > 30
+    gearbox = by_url["/examples/gearbox.html"]
+    assert longest not in gearbox["text"] and "How to open it in DX-CAD" in gearbox["text"]
+    assert "dxcad examples gearbox" in gearbox["text"]       # a short command block is kept
+
+
+def test_search_json_is_ascii_one_page_a_line_and_not_huge():
+    text = read(ROOT / "search.json")
+    text.encode("ascii")
+    assert text.startswith("[\n") and text.endswith("]\n")
+    assert len(text.split("\n")) == len(search_list()) + 3     # the brackets, and the end
+    assert len(text) < 400 * 1024
+
+
+def test_search_page_is_plain_javascript_from_here_and_nothing_else():
+    page = read(ROOT / "search.html")
+    page.encode("ascii")
+    assert not re.search(r"<script[^>]*\ssrc=", page)               # one inline script only
+    assert not re.search(r'(src|srcset|poster|action)="(https?:)?//', page)
+    assert '<link rel="stylesheet"' not in page and "@import" not in page
+    assert "<iframe" not in page and "<form" not in page
+    script = re.search(r"<script>(.*?)</script>", page, re.S).group(1)
+    for banned in ("innerHTML", "eval(", "document.write", "import(", "fetch(", "http://",
+                   "https://", "localStorage", "navigator.sendBeacon"):
+        assert banned not in script, banned
+    assert script.count("{") == script.count("}") and script.count("(") == script.count(")")
+    assert script.count("[") == script.count("]")
+    assert '"search.json"' in script
+    for name in re.findall(r'getElementById\("([^"]+)"\)', script):
+        assert 'id="%s"' % name in page, name
+    assert '<label for="q">' in page and 'id="q" type="search"' in page
+    assert "<noscript>" in page and 'aria-live="polite"' in page
+
+
+def test_search_page_is_in_the_sitemap_and_in_the_search_list():
+    assert "https://dxcad.designmatix.co.uk/search.html" in pagecheck.sitemap_locs(str(ROOT))
+    assert "/search.html" in {e["url"] for e in search_list()}
+
+
+def test_every_page_links_to_search_from_its_header():
+    for rel in pagecheck.page_files(str(ROOT)):
+        text = read(ROOT / rel)
+        header = text[text.index('<header class="bar">'):text.index("</header>")]
+        assert 'href="/search.html"' in header, rel
+
+
+def test_search_json_is_made_by_the_script(tmp_path):
+    root = copy_site(tmp_path / "site")
+    assert run_script(root, "--check").returncode == 0
+    Path(root, "search.json").write_bytes(b"[]\n")
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "search.json" in result.stdout
+    assert run_script(root).returncode == 0
+    assert read(Path(root, "search.json")) == read(ROOT / "search.json")
+
+
+def test_a_changed_word_in_a_doc_is_found_in_the_search_list(tmp_path):
+    import json
+    root = copy_site(tmp_path / "site")
+    gui = Path(root, "data", "core", "gui.md")
+    gui.write_bytes(read(gui).replace("opens the viewer", "opens the zebrafish viewer", 1).encode())
+    assert run_script(root).returncode == 0
+    by_url = {e["url"]: e for e in json.loads(read(Path(root, "search.json")))}
+    assert "zebrafish" in by_url["/docs/gui.html"]["text"]
+    assert pagecheck.check_site(root) == []
+
+
+def test_a_new_doc_is_in_the_search_list_with_its_headings(tmp_path):
+    import json
+    root = copy_site(tmp_path / "site")
+    Path(root, "data", "core", "faq.md").write_bytes(b"# Questions\n\nWords.\n\n## One thing\n\nMore.\n")
+    assert run_script(root).returncode == 0
+    by_url = {e["url"]: e for e in json.loads(read(Path(root, "search.json")))}
+    entry = by_url["/docs/faq.html"]
+    assert [h["t"] for h in entry["headings"]] == ["Questions", "One thing"]
+    assert entry["headings"][1]["id"] == "one-thing"
+
+
+def test_page_text_reader_skips_footer_script_and_whole_scripts():
+    code = "\n".join("line %d" % i for i in range(50))
+    page = ('<html><head><title>  A  title </title></head><body><header><a href="/">Home</a></header>'
+            '<main><h1 id="top">Top <code>x</code></h1><p>One   sentence <b>here</b>.</p>'
+            '<table><tr><td>Cell a</td><td>Cell b</td></tr></table>'
+            '<pre>short one\nshort two</pre><pre>%s</pre><script>var secret = 1;</script>'
+            '<footer><p>Company words</p></footer></main></body></html>' % code)
+    entry = bp.search_entry("sub/page.html", page)
+    assert entry["url"] == "/sub/page.html" and entry["title"] == "A title"
+    assert entry["headings"] == [{"t": "Top x", "id": "top"}]
+    lines = entry["text"].split("\n")
+    assert lines == ["Top x", "One sentence here .".replace(" .", "."), "Cell a", "Cell b",
+                     "short one", "short two"]
+    assert bp.search_entry("index.html", page)["url"] == "/"
+    assert bp.search_entry("docs/index.html", page)["url"] == "/docs/"

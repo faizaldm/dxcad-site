@@ -75,7 +75,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: a page for each doc in data/, each heading and code block of the source there;
   --check passes; tests/test_pages.py passes.
 
-- [ ] 4011. A search page that works with no server and no library (M)
+- [x] 4011. A search page that works with no server and no library (M)
   - search.json made by scripts/build_pages.py (each page's title, address, headings and words), and search.html with
     plain JavaScript: results as you type, the matching words shown in their sentence; it works offline from the files
     alone. Linked from every page's header.

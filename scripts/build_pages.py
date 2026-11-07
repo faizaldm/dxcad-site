@@ -17,6 +17,8 @@ Pages made here:
     tutorial.html     from the public docs and the bracket example
     docs/NAME.html    one page for each public SDK doc in data/core (index.md is
                       docs/index.html), through the small Markdown reader below
+    search.html, search.json
+                      the search page, and the list of every page it searches
 
 The look of a made page is the look of the pages that are written by hand: its
 style and its header are those of refunds.html, its footer is the index's.
@@ -27,11 +29,13 @@ import argparse
 import ast
 import datetime
 import html
+import json
 import os
 import posixpath
 import re
 import struct
 import sys
+from html.parser import HTMLParser
 
 SITE = "https://dxcad.designmatix.co.uk/"
 SOCIAL_IMAGE = "img/og-dxcad.png"
@@ -1194,6 +1198,315 @@ def build_docs(root, shell, date):
     return made
 
 
+# ----------------------------------------------------------------- search ---
+
+# search.json lists every page with its title, address, headings and words (the
+# lines of a whole script are left out: the gallery pages would triple its size).
+# search.html reads it with plain JavaScript: no server, no library, nothing
+# from elsewhere, so once the two files are loaded it works with no network.
+
+SEARCH_JSON = "search.json"
+
+SEARCH_STYLE = """
+.search label{display:block;font-family:var(--cond);font-weight:700;font-size:19px;margin:0 0 6px}
+.search input{width:100%;max-width:560px;font:inherit;padding:10px 12px;border:1.5px solid var(--ink);border-radius:0;background:var(--paper);color:var(--ink)}
+.search input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.search .count{margin:12px 0 0;color:var(--ink-2);font-size:15px}
+.results{list-style:none;padding:0;margin:24px 0 0}
+.results li{margin:0 0 22px;max-width:none}
+.results a{font-family:var(--cond);font-size:20px;font-weight:700}
+.results .url{display:block;font-size:13px;color:var(--ink-2)}
+.results p{margin:4px 0 0;font-size:15px;max-width:80ch}
+.results mark{background:#FFE88A;color:var(--ink);padding:0 1px}
+"""
+
+SEARCH_SCRIPT = r"""
+(function () {
+  var pages = [];
+  var box = document.getElementById("q");
+  var list = document.getElementById("results");
+  var count = document.getElementById("count");
+  var MAX = 40;
+  var prepared = false;
+  var loaded = false;
+
+  function prepare() {
+    if (prepared) { return; }
+    prepared = true;
+    pages.forEach(function (p) {
+      p.lt = p.title.toLowerCase();
+      p.lh = p.headings.map(function (h) { return h.t.toLowerCase(); });
+      p.chunks = p.text.split("\n");
+      p.lc = p.chunks.map(function (c) { return c.toLowerCase(); });
+    });
+  }
+
+  function occurrences(hay, word) {
+    var n = 0, at = hay.indexOf(word);
+    while (at >= 0 && n < 10) { n += 1; at = hay.indexOf(word, at + word.length); }
+    return n;
+  }
+
+  function score(p, words) {
+    var total = 0;
+    for (var i = 0; i < words.length; i += 1) {
+      var w = words[i], here = 0;
+      if (p.lt.indexOf(w) >= 0) { here += 20; }
+      for (var h = 0; h < p.lh.length; h += 1) {
+        if (p.lh[h].indexOf(w) >= 0) { here += 8; break; }
+      }
+      for (var c = 0; c < p.lc.length && here < 60; c += 1) {
+        here += occurrences(p.lc[c], w);
+      }
+      if (here === 0) { return 0; }
+      total += here;
+    }
+    return total;
+  }
+
+  function snippets(p, words) {
+    var found = [];
+    for (var c = 0; c < p.lc.length; c += 1) {
+      var hit = 0;
+      for (var i = 0; i < words.length; i += 1) {
+        if (p.lc[c].indexOf(words[i]) >= 0) { hit += 1; }
+      }
+      if (hit > 0) { found.push({ at: c, hit: hit }); }
+    }
+    found.sort(function (a, b) { return b.hit - a.hit || a.at - b.at; });
+    return found.slice(0, 2).sort(function (a, b) { return a.at - b.at; });
+  }
+
+  function marked(text, words) {
+    var low = text.toLowerCase(), spans = [], start = 0, end = text.length;
+    words.forEach(function (w) {
+      var at = low.indexOf(w);
+      while (at >= 0) { spans.push([at, at + w.length]); at = low.indexOf(w, at + w.length); }
+    });
+    spans.sort(function (a, b) { return a[0] - b[0]; });
+    if (spans.length && text.length > 170) {
+      start = Math.max(0, spans[0][0] - 60);
+      end = Math.min(text.length, start + 170);
+    }
+    var p = document.createElement("p");
+    if (start > 0) { p.appendChild(document.createTextNode("... ")); }
+    var pos = start;
+    spans.forEach(function (s) {
+      if (s[0] < pos || s[0] >= end) { return; }
+      var to = Math.min(s[1], end);
+      p.appendChild(document.createTextNode(text.slice(pos, s[0])));
+      var m = document.createElement("mark");
+      m.appendChild(document.createTextNode(text.slice(s[0], to)));
+      p.appendChild(m);
+      pos = to;
+    });
+    p.appendChild(document.createTextNode(text.slice(pos, end)));
+    if (end < text.length) { p.appendChild(document.createTextNode(" ...")); }
+    return p;
+  }
+
+  function show() {
+    var words = box.value.toLowerCase().split(/\s+/).filter(function (w) { return w; });
+    while (list.firstChild) { list.removeChild(list.firstChild); }
+    if (!words.length) { count.textContent = "Type a word to search the whole site."; return; }
+    if (!loaded) { count.textContent = "Loading the list of pages ..."; return; }
+    prepare();
+    var hits = [];
+    pages.forEach(function (p) {
+      var s = score(p, words);
+      if (s > 0) { hits.push({ p: p, s: s }); }
+    });
+    hits.sort(function (a, b) { return b.s - a.s || (a.p.title < b.p.title ? -1 : 1); });
+    count.textContent = hits.length
+      ? hits.length + (hits.length === 1 ? " page matches." : " pages match.")
+        + (hits.length > MAX ? " The first " + MAX + " are shown." : "")
+      : "No page matches. Try fewer or shorter words.";
+    hits.slice(0, MAX).forEach(function (hit) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = hit.p.url;
+      a.appendChild(document.createTextNode(hit.p.title));
+      li.appendChild(a);
+      var u = document.createElement("span");
+      u.className = "url";
+      u.appendChild(document.createTextNode(hit.p.url));
+      li.appendChild(u);
+      snippets(hit.p, words).forEach(function (s) {
+        li.appendChild(marked(hit.p.chunks[s.at], words));
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function failed() {
+    count.textContent = "The list of pages could not be loaded. Reload the page to try again.";
+  }
+
+  var q = /[?&]q=([^&]*)/.exec(window.location.search);
+  if (q) {
+    try { box.value = decodeURIComponent(q[1].replace(/\+/g, " ")); } catch (e) { box.value = ""; }
+  }
+  box.addEventListener("input", show);
+  var req = new XMLHttpRequest();
+  req.open("GET", "search.json");
+  req.onload = function () {
+    if (req.status >= 400) { failed(); return; }
+    try { pages = JSON.parse(req.responseText); } catch (e) { failed(); return; }
+    loaded = true;
+    show();
+  };
+  req.onerror = failed;
+  req.send();
+})();
+"""
+
+LONG_CODE = 40     # a code block of more lines than this is a whole script: not indexed
+BLOCK_TAGS = {"p", "li", "td", "th", "tr", "h1", "h2", "h3", "h4", "h5", "h6", "pre",
+              "figcaption", "figure", "dt", "dd", "div", "section", "article", "blockquote",
+              "table", "ul", "ol", "br", "caption", "header", "main"}
+
+
+class PageText(HTMLParser):
+    """A page's title, headings (with their ids) and the text of its main part."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.title = ""
+        self.headings = []
+        self.chunks = []
+        self._buf = []
+        self._in_title = False
+        self._in_main = False
+        self._skip = 0
+        self._pre = 0
+        self._pre_at = 0
+        self._heading = None
+
+    def _flush(self):
+        text = " ".join("".join(self._buf).split())
+        self._buf = []
+        if text:
+            self.chunks.append(text)
+        return text
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "title":
+            self._in_title = True
+        elif tag == "main":
+            self._in_main = True
+        if tag in ("script", "style", "svg", "footer", "template"):
+            self._skip += 1
+        if not self._in_main or self._skip:
+            return
+        if tag in BLOCK_TAGS:
+            self._flush()
+        if tag == "pre":
+            self._pre += 1
+            self._pre_at = len(self.chunks)
+        if re.fullmatch(r"h[1-6]", tag):
+            self._heading = a.get("id")
+        if tag == "img" and a.get("alt"):
+            self._flush()
+            self._buf.append(a["alt"])
+            self._flush()
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self._in_title = False
+        if tag in ("script", "style", "svg", "footer", "template") and self._skip:
+            self._skip -= 1
+            return
+        if not self._in_main or self._skip:
+            return
+        if re.fullmatch(r"h[1-6]", tag):
+            text = self._flush()
+            if text:
+                entry = {"t": text}
+                if self._heading:
+                    entry["id"] = self._heading
+                self.headings.append(entry)
+            self._heading = None
+        elif tag in BLOCK_TAGS:
+            self._flush()
+        if tag == "pre" and self._pre:
+            self._pre -= 1
+            self._flush()
+            if len(self.chunks) - self._pre_at > LONG_CODE:
+                del self.chunks[self._pre_at:]   # a whole script is not searched
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.title += data
+        if not self._in_main or self._skip:
+            return
+        if self._pre:
+            parts = data.split("\n")
+            for k, part in enumerate(parts):
+                self._buf.append(part)
+                if k < len(parts) - 1:
+                    self._flush()
+        else:
+            self._buf.append(data)
+
+
+def search_entry(rel, page_html):
+    p = PageText()
+    p.feed(page_html)
+    p.close()
+    p._flush()
+    url = "/" + rel
+    if rel == "index.html":
+        url = "/"
+    elif rel.endswith("/index.html"):
+        url = "/" + rel[:-len("index.html")]
+    return {"url": url, "title": " ".join(p.title.split()), "headings": p.headings,
+            "text": "\n".join(p.chunks)}
+
+
+def search_page(shell):
+    out = [
+        '    <h1>Search the site</h1>',
+        '    <p class="lead">Every page of this site, its documentation and its examples. '
+        'Matching words are shown in their sentence.</p>',
+        '    <div class="search">',
+        '    <label for="q">Search for</label>',
+        '    <input id="q" type="search" autocomplete="off" spellcheck="false">',
+        '    <p class="count" id="count" role="status" aria-live="polite">'
+        'Type a word to search the whole site.</p>',
+        '    </div>',
+        '    <noscript><p>Search needs JavaScript. '
+        'Without it, start from the <a href="/docs/">documentation</a>, the '
+        '<a href="/gallery.html">examples</a> or the <a href="/releases.html">release notes</a>.</p>'
+        '</noscript>',
+        '    <ol class="results" id="results"></ol>',
+        '    <script>',
+        SEARCH_SCRIPT.strip("\n"),
+        '    </script>',
+    ]
+    return make_page(
+        shell, "search.html", "Search | DX-CAD by Designmatix",
+        "Search every page of the DX-CAD site, its documentation and its examples. "
+        "It works with no server and no outside library.",
+        "\n".join(out), GALLERY_STYLE + SEARCH_STYLE)
+
+
+def search_files(root, made):
+    """search.json: every page here, newest content (made pages from memory, the
+    others from disk), in the order of their addresses."""
+    pages = {}
+    for rel in page_files(root):
+        pages[rel] = read_text(os.path.join(root, rel))
+    for rel, (content, _) in made.items():
+        if rel.endswith(".html"):
+            pages[rel] = content
+    entries = sorted((search_entry(rel, text) for rel, text in pages.items()),
+                     key=lambda e: e["url"])
+    body = "[\n" + ",\n".join(json.dumps(e, ensure_ascii=True, separators=(",", ":"))
+                              for e in entries) + "\n]\n"
+    return {SEARCH_JSON: body}
+
+
 # ---------------------------------------------------------------- sitemap ---
 
 def page_files(root):
@@ -1263,7 +1576,9 @@ def build_all(root):
     made.update(build_addons(root, shell, date))
     made.update(build_tutorial(root, shell, date))
     made.update(build_docs(root, shell, date))
+    made["search.html"] = (search_page(shell), date)
     files = {rel: content for rel, (content, _) in made.items()}
+    files.update(search_files(root, made))
     files["sitemap.xml"] = build_sitemap(root, made)
     return files
 

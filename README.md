@@ -17,6 +17,8 @@ hand (the next run would write over the edit):
   (`gui.md`) and the site's own words
 - `docs/NAME.html`, one page for each public SDK doc in `data/core/` (`index.md`
   is `docs/index.html`), and the pictures a doc names that are in `data/core/`
+- `search.html` and `search.json`, the search page and the list of every page,
+  its headings and its words that the page reads
 - `sitemap.xml`, which lists every page
 
 ## After a DX-CAD release: three steps

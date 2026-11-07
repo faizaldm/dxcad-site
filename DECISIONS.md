@@ -68,5 +68,19 @@
   index.md's about its own test suite; the site does not edit data/.
 - 4010: make_page now takes the canonical and og:url from the same address() the sitemap uses, so docs/index.html
   is https://dxcad.designmatix.co.uk/docs/. The index's Download paragraph gained one sentence linking /docs/.
+- 4011: search.json holds, for every .html page (all the pages in the sitemap), its address, title, headings (with
+  their ids) and the text of its main part, one line of text for each paragraph, list item, table cell or code line;
+  the header, the footer and scripts are left out, and so is any code block of more than 40 lines (a whole example
+  script), because the gallery's scripts alone would have been 190 KB of the 440 KB. It is about 250 KB, one page a
+  line. The search page loads it with a plain XMLHttpRequest from its own folder: nothing from elsewhere, no library,
+  and once the two files are loaded no network is needed. "Works offline" is read as that, not as "opens from a
+  folder": every link on the site starts with a slash, so the site as a whole does not work from a folder either.
+- 4011: results are pages whose title, headings and text together hold every typed word (as part of a word, not case
+  sensitive), ranked by title, then headings, then how often; each shows up to two of its lines with the words marked.
+  The marks are built with createElement and text nodes, never innerHTML. A test reads the script for banned calls.
+  There is no browser or node here, so the script itself has been read through and checked for balanced brackets and
+  for the ids it uses, but not run: the owner should try /search.html once after merging.
+- 4011: the header of every hand-made page, and refunds.html's from which the made pages take theirs, gained a
+  "Search" item after Download; it stays on small screens.
 - 4009: the small test site's page template gained the skip link and a main element, and its one heading test now
   starts at h1, because the new rules apply to it as to every page.
