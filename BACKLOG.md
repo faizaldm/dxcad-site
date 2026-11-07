@@ -125,3 +125,24 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     JavaScript every example still shows.
   Accept: tests/test_build_pages.py: each example's tags match the calls in its script; --check passes;
   tests/test_pages.py passes.
+
+- [ ] 4019. Run audit: everything this run committed, checked for what would surprise the owner's testing (M)
+  The owner's rule (7 Nov): the build he tests must hold no or minimal surprises.
+  - For every commit on this branch since 7 November 2026, 09:40: tests added or changed to skip or xfail, assertions
+    taken out, tolerances changed, a test left out of the suite by a marker or a name, debug prints, TODO or FIXME
+    added, files over 1 MB, text that is not ASCII, a person's name or another CAD product's name. Each finding mended
+    at its cause, or explained in REPORT.md in words the owner can check.
+  - Each item ticked this run has its CHANGELOG line, its docs or help words where a user meets it, and at least one
+    test that fails without its change.
+  - Then the whole suite in its full passes (slow and serial too), twice, and any test that passed once and failed
+    once is a flaky test, mended (never retried away).
+  Accept: REPORT.md has the audit as a table (commit, finding, what was done); nothing loosened, skipped or excluded
+  without a reason written there; both full passes pass; the flaky tests found, if any, are named and mended.
+
+- [ ] 4020. The owner's test list for the website: what tests cannot see, step by step (S)
+  - docs/qa/owner-checks.md (new or added to): every manual check this run's items left under REVIEW in REPORT.md,
+    each with exact steps, what should be seen, and where; a second list of what is already checked automatically (by
+    which test), so the owner spends his time only where a test cannot look; the checks ordered by risk, the riskiest
+    first.
+  Accept: every REVIEW manual check of this run is in the list with steps and an expected result; the automatic list
+  names a test for each entry.
