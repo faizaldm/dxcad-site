@@ -11,7 +11,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   - Whatever fails on the pages as they are is mended in the pages, each mend named in REPORT.md.
   Accept: tests/test_pages.py passes on every page; a page with a broken link, a missing alt or a page left out of
   the sitemap (made in a temporary folder) fails it, naming the page and the reason.
-- [ ] 4002. Release pages: what each DX-CAD release brought, in plain words, made from the release notes (S)
+- [x] 4002. Release pages: what each DX-CAD release brought, in plain words, made from the release notes (S)
   - scripts/build_pages.py (standard library only) makes releases.html from data/core/RELEASE_NOTES.md: one section
     per release, newest first, its date and its lines in plain words, linked from the index's footer and in the
     sitemap. --check answers whether every page it makes is as committed.
