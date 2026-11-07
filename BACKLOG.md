@@ -107,7 +107,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     picture of a page, and no page over 300 KB with its pictures (4001's rule) kept.
   Accept: tests/test_pages.py fails on an img without width and height and passes on every page; --check passes.
 
-- [ ] 4016. A questions page from the public docs: what DX-CAD does and does not do, in plain words (S)
+- [x] 4016. A questions page from the public docs: what DX-CAD does and does not do, in plain words (S)
   - faq.html made by scripts/build_pages.py from data/'s limitations.md and gui.md only: a question and a short answer
     each, linked to the docs page that says more; in the sitemap and the footer.
   Accept: tests/test_build_pages.py: every answer's link goes to a page here; every limitation in limitations.md has

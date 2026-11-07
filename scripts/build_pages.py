@@ -178,7 +178,7 @@ FOOTER = """<footer class="tb" aria-label="Company details">
     <div><span>Refunds</span><strong><a href="/refunds.html">Refund policy</a></strong></div>
     <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
     <div><span>Releases</span><strong><a href="/releases.html">What is new in each release</a></strong></div>
-    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a></strong></div>
+    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a> &middot; <a href="/faq.html">Questions</a></strong></div>
     <div><span>Find</span><strong><a href="/search.html">Search</a> &middot; <a href="/download.html">All downloads</a></strong></div>
     <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
     <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
@@ -1784,6 +1784,170 @@ def build_download(root, shell, date):
     return {"download.html": (download_page(root, shell), date)}
 
 
+# -------------------------------------------------------------------- faq ---
+
+FAQ_STYLE = """
+.doc .lead{font-size:19px;max-width:62ch;margin:0 0 24px}
+.doc .qa{border-top:1px solid var(--line);padding-top:4px;margin:0 0 8px}
+.doc .qa h3{margin:12px 0 6px}
+.doc .qa p{margin:0 0 8px}
+.doc .qa .more{font-size:15px}
+"""
+
+# The questions about gui.md: (question, the heading of its section, which paragraph of the
+# section answers it, and which sentences of it, from and up to).  The answer is gui.md's own
+# words, nothing added.
+FAQ_WINDOW = [
+    ("What is the window, and how do I open it?", "The window", 0, (0, 1)),
+    ("Does DX-CAD need a display?", "The window", 1, (0, 2)),
+    ("Can I have several documents open at once?", "Tabs", 0, (0, 2)),
+    ("Where does the model live in the window?", "The model pane", 0, (0, 2)),
+    ("Is it safe to open a project someone sent me?", "The model a project carries", 0, (0, 2)),
+    ("Can I ask the Assistant to build or change a part?", "The Assistant", 0, (0, 1)),
+    ("How do I get help while I work?", "The help window", 0, (0, 1)),
+    ("Where do I find the keyboard shortcuts?", "The Keyboard Shortcuts box", 0, (0, 1)),
+]
+
+# The questions about limitations.md, by the heading of each section.  A section with no
+# question here still gets one, made from its heading, so a limitation added to the doc is
+# never left out.
+FAQ_LIMITS = {
+    "Fillets that would consume a face": "Why is a large fillet refused?",
+    "Fillets meeting at a vertex":
+        "Why does a fillet fail where several filleted edges meet at a corner?",
+    "Variable-radius fillets": "Can a fillet change its radius along an edge?",
+    "Booleans on coincident or tangent faces":
+        "Why does a boolean fail when two parts only touch?",
+    "Shelling and offsets on complex faces": "Why can a part not always be hollowed out?",
+    "Persistent naming": "Do face numbers stay the same when an earlier feature changes?",
+    "STEP and IGES files that need healing":
+        "Does DX-CAD repair STEP files, and does it read IGES?",
+    "No simultaneous assembly solver":
+        "Can DX-CAD solve all the mates of an assembly at once?",
+    "Large assemblies": "Can DX-CAD work with an assembly of thousands of parts?",
+    "Pictures without a window on macOS":
+        "Can DX-CAD draw a picture of a part on a Mac with no window open?",
+    "The robustness suite": "What happens with the hardest cases, such as a fillet that is too big?",
+}
+
+ITEM_RE = re.compile(r"\s*\(items? [\d, and]+\)")
+SENTENCE_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z`\"(])")
+
+
+def faq_sentences(text, first, last):
+    """Sentences first..last-1 of a paragraph, with the private item numbers the docs
+    carry taken out."""
+    text = ITEM_RE.sub("", " ".join(text.split()))
+    out = " ".join(SENTENCE_RE.split(text)[first:last]).strip()
+    return out[:1].upper() + out[1:]
+
+
+def faq_sections(blocks, level):
+    """{heading: [paragraph text]} of the sections at heading level `level` (the
+    paragraphs before the next heading of any level are the section's own)."""
+    found, current = {}, None
+    for b in blocks:
+        if b[0] == "h":
+            current = md_plain(b[2]) if b[1] == level else None
+            if current is not None:
+                found[current] = []
+        elif b[0] == "p" and current is not None:
+            found[current].append(b[1])
+    return found
+
+
+def faq_entries(root):
+    """([(group, question, [answer markdown], doc, heading to link to)], {doc: blocks})."""
+    sources = doc_sources(root)
+    for name in ("gui.md", "limitations.md"):
+        if name not in sources:
+            raise ValueError("data/core/%s is missing; the questions page is made from it" % name)
+    parsed = {s: md_blocks(sources[s].split("\n")) for s in ("gui.md", "limitations.md")}
+    gui, lim = parsed["gui.md"], parsed["limitations.md"]
+    gui_sections = {}
+    for level in (1, 2, 3):
+        for heading, paras in faq_sections(gui, level).items():
+            gui_sections.setdefault(heading, paras)
+    entries = []
+    for question, heading, which, (a, b) in FAQ_WINDOW:
+        paras = gui_sections.get(heading, [])
+        if len(paras) <= which:
+            raise ValueError("data/core/gui.md has no paragraph %d under '%s'" % (which + 1, heading))
+        entries.append(("window", question, [faq_sentences(paras[which], a, b)], "gui.md", heading))
+    # the first paragraph of limitations.md says what builds the solids
+    intro = next(b[1] for b in lim if b[0] == "p")
+    entries.append(("limits", "What does DX-CAD build its solids with?",
+                    [faq_sentences(intro, 0, 1)], "limitations.md", None))
+    for heading, paras in faq_sections(lim, 2).items():
+        if not paras:
+            raise ValueError("data/core/limitations.md: the section '%s' has no paragraph" % heading)
+        question = FAQ_LIMITS.get(heading) or "What should I know about: %s?" % heading.lower()
+        text = [" ".join(p.split()) for p in paras]
+        cause = next((t for t in text if t.startswith("Cause:")), None)
+        work = next((t for t in text if t.startswith("Workaround:")), None)
+        if cause and work:
+            answer = [faq_sentences(cause[len("Cause:"):], 0, 3),
+                      "Workaround: " + faq_sentences(work[len("Workaround:"):], 0, 2)]
+        else:
+            answer = [faq_sentences(text[0], 0, 2)]
+        entries.append(("limits", question, answer, "limitations.md", heading))
+    return entries, parsed
+
+
+def faq_page(root, shell):
+    entries, parsed = faq_entries(root)
+    slugs, titles = {}, {}
+    for src, blocks in parsed.items():
+        seen, slugs[src] = {}, set()
+        for b in blocks:
+            if b[0] == "h":
+                sid = slugify(b[2])
+                n = seen.get(sid, 0)
+                seen[sid] = n + 1
+                slugs[src].add(sid if n == 0 else "%s-%d" % (sid, n))
+        titles[src] = next(md_plain(b[2]) for b in blocks if b[0] == "h")
+    out = [
+        '    <h1>Questions and answers</h1>',
+        '    <p class="lead">What DX-CAD does and what it does not do, in plain words. Each answer '
+        'is taken from the public documentation, and its link goes to the page that says more.</p>',
+    ]
+    group_titles = {"window": "What DX-CAD does", "limits": "What DX-CAD does not do"}
+    shown, used = None, set()
+    for group, question, answer, src, heading in entries:
+        if group != shown:
+            shown = group
+            out.append('    <h2>%s</h2>' % group_titles[group])
+        ctx = {"src": src, "slugs": slugs, "examples": set(), "assets": {}, "used": set()}
+        base = qid = "q-" + slugify(question)
+        n = 1
+        while qid in used:
+            n += 1
+            qid = "%s-%d" % (base, n)
+        used.add(qid)
+        href, label = doc_href(src), titles[src]
+        if heading is not None:
+            sid = slugify(heading)
+            if sid not in slugs[src]:
+                raise ValueError("%s has no heading '%s' to link to" % (src, heading))
+            href += "#" + sid
+            label = md_plain(heading)
+        out.append('    <div class="qa" id="%s">' % qid)
+        out.append('      <h3>%s</h3>' % esc(question))
+        for para in answer:
+            out.append('      <p>%s</p>' % md_inline(para, ctx))
+        out.append('      <p class="more">More: <a href="%s">%s</a></p>' % (esc(href), esc(label)))
+        out.append('    </div>')
+    return make_page(
+        shell, "faq.html", "Questions and answers | DX-CAD by Designmatix",
+        "What DX-CAD does and does not do, in plain words: short answers from the public "
+        "documentation, each linked to the page that says more.",
+        "\n".join(out), FAQ_STYLE)
+
+
+def build_faq(root, shell, date):
+    return {"faq.html": (faq_page(root, shell), date)}
+
+
 # ----------------------------------------------------------------- images ---
 
 IMG_RE = re.compile(r"<img\b[^>]*>")
@@ -1892,6 +2056,7 @@ MAIN_PAGES = [
     ("/tutorial.html", "Tutorial", "Your first part in ten minutes."),
     ("/gallery.html", "Examples", "Every example part, with its picture and its script."),
     ("/releases.html", "Releases", "What each DX-CAD release brought."),
+    ("/faq.html", "Questions", "What DX-CAD does and does not do, in short answers."),
     ("/search.html", "Search", "Find a word anywhere on the site."),
     ("/fabrication.html", "Fabrication", "The add-on for sheet and plate layout."),
     ("/drafting-pro.html", "Drafting Pro", "The add-on for drawings."),
@@ -2003,6 +2168,7 @@ def build_all(root):
     made.update(build_tutorial(root, shell, date))
     made.update(build_docs(root, shell, date))
     made.update(build_download(root, shell, date))
+    made.update(build_faq(root, shell, date))
     made["search.html"] = (search_page(shell), date)
     made["404.html"] = (not_found_page(shell), date)
     lookup = picture_lookup(root, made)

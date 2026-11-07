@@ -1435,3 +1435,138 @@ def test_the_gallery_the_add_on_pages_and_the_home_page_have_sized_pictures():
         assert imgs, rel
         assert all(" width=" in t and " height=" in t for t in imgs), rel
         assert 'loading="lazy"' not in imgs[0] and all('loading="lazy"' in t for t in imgs[1:]), rel
+
+
+# -------------------------------------------------------------------- faq ---
+
+import html as _html
+
+
+def _plain_words(text):
+    """Text with its markup, marks, entities and case taken off, as one line."""
+    text = re.sub(r"<[^>]+>", "", text)
+    text = _html.unescape(text)
+    text = re.sub(r"\(items? [\d, and]+\)", "", text)
+    text = re.sub(r"[`*]|\]\([^)]*\)|\[", "", text)
+    return re.sub(r"\s+([.,;:])", lambda m: m.group(1), " ".join(text.lower().split()))
+
+
+def faq_entries_of(page):
+    """[(question, [answer paragraph text], more href)] read from the page by a plain scan."""
+    found = []
+    for block in re.findall(r'<div class="qa" id="[^"]+">\n(.*?)\n    </div>', page, re.S):
+        question = re.search(r"<h3>(.*?)</h3>", block, re.S).group(1)
+        href = re.search(r'<p class="more">More: <a href="([^"]+)"', block).group(1)
+        paras = re.findall(r'<p>(.*?)</p>', block, re.S)
+        found.append((_html.unescape(question), paras, href))
+    return found
+
+
+def limitation_headings(root=ROOT):
+    text = read(Path(root) / "data" / "core" / "limitations.md")
+    return re.findall(r"(?m)^## (.+?)\s*$", text)
+
+
+def heading_id(heading):
+    return re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-")
+
+
+def ids_of(path):
+    return set(re.findall(r'\sid="([^"]+)"', read(path)))
+
+
+def test_faq_page_is_what_the_script_makes():
+    assert read(ROOT / "faq.html") == bp.build_all(str(ROOT))["faq.html"]
+
+
+def test_every_answers_link_goes_to_a_page_here_and_to_a_heading_on_it():
+    entries = faq_entries_of(read(ROOT / "faq.html"))
+    assert len(entries) >= 15
+    for question, paras, href in entries:
+        assert href.startswith("/docs/"), (question, href)
+        path, _, frag = href.partition("#")
+        rel = "docs/index.html" if path == "/docs/" else path.lstrip("/")
+        assert (ROOT / rel).is_file(), "%s: %s is not a page here" % (question, href)
+        if frag:
+            assert frag in ids_of(ROOT / rel), "%s: %s has no #%s" % (question, rel, frag)
+
+
+def test_every_limitation_in_limitations_md_has_its_question_linked_to_its_section():
+    headings = limitation_headings()
+    assert len(headings) >= 10
+    entries = faq_entries_of(read(ROOT / "faq.html"))
+    linked = [href for _, _, href in entries]
+    for heading in headings:
+        href = "/docs/limitations.html#" + heading_id(heading)
+        assert linked.count(href) == 1, "limitations.md: '%s' has no question" % heading
+        question = next(q for q, _, h in entries if h == href)
+        assert question.endswith("?")
+
+
+def test_every_answer_is_the_docs_own_words():
+    page = read(ROOT / "faq.html")
+    docs = _plain_words(read(ROOT / "data" / "core" / "gui.md")
+                        + " " + read(ROOT / "data" / "core" / "limitations.md"))
+    for question, paras, _ in faq_entries_of(page):
+        assert paras, question
+        for para in paras:
+            words = _plain_words(para)
+            words = words[len("workaround: "):] if words.startswith("workaround: ") else words
+            for sentence in re.split(r"(?<=[.!?]) ", words):
+                assert sentence in docs, "%s: not in the docs: %r" % (question, sentence)
+
+
+def test_faq_page_carries_no_private_item_numbers_and_no_labels_of_the_source():
+    page = read(ROOT / "faq.html")
+    body = page[page.index('<article class="doc">'):page.index("</article>")]
+    assert not re.search(r"\bitems? \d+", body)
+    assert "Cause:" not in body
+    assert "<script" not in page
+
+
+def test_faq_page_is_sound_in_the_sitemap_the_search_list_the_footer_and_the_404_page():
+    assert pagecheck.check_page(str(ROOT), "faq.html") == []
+    assert "https://dxcad.designmatix.co.uk/faq.html" in pagecheck.sitemap_locs(str(ROOT))
+    assert "/faq.html" in {e["url"] for e in search_list()}
+    assert 'href="/faq.html"' in bp.FOOTER
+    for rel in pagecheck.page_files(str(ROOT)):
+        assert 'href="/faq.html"' in footer_of(read(ROOT / rel)), rel
+    assert 'href="/faq.html"' in read(ROOT / "404.html")
+
+
+def test_a_new_limitation_in_a_copy_of_the_data_gets_a_question_and_changes_the_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    path = Path(root, "data", "core", "limitations.md")
+    text = read(path)
+    new = ("## Text on a curved face\n\nCause: lettering is flat. It cannot bend.\n\n"
+           "Workaround: cut the text from a flat plate first.\n\n")
+    text = text.replace("## The robustness suite", new + "## The robustness suite", 1)
+    path.write_bytes(text.encode())
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "faq.html" in result.stdout
+    assert run_script(root, "--all").returncode == 0
+    entries = faq_entries_of(read(Path(root, "faq.html")))
+    hrefs = [h for _, _, h in entries]
+    assert "/docs/limitations.html#text-on-a-curved-face" in hrefs
+    q, paras, _ = next(e for e in entries if e[2].endswith("#text-on-a-curved-face"))
+    assert q == "What should I know about: text on a curved face?"
+    assert paras == ["Lettering is flat. It cannot bend.",
+                     "Workaround: Cut the text from a flat plate first."]
+    assert run_script(root, "--check").returncode == 0
+    assert pagecheck.check_page(root, "faq.html") == []
+
+
+def test_a_changed_word_in_the_docs_changes_the_answer(tmp_path):
+    root = copy_site(tmp_path / "site")
+    path = Path(root, "data", "core", "limitations.md")
+    path.write_bytes(read(path).replace("one radius per call", "two radii per call", 1).encode())
+    assert run_script(root, "--all").returncode == 0
+    assert "two radii per call" in read(Path(root, "faq.html"))
+
+
+def test_the_build_stops_and_says_why_when_a_section_the_questions_need_is_gone(tmp_path):
+    root = copy_site(tmp_path / "site")
+    path = Path(root, "data", "core", "gui.md")
+    path.write_bytes(read(path).replace("## Tabs", "## Pages", 1).encode())
+    result = run_script(root, "--check")
+    assert result.returncode != 0 and "Tabs" in result.stderr

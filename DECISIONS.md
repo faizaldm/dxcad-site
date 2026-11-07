@@ -139,3 +139,10 @@
   fails naming the picture. The small test site's pages and one test (lazy pictures counted one by one: the big one
   is now the second, because the first is no longer lazy) were changed to match. No page is near 300 KB: the
   largest stays within the rule, which is kept and tested as before.
+- 4016: faq.html is made from data/core/gui.md and limitations.md only. A question about the window names a section of
+  gui.md and takes one paragraph's first sentences as the answer (FAQ_WINDOW in the script); a limitation is one
+  question for each '##' section of limitations.md, answered by its Cause paragraph (up to three sentences) and its
+  Workaround (up to two). A section the script has no question for still gets one made from its heading, so a new
+  limitation is never left out. Answers are the docs' own words with the private item numbers the docs carry
+  taken out; each links to its section of the docs page. 'Questions' is added to the footer's Learn line (so all
+  pages changed) and to the 404 page's list.
