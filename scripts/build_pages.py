@@ -11,6 +11,8 @@ Pages made here:
     releases.html     from data/core/RELEASE_NOTES.md
     gallery.html, examples/NAME.html, img/gallery/...
                       from data/core/examples and data/core/gallery
+    fabrication.html, drafting-pro.html
+                      from data/core/gui.md and the site's own words
 
 The look of a made page is the look of the pages that are written by hand: its
 style and its header are those of refunds.html, its footer is the index's.
@@ -427,6 +429,181 @@ def build_gallery(root, shell, date):
     return made
 
 
+# ----------------------------------------------------------------- add-ons ---
+
+# Words below are the site's own: the Fabrication ones are those of
+# fabrication-layout-software.html, the Drafting Pro ones those of the editions
+# table in index.html.  The commands, and the trial and licence words, are read
+# from data/core/gui.md every time the pages are made.
+
+FABRICATION = {
+    "file": "fabrication.html",
+    "name": "Fabrication",
+    "title": "Fabrication add-on: cones, transitions, elbows and branches | DX-CAD by Designmatix",
+    "description": ("The Fabrication add-on for DX-CAD: the shapes plate and duct fabricators "
+                    "cut every day, developed to flat patterns with a marking table, "
+                    "and exported to DXF. Free during your 30-day trial."),
+    "h1": "The Fabrication add-on",
+    "lead": ("The shapes plate and duct fabricators cut every day, developed to flat patterns "
+             "with thickness allowance, seams and a marking table for setting out by hand, "
+             "and exported to DXF for the cutting table."),
+    "pictures": [
+        ("fabrication-cone-and-reducer.png",
+         "A cone and reducer with their flat patterns, made with the Fabrication add-on"),
+        ("fabrication-square-to-round.png",
+         "A square-to-round transition and its flat pattern with marking table, "
+         "made by DX-CAD Fabrication"),
+    ],
+    "sections": [
+        ("The shapes", [
+            ("Cones and reducers", "Concentric and oblique cones and reducers, rolled cylinders "
+             "and courses, and cone-on-cone and pipe-on-cone joints."),
+            ("Transitions", "Square-to-round, rectangle-to-rectangle and round-to-round "
+             "transitions, and hoppers, each with its seams and splits where you choose."),
+            ("Elbows and branches", "Segmented (lobster-back) and reducing elbows, tees, "
+             "laterals, Y-pieces and breeches, headers, and branches on pipes, cones, elbows "
+             "and plates."),
+            ("Ducting and press-brake parts", "Rectangular duct elbows, offsets and Y-branches; "
+             "trays, boxes, brackets and corner posts for the press brake; dished heads; and "
+             "weldments with cut lists."),
+        ]),
+        ("Flat patterns you can trust", [
+            ("Thickness allowance", "Each development allows for the plate's thickness, with "
+             "the sizes taken to the face you choose."),
+            ("Marking tables", "Every flat comes with a marking table of points to set it out "
+             "by hand, for the shop that still marks plate with a rule and a scriber."),
+            ("Verified by refolding", "Every shape family is checked over a grid of sizes by "
+             "folding its flat pattern back up and comparing it with the 3D surface, and "
+             "against closed-form values where they exist."),
+            ("Out to the shop", "Flats go out as DXF and SVG, onto drawings, and onto stock "
+             "sheets with the nesting tool, each piece kept a gap from the next."),
+        ]),
+    ],
+    "steps_title": "From sizes to the cutting table",
+    "steps": [
+        "Pick the shape from the Fabrication menu and type its sizes in the dialog.",
+        "Choose the plate thickness, where the seam goes and how many pieces.",
+        "See the part in 3D and its flat pattern, with the marking table.",
+        "Export the DXF, or nest the flats on your stock sheets, and put it on a drawing.",
+    ],
+    "other": ("drafting-pro.html", "Drafting Pro", "production drawings"),
+    "more": ("/fabrication-layout-software.html", "Fabrication layout software"),
+}
+
+DRAFTING_PRO = {
+    "file": "drafting-pro.html",
+    "name": "Drafting Pro",
+    "title": "Drafting Pro add-on: dimensions, balloons, GD&T and section views | DX-CAD by Designmatix",
+    "description": ("The Drafting Pro add-on for DX-CAD: dimensions, balloons, hole tables, "
+                    "tolerances and GD&T, section, detail and exploded views. Free during "
+                    "your 30-day trial."),
+    "h1": "The Drafting Pro add-on",
+    "lead": ("Dimensions, balloons, hole tables, tolerances and GD&T, section, detail and "
+             "exploded views, for the drawings DX-CAD makes."),
+    "pictures": [
+        ("drafting-finished-drawing.png",
+         "A finished assembly drawing with sections, a detail view, dimensions, balloons and "
+         "a parts list, made with Drafting Pro"),
+    ],
+    "sections": [
+        ("What is in DX-CAD, and what Drafting Pro adds", [
+            ("In DX-CAD itself", "Drawing documents, title blocks and parts lists, to PDF "
+             "and DXF."),
+            ("In Drafting Pro", "Dimensions, balloons, hole tables, tolerances and GD&T, "
+             "section, detail and exploded views, revision tables and notes."),
+        ]),
+    ],
+    "steps_title": "",
+    "steps": [],
+    "other": ("fabrication.html", "Fabrication", "cones, transitions, elbows and branches"),
+    "more": None,
+}
+
+
+def gui_section(gui, name):
+    """The part of gui.md under '### NAME': its paragraph and its command rows."""
+    m = re.search(r"(?ms)^### %s\n\n(.*?)(?=^#{2,3} )" % re.escape(name), gui)
+    if not m:
+        raise ValueError("data/core/gui.md has no '### %s' section" % name)
+    block = m.group(1)
+    paragraph = block.split("\n\n")[0].strip()
+    commands = []
+    for line in block.split("\n"):
+        if not line.startswith("| `"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cmd = cells[0].strip("`")
+        what = cells[-1].split(" Greyed:")[0].strip()
+        if not cmd.endswith(" - " + name):
+            raise ValueError("gui.md: command %r is not named for %s" % (cmd, name))
+        commands.append((cmd, what))
+    if not commands:
+        raise ValueError("data/core/gui.md: no commands under '### %s'" % name)
+    return paragraph, commands
+
+
+def trial_words(gui, name):
+    """The trial and licence sentences of gui.md, as it words them, for one add-on."""
+    paragraph, _ = gui_section(gui, name)
+    m = re.search(r"What a listed command's panel says depends on .*$", paragraph, re.S)
+    if not m:
+        raise ValueError("gui.md: no licence words in the '%s' section" % name)
+    first = re.sub(r" \(item \d+\)", "", paragraph.split(". ")[0]) + "."
+    third = re.search(r"The paid add-ons, Fabrication and Drafting Pro, [^.]*\.", gui)
+    if not third:
+        raise ValueError("gui.md: no licence words about the paid add-ons")
+    return first, m.group(0), third.group(0)
+
+
+def addon_page(root, shell, spec, gui):
+    name = spec["name"]
+    first, panel, both = trial_words(gui, name)
+    _, commands = gui_section(gui, name)
+    out = ['    <h1>%s</h1>' % esc(spec["h1"]),
+           '    <p class="lead">%s</p>' % esc(spec["lead"])]
+    for pic, alt in spec["pictures"]:
+        data = read_bytes(os.path.join(root, "img", pic))
+        out.append('    <figure class="shot">%s</figure>'
+                   % img_tag("/img/" + pic, alt, data, lazy=True))
+    out.append('    <p><a class="btn" href="/#download">Download the 30-day free trial</a> '
+               '<a class="btn ghost" href="/#pricing">See pricing</a></p>')
+    for title, items in spec["sections"]:
+        out.append('    <h2>%s</h2>' % esc(title))
+        out.append('    <ul>')
+        for head, text in items:
+            out.append('      <li><strong>%s.</strong> %s</li>' % (esc(head), esc(text)))
+        out.append('    </ul>')
+    if spec["steps"]:
+        out.append('    <h2>%s</h2>' % esc(spec["steps_title"]))
+        out.append('    <ol>')
+        out += ['      <li>%s</li>' % esc(s) for s in spec["steps"]]
+        out.append('    </ol>')
+    out.append('    <h2>Its commands</h2>')
+    out.append('    <p>These are the commands of %s, as DX-CAD lists them in its menus and in '
+               'command search:</p>' % esc(name))
+    out.append('    <ul>')
+    for cmd, what in commands:
+        out.append('      <li><code>%s</code>: %s</li>' % (esc(cmd), esc(what)))
+    out.append('    </ul>')
+    out.append('    <h2>Trial and licence</h2>')
+    out.append('    <div class="box"><p>%s</p><p>%s</p><p>%s</p></div>'
+               % (esc(first), esc(panel), esc(both)))
+    page_other, other_name, other_what = spec["other"]
+    out.append('    <h2>Also an add-on</h2>')
+    out.append('    <p><a href="/%s">%s</a> does %s.%s</p>'
+               % (page_other, esc(other_name), esc(other_what),
+                  (' More on the <a href="%s">%s</a> page.' % (spec["more"][0], esc(spec["more"][1])))
+                  if spec["more"] else ""))
+    return make_page(shell, spec["file"], spec["title"], spec["description"],
+                     "\n".join(out), GALLERY_STYLE)
+
+
+def build_addons(root, shell, date):
+    gui = read_text(os.path.join(root, "data", "core", "gui.md"))
+    return {spec["file"]: (addon_page(root, shell, spec, gui), date)
+            for spec in (FABRICATION, DRAFTING_PRO)}
+
+
 # ---------------------------------------------------------------- sitemap ---
 
 def page_files(root):
@@ -484,6 +661,7 @@ def build_all(root):
     made.update(build_releases(root, shell))
     date = made["releases.html"][1]      # the newest release's date
     made.update(build_gallery(root, shell, date))
+    made.update(build_addons(root, shell, date))
     files = {rel: content for rel, (content, _) in made.items()}
     files["sitemap.xml"] = build_sitemap(root, made)
     return files

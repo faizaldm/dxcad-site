@@ -337,3 +337,96 @@ def test_a_changed_picture_changes_the_copy(tmp_path):
                     Path(root, "data", "core", "gallery", "tray.png"))
     check = run_script(root, "--check")
     assert check.returncode == 1 and "img/gallery/tray.png" in check.stdout
+
+
+# ---------------------------------------------------------------- add-ons ---
+
+GUI = read(ROOT / "data" / "core" / "gui.md")
+ADDONS = [("fabrication.html", "Fabrication"), ("drafting-pro.html", "Drafting Pro")]
+
+
+def gui_commands(name):
+    """Every command gui.md names for an add-on, by a plain scan of its table rows."""
+    return re.findall(r"(?m)^\| `([^`]+ - %s)` \|" % re.escape(name), GUI)
+
+
+def page_text(page):
+    return unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", page)))
+
+
+@pytest.mark.parametrize("file,name", ADDONS)
+def test_addon_page_names_only_commands_that_gui_md_names(file, name):
+    page = read(ROOT / file)
+    named = [unescape(c) for c in re.findall(r"<code>([^<]*)</code>", page)]
+    assert named, "the page names no command"
+    known = gui_commands(name)
+    assert len(known) >= 9
+    for cmd in named:
+        assert cmd in known, "%s names %r, which gui.md does not" % (file, cmd)
+        assert "`%s`" % cmd in GUI
+    # and it names every one of them
+    assert sorted(named) == sorted(known)
+
+
+@pytest.mark.parametrize("file,name", ADDONS)
+def test_addon_page_trial_and_licence_words_are_guis(file, name):
+    text = page_text(read(ROOT / file))
+    section = GUI[GUI.index("### %s\n" % name):]
+    m = re.search(r"What a listed command's panel says depends on .*?Buy link\.", section, re.S)
+    assert m and ("download %s and install" % name) in m.group(0)
+    sentences = (m.group(0),
+                 re.search(r"The paid add-ons, Fabrication and Drafting Pro, [^.]*\.",
+                           GUI).group(0))
+    for sentence in sentences:
+        assert re.sub(r"\s+", " ", sentence) in text
+    assert "%s is a paid add-on." % name in text
+    assert "Free during your trial" in text and "Install from File" in text
+
+
+@pytest.mark.parametrize("file,name", ADDONS)
+def test_addon_page_has_no_price(file, name):
+    page = read(ROOT / file)
+    body = page[page.index("<article"):page.index("</article>")]
+    assert "&pound;" not in body and "£" not in body and "249" not in body
+
+
+def test_addon_pages_use_pictures_already_in_img_with_alt_text():
+    for file, _ in ADDONS:
+        page = read(ROOT / file)
+        imgs = re.findall(r'<img src="(/img/[^"]+)" alt="([^"]+)"', page)
+        assert imgs
+        for src, alt in imgs:
+            assert (ROOT / src.lstrip("/")).is_file()
+            assert "Fabrication" in alt or "Drafting Pro" in alt
+
+
+def test_addon_pages_are_linked_from_the_index_and_each_other_and_in_the_sitemap():
+    index = read(ROOT / "index.html")
+    locs = pagecheck.sitemap_locs(str(ROOT))
+    for file, _ in ADDONS:
+        assert 'href="/%s"' % file in index
+        assert "https://dxcad.designmatix.co.uk/" + file in locs
+    assert 'href="/drafting-pro.html"' in read(ROOT / "fabrication.html")
+    assert 'href="/fabrication.html"' in read(ROOT / "drafting-pro.html")
+
+
+def test_changing_a_command_in_gui_md_changes_the_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    gui = Path(root, "data", "core", "gui.md")
+    text = read(gui)
+    changed = text.replace("Place dimensions on a drawing's views by picking edges and points.",
+                           "Place dimensions on a drawing's views, new words.")
+    assert changed != text
+    gui.write_bytes(changed.encode())
+    assert run_script(root, "--check").returncode == 1
+    assert run_script(root).returncode == 0
+    assert "new words" in read(Path(root, "drafting-pro.html"))
+    assert pagecheck.check_site(root) == []
+
+
+def test_missing_addon_section_in_gui_md_is_an_error(tmp_path):
+    root = copy_site(tmp_path / "site")
+    gui = Path(root, "data", "core", "gui.md")
+    gui.write_bytes(read(gui).replace("### Fabrication\n", "### Fabricating\n").encode())
+    result = run_script(root)
+    assert result.returncode != 0 and "Fabrication" in result.stderr

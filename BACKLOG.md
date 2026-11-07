@@ -27,7 +27,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   - Made by scripts/build_pages.py; in the sitemap; linked from the index.
   Accept: tests/test_build_pages.py: one page per example in data/core/examples, each with its picture, its text and
   its whole script; --check passes; tests/test_pages.py passes.
-- [ ] 4004. A page for each add-on, Fabrication and Drafting Pro, from what is public already (S)
+- [x] 4004. A page for each add-on, Fabrication and Drafting Pro, from what is public already (S)
   - fabrication.html and drafting-pro.html: what each does in plain words, its commands and its trial and licence
     words, taken only from what the site's own pages and data/core/gui.md already say (nothing from the add-ons'
     private repositories); pictures already in img/ where they fit; linked from the index and from each other; in
