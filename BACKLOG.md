@@ -82,7 +82,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: search.json lists every page in the sitemap with its title and headings; the page
   loads no script from elsewhere; --check passes; tests/test_pages.py passes.
 
-- [ ] 4012. A 404 page and one footer on every page, made by the build (S)
+- [x] 4012. A 404 page and one footer on every page, made by the build (S)
   - 404.html in the site's style with links to the main pages (GitHub Pages serves it for a missing address); every
     page's footer the same, from one place in scripts/build_pages.py.
   Accept: tests/test_build_pages.py: every page's footer is the same and has the main links; 404.html exists and is

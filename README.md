@@ -19,7 +19,13 @@ hand (the next run would write over the edit):
   is `docs/index.html`), and the pictures a doc names that are in `data/core/`
 - `search.html` and `search.json`, the search page and the list of every page,
   its headings and its words that the page reads
+- `404.html`, the page GitHub Pages shows for an address that is not here (it is
+  left out of the sitemap and the search)
 - `sitemap.xml`, which lists every page
+
+The footer of every page is written once, in `scripts/build_pages.py` (`FOOTER`).
+The script gives it to the pages it makes and, on every run, puts it in place of
+the footer of the hand-made pages, so change the footer there and nowhere else.
 
 ## After a DX-CAD release: three steps
 

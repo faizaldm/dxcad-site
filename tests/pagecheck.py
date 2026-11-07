@@ -15,6 +15,10 @@ import a11ycheck
 SITE = "https://dxcad.designmatix.co.uk/"
 MAX_PAGE_BYTES = 300 * 1024
 
+# Pages that are reachable (GitHub Pages serves 404.html for a missing address)
+# but are not listed in sitemap.xml.
+NOT_LISTED = {"404.html"}
+
 # Folders that hold the repository's own files, not pages a visitor reaches.
 SKIP_DIRS = {"data", "logs", "prompts", "scripts", "tests", "node_modules", "__pycache__"}
 
@@ -331,14 +335,17 @@ def check_site(root):
         problems.append(("sitemap.xml", "cannot be read: %s" % err))
         locs = None
     if locs is not None:
-        wanted = {canonical_for(rel): rel for rel in pages}
+        wanted = {canonical_for(rel): rel for rel in pages if rel not in NOT_LISTED}
         for dup in sorted({l for l in locs if locs.count(l) > 1}):
             problems.append(("sitemap.xml", "lists %s more than once" % dup))
         for addr, rel in sorted(wanted.items()):
             if addr not in locs:
                 problems.append((rel, "is missing from sitemap.xml"))
+        hidden = {canonical_for(rel) for rel in pages if rel in NOT_LISTED}
         for loc in locs:
-            if loc not in wanted:
+            if loc in hidden:
+                problems.append(("sitemap.xml", "lists %s, which must stay out of it" % loc))
+            elif loc not in wanted:
                 problems.append(("sitemap.xml", "lists %s, which is no page here" % loc))
     try:
         with open(os.path.join(root, "robots.txt"), encoding="utf-8") as f:

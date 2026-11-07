@@ -426,3 +426,25 @@ def test_every_real_page_has_a_skip_link_and_one_h1():
         p = pagecheck.parse(str(ROOT), rel)
         assert p.first_focusable["href"].startswith("#"), rel
         assert [h for h, _ in p.headings].count(1) == 1, rel
+
+
+# 404.html is reachable but is not listed in the sitemap.
+
+def test_a_404_page_may_be_left_out_of_the_sitemap(tmp_path):
+    root = make_site(tmp_path, {"404.html": "<h1>Gone</h1>"})
+    assert pagecheck.check_site(root) == []
+
+
+def test_a_404_page_listed_in_the_sitemap_fails_naming_it(tmp_path):
+    root = make_site(tmp_path, {"404.html": "<h1>Gone</h1>"},
+                     sitemap=("", "about.html", "404.html"))
+    found = reasons(root)
+    assert any(r.startswith("sitemap.xml ") and "404.html" in r and "stay out" in r
+               for r in found), found
+
+
+def test_other_pages_must_still_be_in_the_sitemap_beside_a_404_page(tmp_path):
+    root = make_site(tmp_path, {"404.html": "<h1>Gone</h1>", "extra.html": "<h1>E</h1>"})
+    found = reasons(root)
+    assert any(r.startswith("extra.html ") and "missing from sitemap.xml" in r for r in found)
+    assert not any(r.startswith("404.html ") for r in found)

@@ -935,6 +935,9 @@ def test_search_json_lists_every_page_in_the_sitemap_with_title_and_headings():
     assert sorted("/" + loc[len("https://dxcad.designmatix.co.uk/"):] for loc in locs) \
         == sorted(by_url)
     for rel in pagecheck.page_files(str(ROOT)):
+        if rel in pagecheck.NOT_LISTED:
+            assert url_of(rel) not in by_url
+            continue
         entry = by_url[url_of(rel)]
         page = pagecheck.parse(str(ROOT), rel)
         assert entry["title"] == " ".join(page.titles[0].split()), rel
@@ -1049,3 +1052,116 @@ def test_page_text_reader_skips_footer_script_and_whole_scripts():
                      "short one", "short two"]
     assert bp.search_entry("index.html", page)["url"] == "/"
     assert bp.search_entry("docs/index.html", page)["url"] == "/docs/"
+
+
+# ------------------------------------------------------- 404 and the footer ---
+
+MAIN_LINKS = ["/", "/docs/", "/gallery.html", "/tutorial.html", "/releases.html",
+              "/search.html", "/eula.html", "/refunds.html", "/privacy.html"]
+
+
+def footer_of(text):
+    found = re.findall(r'<footer class="tb".*?</footer>', text.replace("\r\n", "\n"), re.S)
+    assert len(found) == 1
+    return found[0]
+
+
+def test_every_pages_footer_is_the_same_and_has_the_main_links():
+    pages = pagecheck.page_files(str(ROOT))
+    assert len(pages) > 40
+    for rel in pages:
+        footer = footer_of(read(ROOT / rel))
+        assert footer == bp.FOOTER, "%s: its footer is not the one in the build script" % rel
+        hrefs = re.findall(r'href="([^"]*)"', footer)
+        for link in MAIN_LINKS:
+            assert link in hrefs, "%s: its footer lacks %s" % (rel, link)
+
+
+def test_the_footer_has_one_place_and_keeps_the_companys_words():
+    assert bp.FOOTER.startswith('<footer class="tb"') and bp.FOOTER.endswith("</footer>")
+    for words in ("Designmatix Ltd", "12697280", "England and Wales", "Paddle.com",
+                  "support@designmatix.co.uk"):
+        assert words in bp.FOOTER
+    shell = bp.read_shell(str(ROOT))
+    assert shell["footer"] == bp.FOOTER
+
+
+def test_a_footer_changed_by_hand_fails_check_and_all_puts_it_back(tmp_path):
+    root = copy_site(tmp_path / "site")
+    page = Path(root, "privacy.html")
+    text = read(page)
+    page.write_bytes(text.replace("Refund policy", "Refunds, our policy", 1).encode())
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "privacy.html" in result.stdout
+    assert run_script(root, "--all").returncode == 0
+    assert read(page) == text
+    assert run_script(root, "--check").returncode == 0
+
+
+def test_all_changes_only_the_footer_of_a_hand_made_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    before = snapshot(root)
+    page = Path(root, "python-cad.html")
+    old = footer_of(read(page))
+    page.write_bytes(read(page).replace(old, old.replace("<span>Licence</span>",
+                                                       "<span>Our licence</span>")).encode())
+    assert run_script(root, "--all").returncode == 0
+    after = snapshot(root)
+    def norm(data):
+        return data.replace(b"\r\n", b"\n")
+    assert sorted(k for k in after if norm(before.get(k, b"")) != norm(after[k])) == []
+
+
+def test_changing_the_footer_in_the_script_changes_every_page(tmp_path):
+    root = copy_site(tmp_path / "site")
+    script = Path(root, "scripts", "build_pages.py")
+    text = read(script)
+    assert "<span>Find</span>" in text
+    script.write_bytes(text.replace("<span>Find</span>", "<span>Look</span>", 1).encode())
+    run = subprocess.run([sys.executable, str(script), "--root", root, "--all"],
+                         capture_output=True, text=True)
+    assert run.returncode == 0, run.stderr
+    for rel in pagecheck.page_files(root):
+        assert "<span>Look</span>" in read(Path(root, rel)), rel
+        assert "<span>Find</span>" not in read(Path(root, rel)), rel
+
+
+def test_404_page_exists_is_not_in_the_sitemap_or_the_search_list_and_is_not_indexed():
+    page = read(ROOT / "404.html")
+    page.encode("ascii")
+    assert "404.html" in pagecheck.page_files(str(ROOT))
+    assert "https://dxcad.designmatix.co.uk/404.html" not in pagecheck.sitemap_locs(str(ROOT))
+    assert "/404.html" not in {e["url"] for e in search_list()}
+    assert '<meta name="robots" content="noindex, follow">' in page
+    assert "<h1>That page is not here</h1>" in page
+    assert "<title>Page not found | DX-CAD by Designmatix</title>" in page
+    assert 'link rel="canonical" href="https://dxcad.designmatix.co.uk/404.html"' in page
+
+
+def test_404_page_links_to_the_main_pages_from_the_root_so_it_works_at_any_depth():
+    page = read(ROOT / "404.html")
+    body = page[page.index('<article class="doc">'):page.index("<footer")]
+    hrefs = re.findall(r'href="([^"]*)"', body)
+    for link in ("/", "/docs/", "/tutorial.html", "/gallery.html", "/releases.html",
+                 "/search.html", "/fabrication.html", "/drafting-pro.html"):
+        assert link in hrefs
+    assert all(h.startswith("/") for h in hrefs)
+    assert not re.search(r'(src|href)="(?!/|#|https?:|mailto:|tel:|data:)', page)
+
+
+def test_404_page_looks_like_the_others_and_is_sound(tmp_path):
+    page = read(ROOT / "404.html")
+    refunds = read(ROOT / "refunds.html")
+    assert refunds[refunds.index("<style>"):refunds.index("</style>")] in page
+    assert refunds[refunds.index('<header class="bar">'):refunds.index("</header>")] in page
+    assert pagecheck.check_page(str(ROOT), "404.html") == []
+
+
+def test_a_missing_404_page_is_made_again(tmp_path):
+    root = copy_site(tmp_path / "site")
+    Path(root, "404.html").unlink()
+    result = run_script(root, "--check")
+    assert result.returncode == 1 and "404.html" in result.stdout
+    assert run_script(root).returncode == 0
+    assert read(Path(root, "404.html")) == read(ROOT / "404.html")
+    assert "404.html" not in read(Path(root, "sitemap.xml"))

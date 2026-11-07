@@ -19,6 +19,9 @@ Pages made here:
                       docs/index.html), through the small Markdown reader below
     search.html, search.json
                       the search page, and the list of every page it searches
+    404.html          the page GitHub Pages shows for an address that is not here
+    footer            FOOTER, below, is the footer of every page: made pages are
+                      given it, and in the hand-made pages it replaces the footer
 
 The look of a made page is the look of the pages that are written by hand: its
 style and its header are those of refunds.html, its footer is the index's.
@@ -153,10 +156,37 @@ def between(text, start, end, what, source):
     return text[a:b + len(end)]
 
 
+# The footer of every page of the site, written here and nowhere else: a made
+# page is given it when it is made, and a hand-made page has its footer
+# replaced by it on every run (see build_footers).  Its first line starts at the
+# tag, its last line carries the page's own indent.
+FOOTER = """<footer class="tb" aria-label="Company details">
+    <div><span>Product</span><strong><a href="/">DX-CAD</a></strong></div>
+    <div><span>Made by</span><strong>Designmatix Ltd</strong></div>
+    <div><span>Company number</span><strong>12697280</strong></div>
+    <div><span>Registered in</span><strong>England and Wales</strong></div>
+    <div class="wide"><span>Registered office</span><strong>71-75 Shelton Street, London WC2H 9JQ, United Kingdom</strong></div>
+    <div><span>Email</span><strong><a href="mailto:support@designmatix.co.uk">support@designmatix.co.uk</a></strong></div>
+    <div><span>Telephone</span><strong><a href="tel:+442088651947">+44 (0) 20 8865 1947</a></strong></div>
+    <div><span>Licence</span><strong><a href="/eula.html">Licence agreement</a></strong></div>
+    <div><span>Refunds</span><strong><a href="/refunds.html">Refund policy</a></strong></div>
+    <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
+    <div><span>Releases</span><strong><a href="/releases.html">What is new in each release</a></strong></div>
+    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a></strong></div>
+    <div><span>Find</span><strong><a href="/search.html">Search</a></strong></div>
+    <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
+    <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
+  </footer>"""
+
+FOOTER_RE = re.compile(r'<footer class="tb".*?</footer>', re.S)
+
+# Pages a visitor can reach that are not listed in sitemap.xml (nor searched).
+NOT_LISTED = {"404.html"}
+
+
 def read_shell(root):
-    """The style, header and footer a made page takes from the hand-made ones."""
+    """The style, header and icons a made page takes from the hand-made ones."""
     refunds = read_text(os.path.join(root, "refunds.html"))
-    index = read_text(os.path.join(root, "index.html"))
     icons = [ln for ln in refunds.split("\n")
              if ln.startswith(('<link rel="icon"', '<link rel="apple-touch-icon"'))]
     return {
@@ -164,12 +194,12 @@ def read_shell(root):
         "style": between(refunds, "<style>", "</style>", "style", "refunds.html"),
         "header": between(refunds, '<header class="bar">', "</header>", "header",
                           "refunds.html"),
-        "footer": between(index, '<footer class="tb"', "</footer>", "footer",
-                          "index.html"),
+        "footer": FOOTER,
     }
 
 
-def make_page(shell, path, title, description, body, extra_style="", head_extra=""):
+def make_page(shell, path, title, description, body, extra_style="", head_extra="",
+              robots="index, follow"):
     """A whole page, as text.  path is the page's file name, e.g. releases.html."""
     url = address(path)
     image = SITE + SOCIAL_IMAGE
@@ -183,7 +213,7 @@ def make_page(shell, path, title, description, body, extra_style="", head_extra=
         '<title>%s</title>' % t,
         '<meta name="description" content="%s">' % d,
         '<link rel="canonical" href="%s">' % url,
-        '<meta name="robots" content="index, follow">',
+        '<meta name="robots" content="%s">' % robots,
         '<meta name="theme-color" content="#1E2FE0">',
         '<meta name="author" content="Designmatix Ltd">',
     ]
@@ -1500,11 +1530,67 @@ def search_files(root, made):
     for rel, (content, _) in made.items():
         if rel.endswith(".html"):
             pages[rel] = content
+    for rel in NOT_LISTED:
+        pages.pop(rel, None)
     entries = sorted((search_entry(rel, text) for rel, text in pages.items()),
                      key=lambda e: e["url"])
     body = "[\n" + ",\n".join(json.dumps(e, ensure_ascii=True, separators=(",", ":"))
                               for e in entries) + "\n]\n"
     return {SEARCH_JSON: body}
+
+
+# --------------------------------------------------------- 404, footers ---
+
+NOT_FOUND_STYLE = """
+.doc .lead{font-size:19px;max-width:62ch;margin:0 0 24px}
+.doc .gone{font-family:var(--cond);font-size:15px;color:var(--ink-2);margin:0 0 8px}
+.doc .ways{list-style:none;padding:0;margin:24px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.doc .ways li{margin:0;max-width:none;border:1px solid var(--ink);padding:14px 16px}
+.doc .ways a{font-family:var(--cond);font-weight:700;font-size:19px}
+.doc .ways span{display:block;font-size:14px;color:var(--ink-2);margin-top:2px}
+"""
+
+# (address, name, what it is): the main pages the 404 page sends a visitor to.
+MAIN_PAGES = [
+    ("/", "Home", "What DX-CAD is, what it costs and how to get it."),
+    ("/docs/", "Documentation", "The window, the examples and the known limits."),
+    ("/tutorial.html", "Tutorial", "Your first part in ten minutes."),
+    ("/gallery.html", "Examples", "Every example part, with its picture and its script."),
+    ("/releases.html", "Releases", "What each DX-CAD release brought."),
+    ("/search.html", "Search", "Find a word anywhere on the site."),
+    ("/fabrication.html", "Fabrication", "The add-on for sheet and plate layout."),
+    ("/drafting-pro.html", "Drafting Pro", "The add-on for drawings."),
+]
+
+
+def not_found_page(shell):
+    out = [
+        '    <p class="gone">Error 404</p>',
+        '    <h1>That page is not here</h1>',
+        '    <p class="lead">The address may have been typed wrongly, or the page may have moved. '
+        'These are the main pages of the site:</p>',
+        '    <ul class="ways">',
+    ]
+    for href, name, what in MAIN_PAGES:
+        out.append('      <li><a href="%s">%s</a><span>%s</span></li>' % (href, name, esc(what)))
+    out.append('    </ul>')
+    return make_page(
+        shell, "404.html", "Page not found | DX-CAD by Designmatix",
+        "This page does not exist. Start again from the home page, the documentation, "
+        "the tutorial or the search page of DX-CAD.",
+        "\n".join(out), NOT_FOUND_STYLE, robots="noindex, follow")
+
+
+def build_footers(root, made):
+    """Every hand-made page with its footer replaced by FOOTER: {path: text}."""
+    out = {}
+    for rel in page_files(root):
+        if rel in made:
+            continue
+        text = read_text(os.path.join(root, rel))
+        if len(FOOTER_RE.findall(text)) == 1:
+            out[rel] = FOOTER_RE.sub(lambda m: FOOTER, text)
+    return out
 
 
 # ---------------------------------------------------------------- sitemap ---
@@ -1540,6 +1626,7 @@ def build_sitemap(root, made):
             old[loc] = mod
             order.append(loc)
     pages = set(page_files(root)) | {rel for rel in made if rel.endswith(".html")}
+    pages -= NOT_LISTED
     wanted = {address(rel): rel for rel in pages}
     # A made page is dated by its data, but a page that is already committed
     # exactly as it is made keeps the date it has: only a page that changes
@@ -1577,7 +1664,9 @@ def build_all(root):
     made.update(build_tutorial(root, shell, date))
     made.update(build_docs(root, shell, date))
     made["search.html"] = (search_page(shell), date)
+    made["404.html"] = (not_found_page(shell), date)
     files = {rel: content for rel, (content, _) in made.items()}
+    files.update(build_footers(root, made))
     files.update(search_files(root, made))
     files["sitemap.xml"] = build_sitemap(root, made)
     return files

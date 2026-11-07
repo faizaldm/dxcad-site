@@ -82,5 +82,17 @@
   for the ids it uses, but not run: the owner should try /search.html once after merging.
 - 4011: the header of every hand-made page, and refunds.html's from which the made pages take theirs, gained a
   "Search" item after Download; it stays on small screens.
+- 4012: the footer is the FOOTER constant in scripts/build_pages.py. Until now there were two footers: nine hand-made
+  pages still had the one from before 4002 (no Releases cell). The script now gives FOOTER to every page it makes and
+  replaces the footer of each hand-made page with it on every run (--check says which page differs), so those nine
+  pages changed in their footer and in nothing else. The index's footer is no longer the pattern; the build is.
+  FOOTER is the old index footer plus three changes: "DX-CAD" links home; a "Learn" cell (Documentation, Examples,
+  Tutorial) and a "Find" cell (Search) hold the main links the item asks for; "Also from Designmatix" spans two cells
+  so the grid stays full. A hand-made page with no footer, or two, is left alone by the script and fails the test.
+- 4012: 404.html is made like the other pages (its style and header from refunds.html), links to eight main pages by
+  addresses that start with a slash so it works at any depth, and carries noindex because it is not a page to find.
+  It keeps a canonical link, as the site's checks want of every page. It is left out of sitemap.xml and of search.json
+  (the checks now say a 404.html listed in the sitemap is an error). GitHub Pages shows a 404.html in the
+  site's top folder for a missing address.
 - 4009: the small test site's page template gained the skip link and a main element, and its one heading test now
   starts at h1, because the new rules apply to it as to every page.
