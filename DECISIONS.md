@@ -17,3 +17,8 @@
   gives a made page the date of its data (releases.html: the newest release's date).
 - 4002: links in the release notes to files the site does not have (CHANGELOG.md, docs/install.md, ...) are shown as
   plain words, not links.
+- 4003: example pages' light picture loads with the page, the dark one is loading="lazy"; the gallery's pictures are
+  all lazy. Each example page stays under the 300 KB limit with its eager picture.
+- 4003: "how to open it in DX-CAD" gives only the commands data/core/gui.md and examples/README.md show:
+  `dxcad examples NAME`, `dxcad gui NAME.py`, `dxcad run NAME.py --output NAME.dxcprt`, `dxcad describe NAME.dxcprt`.
+- 4003: the index's Made with DX-CAD paragraph gained one sentence linking /gallery.html (the footer has no room).

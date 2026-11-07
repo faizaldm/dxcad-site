@@ -27,9 +27,8 @@ def read(path):
 
 
 def copy_site(dest):
-    """A working copy of the site (not the data's pictures, which the tests do not need)."""
-    ignore = shutil.ignore_patterns(".git", ".venv", "logs", "__pycache__",
-                                    ".pytest_cache", "gallery", "examples")
+    """A working copy of the site."""
+    ignore = shutil.ignore_patterns(".git", ".venv", "logs", "__pycache__", ".pytest_cache")
     shutil.copytree(ROOT, dest, ignore=ignore)
     return str(dest)
 
@@ -240,3 +239,101 @@ def test_pages_made_here_pass_the_site_checks(tmp_path):
     root = copy_site(tmp_path / "site")
     assert run_script(root).returncode == 0
     assert pagecheck.check_site(root) == []
+
+
+# ---------------------------------------------------------------- gallery ---
+
+EXAMPLES = ROOT / "data" / "core" / "examples"
+GALLERY = ROOT / "data" / "core" / "gallery"
+NAMES = sorted(p.stem for p in EXAMPLES.glob("*.py"))
+
+
+def unescape(text):
+    import html
+    return html.unescape(text)
+
+
+def test_there_are_examples():
+    assert len(NAMES) >= 20
+
+
+@pytest.mark.parametrize("name", NAMES)
+def test_example_page_has_picture_text_and_whole_script(name):
+    page = read(ROOT / "examples" / (name + ".html"))
+    script = read(EXAMPLES / (name + ".py"))
+    # the picture: copied byte for byte, and shown with alt text
+    assert (ROOT / "img" / "gallery" / (name + ".png")).read_bytes() == \
+        (GALLERY / (name + ".png")).read_bytes()
+    assert 'src="/img/gallery/%s.png"' % name in page
+    assert re.search(r'<img src="/img/gallery/%s\.png" alt="[^"]+"' % name, page)
+    # the dark picture, where there is one
+    dark = GALLERY / "dark" / (name + ".png")
+    if dark.exists():
+        assert (ROOT / "img" / "gallery" / "dark" / (name + ".png")).read_bytes() == \
+            dark.read_bytes()
+        assert 'src="/img/gallery/dark/%s.png"' % name in page
+    else:
+        assert "/img/gallery/dark/" not in page
+    # the whole script, as text, escaped
+    blocks = re.findall(r'<pre class="script"><code>(.*?)</code></pre>', page, re.S)
+    assert unescape(blocks[-1]) == script.rstrip("\n")
+    assert "<script" not in page.replace("<script type=\"application/ld+json\"", "")
+    # how to open it in DX-CAD
+    assert "dxcad examples %s" % name in page and "dxcad gui %s.py" % name in page
+
+
+@pytest.mark.parametrize("name", NAMES)
+def test_example_description_is_the_scripts_first_docstring_line(name):
+    import ast
+    doc = ast.get_docstring(ast.parse(read(EXAMPLES / (name + ".py"))))
+    first = doc.strip().split("\n")[0].strip()
+    assert first
+    page = read(ROOT / "examples" / (name + ".html"))
+    assert unescape(re.search(r'<p class="lead">(.*?)</p>', page).group(1)) == first
+    gallery = read(ROOT / "gallery.html")
+    assert "<span>%s</span>" % bp.esc(first) in gallery
+
+
+def test_gallery_lists_every_example_with_its_picture():
+    page = read(ROOT / "gallery.html")
+    for name in NAMES:
+        assert 'href="/examples/%s.html"' % name in page
+        assert 'src="/img/gallery/%s.png"' % name in page
+    assert len(re.findall(r'<li><a href="/examples/', page)) == len(NAMES)
+
+
+def test_gallery_is_linked_from_the_index_and_in_the_sitemap():
+    assert 'href="/gallery.html"' in read(ROOT / "index.html")
+    locs = pagecheck.sitemap_locs(str(ROOT))
+    assert "https://dxcad.designmatix.co.uk/gallery.html" in locs
+    for name in NAMES:
+        assert "https://dxcad.designmatix.co.uk/examples/%s.html" % name in locs
+
+
+def test_a_new_example_gets_a_page_and_a_picture(tmp_path):
+    root = copy_site(tmp_path / "site")
+    base = Path(root, "data", "core")
+    (base / "examples" / "zed.py").write_bytes(
+        b'"""A zed shape, for the test.\n\nMore words.\n"""\nLENGTH = 5 < 6\n')
+    shutil.copyfile(base / "gallery" / "tray.png", base / "gallery" / "zed.png")
+    assert run_script(root).returncode == 0
+    page = read(Path(root, "examples", "zed.html"))
+    assert "A zed shape, for the test." in page and "LENGTH = 5 &lt; 6" in page
+    assert Path(root, "img", "gallery", "zed.png").exists()
+    assert "examples/zed.html" in read(Path(root, "gallery.html"))
+    assert pagecheck.check_site(root) == []
+
+
+def test_an_example_without_a_picture_is_an_error(tmp_path):
+    root = copy_site(tmp_path / "site")
+    Path(root, "data", "core", "examples", "zed.py").write_bytes(b'"""A zed."""\n')
+    result = run_script(root)
+    assert result.returncode != 0 and "zed" in result.stderr
+
+
+def test_a_changed_picture_changes_the_copy(tmp_path):
+    root = copy_site(tmp_path / "site")
+    shutil.copyfile(Path(root, "data", "core", "gallery", "bracket.png"),
+                    Path(root, "data", "core", "gallery", "tray.png"))
+    check = run_script(root, "--check")
+    assert check.returncode == 1 and "img/gallery/tray.png" in check.stdout

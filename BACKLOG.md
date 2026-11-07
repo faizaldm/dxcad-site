@@ -18,7 +18,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: releases.html is what the script makes from data/ (--check passes); it has a
   section for every release in data/core/RELEASE_NOTES.md with its date; changing a line of a copy of the data in a
   temporary folder changes the page. tests/test_pages.py passes.
-- [ ] 4003. A gallery: every example of DX-CAD with its picture and its script (M)
+- [x] 4003. A gallery: every example of DX-CAD with its picture and its script (M)
   The examples (data/core/examples, with their pictures in data/core/gallery) show what a model.py is: a page each
   sells the "model as a script" idea better than a paragraph.
   - gallery.html: every example's picture with its one-line description (the script's first docstring line); a page
