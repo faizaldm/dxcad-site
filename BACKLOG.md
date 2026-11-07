@@ -87,3 +87,22 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     page's footer the same, from one place in scripts/build_pages.py.
   Accept: tests/test_build_pages.py: every page's footer is the same and has the main links; 404.html exists and is
   left out of the sitemap; --check passes; tests/test_pages.py passes.
+
+- [ ] 4013. A download page from the public latest.json: version, files, sizes and checksums (S)
+  - download.html made by scripts/build_pages.py from data/'s latest.json: the current version and date, each file
+    with its size and its SHA-256 where latest.json gives one, and what to do with each; linked from every header; in
+    the sitemap.
+  Accept: tests/test_build_pages.py: the page lists exactly latest.json's files with their sizes and checksums; a
+  changed latest.json in a temporary folder changes the page; --check passes; tests/test_pages.py passes.
+
+- [ ] 4014. Structured data on the main and release pages, and a dark theme that follows the system (S)
+  - JSON-LD (schema.org SoftwareApplication) on index.html and releases.html with the name, the operating systems, the
+    version and the download address from data/; a prefers-color-scheme: dark style that keeps 4009's contrast; a
+    print style for the docs pages.
+  Accept: tests/test_pages.py: the JSON-LD parses and names the version in data/; both themes reach AA contrast by
+  4009's check; --check passes.
+
+- [ ] 4015. Pictures sized for the web: each img with its width and height, lazy loading below the fold (S)
+  - Every img gets width and height (read from the file by the standard library), loading="lazy" except the first
+    picture of a page, and no page over 300 KB with its pictures (4001's rule) kept.
+  Accept: tests/test_pages.py fails on an img without width and height and passes on every page; --check passes.
