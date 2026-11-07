@@ -10,6 +10,8 @@ import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.parse import unquote, urlsplit
 
+import a11ycheck
+
 SITE = "https://dxcad.designmatix.co.uk/"
 MAX_PAGE_BYTES = 300 * 1024
 
@@ -58,8 +60,16 @@ class Page(HTMLParser):
         self.ids = set()
         self.html_lang = None
         self.errors = []
+        self.headings = []       # (level, text)
+        self.named = []          # {"tag", "attrs", "name"} for each link and button
+        self.styles = []         # text of each <style>
+        self.inline_styles = []  # style="..." attribute values
+        self.first_focusable = None   # attributes of the first link or control in <body>
         self._stack = []
+        self._frames = []        # open elements whose text is gathered
         self._in_title = False
+        self._in_style = False
+        self._in_body = False
 
     def handle_starttag(self, tag, attrs):
         a = {k: (v if v is not None else "") for k, v in attrs}
@@ -68,6 +78,14 @@ class Page(HTMLParser):
         if tag == "title":
             self._in_title = True
             self.titles.append("")
+        if tag == "style":
+            self._in_style = True
+            self.styles.append("")
+        if tag == "body":
+            self._in_body = True
+        if a.get("style"):
+            self.inline_styles.append(a["style"])
+        self._note_structure(tag, a)
         if tag == "meta":
             self.metas.append(a)
         if tag == "link":
@@ -89,6 +107,42 @@ class Page(HTMLParser):
         if tag not in VOID:
             self._stack.append(tag)
 
+    def _note_structure(self, tag, a):
+        """Headings, names of links and controls, the first thing to tab to."""
+        focusable = ((tag == "a" and "href" in a) or tag in ("button", "select", "textarea")
+                     or (tag == "input" and a.get("type", "").lower() != "hidden"))
+        if self._in_body and focusable and self.first_focusable is None:
+            a["_tag"] = tag
+            self.first_focusable = a
+        hidden = a.get("aria-hidden", "").lower() == "true"
+        if tag in VOID:
+            if tag == "img" and self._frames:
+                for frame in self._frames:
+                    if frame["kind"] == "name":
+                        frame["text"].append(" " + a.get("alt", "") + " ")
+            if tag == "input" and a.get("type", "").lower() in ("submit", "button", "reset", "image"):
+                name = a.get("value") or a.get("alt") or ""
+                self.named.append({"tag": "input", "attrs": a, "name": name.strip()})
+            return
+        if re.fullmatch(r"h[1-6]", tag):
+            self._frames.append({"tag": tag, "kind": "heading", "text": [], "attrs": a})
+        elif (tag == "a" and "href" in a) or tag == "button" or a.get("role") == "button":
+            self._frames.append({"tag": tag, "kind": "name", "text": [], "attrs": a})
+        elif hidden:
+            self._frames.append({"tag": tag, "kind": "hidden", "text": [], "attrs": a})
+
+    def _close_frame(self, tag):
+        for i in range(len(self._frames) - 1, -1, -1):
+            if self._frames[i]["tag"] == tag:
+                frame = self._frames[i]
+                del self._frames[i:]
+                text = " ".join("".join(frame["text"]).split())
+                if frame["kind"] == "heading":
+                    self.headings.append((int(tag[1]), text))
+                elif frame["kind"] == "name":
+                    self.named.append({"tag": tag, "attrs": frame["attrs"], "name": text})
+                return
+
     def handle_startendtag(self, tag, attrs):
         self.handle_starttag(tag, attrs)
         if tag not in VOID and self._stack and self._stack[-1] == tag:
@@ -97,6 +151,10 @@ class Page(HTMLParser):
     def handle_endtag(self, tag):
         if tag == "title":
             self._in_title = False
+        if tag == "style":
+            self._in_style = False
+        if tag not in VOID:
+            self._close_frame(tag)
         if tag in VOID:
             return
         if tag in self._stack:
@@ -112,6 +170,11 @@ class Page(HTMLParser):
     def handle_data(self, data):
         if self._in_title:
             self.titles[-1] += data
+        if self._in_style:
+            self.styles[-1] += data
+        if self._frames and not any(f["kind"] == "hidden" for f in self._frames):
+            for frame in self._frames:
+                frame["text"].append(data)
 
     def close(self):
         super().close()
@@ -229,6 +292,7 @@ def check_page(root, rel):
         out.append("canonical link is %r, should be %r"
                    % (canon[0].get("href"), canonical_for(rel)))
     out.extend(social_problems(root, rel, p, canon))
+    out.extend(a11ycheck.a11y_problems(p))
     for img in p.imgs:
         if not img.get("alt", "").strip():
             out.append("image %r has no alt text" % (img.get("src", "")[:60],))

@@ -45,7 +45,10 @@ PAGE = """<!doctype html>
 <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
+<main id="main">
 {body}
+</main>
 </body>
 </html>
 """
@@ -161,7 +164,7 @@ def test_missing_anchor_fails(tmp_path):
 
 
 def test_anchor_that_exists_passes(tmp_path):
-    root = make_site(tmp_path, {"index.html": '<h2 id="here">h</h2><a href="#here">x</a>'})
+    root = make_site(tmp_path, {"index.html": '<h1 id="here">h</h1><a href="#here">x</a>'})
     assert pagecheck.check_site(root) == []
 
 
@@ -272,3 +275,154 @@ def test_every_real_page_has_the_social_tags():
         keys = {m.get("property") or m.get("name") for m in p.metas}
         for key in OG_TAGS:
             assert key in keys, "%s lacks %s" % (rel, key)
+
+
+# Accessibility: headings in order, contrast, a skip link, named links and buttons.
+
+def edit_about(tmp_path, old, new):
+    """Make the small site, then change about.html: old text becomes new."""
+    root = make_site(tmp_path)
+    page = tmp_path / "about.html"
+    text = page.read_text(encoding="utf-8")
+    assert old in text
+    page.write_text(text.replace(old, new), encoding="utf-8")
+    return root
+
+
+def about_reasons(root):
+    return [r for r in reasons(root) if r.startswith("about.html ")]
+
+
+def test_headings_in_order_pass(tmp_path):
+    body = "<h1>A</h1><h2>B</h2><h3>C</h3><h2>D</h2><h4>E</h4>"
+    root = make_site(tmp_path, {"about.html": body})
+    found = about_reasons(root)
+    assert len(found) == 1 and "<h4>" in found[0] and "skipping a level" in found[0], found
+    body = "<h1>A</h1><h2>B</h2><h3>C</h3><h2>D</h2><h3>E</h3>"
+    assert pagecheck.check_site(make_site(tmp_path, {"about.html": body})) == []
+
+
+def test_skipped_heading_level_fails_naming_page_and_rule(tmp_path):
+    root = make_site(tmp_path, {"about.html": "<h1>One</h1><h3>Three</h3>"})
+    found = about_reasons(root)
+    assert any("heading <h3>" in r and "follows <h1>" in r for r in found), found
+
+
+def test_first_heading_must_be_h1(tmp_path):
+    root = make_site(tmp_path, {"about.html": "<h2>Two</h2>"})
+    assert any("first heading is <h2>" in r for r in about_reasons(root))
+
+
+def test_page_without_a_skip_link_fails(tmp_path):
+    root = edit_about(tmp_path, '<a class="skip" href="#main">Skip to content</a>', "")
+    assert any('"Skip to content"' in r for r in about_reasons(root)), about_reasons(root)
+
+
+def test_skip_link_must_not_come_after_other_links(tmp_path):
+    root = edit_about(tmp_path, '<a class="skip" href="#main">Skip to content</a>',
+                      '<a href="/">Home</a><a class="skip" href="#main">Skip to content</a>')
+    assert any('"Skip to content"' in r for r in about_reasons(root))
+
+
+def test_skip_link_must_say_so(tmp_path):
+    root = edit_about(tmp_path, ">Skip to content<", ">Go<")
+    assert any('does not say "Skip to content"' in r for r in about_reasons(root))
+
+
+def test_skip_link_must_point_at_an_id(tmp_path):
+    root = edit_about(tmp_path, 'href="#main"', 'href="#nowhere"')
+    assert any("missing id" in r for r in about_reasons(root))
+
+
+@pytest.mark.parametrize("body", [
+    '<a href="about.html"></a>',
+    '<a href="about.html"><img src="pic.png" alt=""></a>',
+    '<a href="about.html"><span aria-hidden="true">Go</span></a>',
+    "<button></button>",
+    '<button><img src="pic.png" alt=""></button>',
+])
+def test_link_or_button_without_a_name_fails(tmp_path, body):
+    root = make_site(tmp_path, {"about.html": body})
+    assert any("no name a screen reader can say" in r for r in about_reasons(root)),         about_reasons(root)
+
+
+@pytest.mark.parametrize("body", [
+    '<a href="about.html">About</a>',
+    '<a href="about.html" aria-label="About us"></a>',
+    '<a href="about.html"><img src="pic.png" alt="About"></a>',
+    '<a href="about.html"><span class="vh">About</span></a>',
+    "<button>Go</button>",
+    '<button aria-label="Close"></button>',
+])
+def test_named_link_or_button_passes(tmp_path, body):
+    root = make_site(tmp_path, {"about.html": body})
+    assert about_reasons(root) == []
+
+
+@pytest.mark.parametrize("alt", ["pic.png", "IMG_0042.JPG", "photo-1.webp", "diagram.svg"])
+def test_file_name_as_alt_fails(tmp_path, alt):
+    root = make_site(tmp_path, {"about.html": '<img src="pic.png" alt="%s">' % alt})
+    assert any("file name for alt text" in r for r in about_reasons(root)), about_reasons(root)
+
+
+def test_alt_that_is_a_sentence_passes(tmp_path):
+    body = '<img src="pic.png" alt="A bracket with four holes, in a CAD window">'
+    assert about_reasons(make_site(tmp_path, {"about.html": body})) == []
+
+
+STYLE = "<style>:root{--a:#14213D;--b:#FFFFFF;--c:#9AA3B5}%s</style>"
+
+
+def styled(rules):
+    return STYLE % rules + "<p>Words</p>"
+
+
+def test_low_contrast_text_fails_naming_the_rule(tmp_path):
+    root = make_site(tmp_path, {"about.html": styled("body{color:var(--a);background:var(--b)}"
+                                                     ".note{color:var(--c)}")})
+    found = about_reasons(root)
+    assert any("contrast" in r and ".note" in r and "#9AA3B5" in r for r in found), found
+
+
+def test_low_contrast_pair_in_one_rule_fails(tmp_path):
+    root = make_site(tmp_path, {"about.html": styled(".btn{color:#fff;background:#7a8cff}")})
+    assert any("contrast" in r and ".btn" in r for r in about_reasons(root))
+
+
+def test_low_contrast_inline_style_fails(tmp_path):
+    root = make_site(tmp_path, {"about.html": '<p style="color:#bbb;background:#fff">x</p>'})
+    assert any("contrast" in r for r in about_reasons(root))
+
+
+def test_hover_background_is_held_to_the_rule_colour(tmp_path):
+    rules = ".btn{color:#fff;background:#1624B8}.btn:hover{background:#9AA3B5}"
+    root = make_site(tmp_path, {"about.html": styled(rules)})
+    assert any("contrast" in r and ".btn:hover" in r for r in about_reasons(root))
+
+
+def test_good_contrast_passes_and_media_rules_are_read(tmp_path):
+    rules = ("body{color:var(--a);background:var(--b)}.btn{color:#fff;background:#1E2FE0}"
+             "@media (max-width:700px){.note{color:var(--c)}}")
+    root = make_site(tmp_path, {"about.html": styled(rules)})
+    assert any("contrast" in r and ".note" in r for r in about_reasons(root))
+    good = rules.replace("--c)}", "--a)}")
+    assert about_reasons(make_site(tmp_path, {"about.html": styled(good)})) == []
+
+
+def test_colour_it_cannot_read_is_reported(tmp_path):
+    root = make_site(tmp_path, {"about.html": styled(".x{color:hsl(10,20%,30%)}")})
+    assert any("cannot read the colour" in r for r in about_reasons(root))
+
+
+def test_contrast_arithmetic():
+    import a11ycheck
+    assert round(a11ycheck.contrast((0, 0, 0), (255, 255, 255)), 2) == 21.0
+    assert round(a11ycheck.contrast((119, 119, 119), (255, 255, 255)), 2) == 4.48
+    assert a11ycheck.contrast((255, 255, 255), (255, 255, 255)) == 1.0
+
+
+def test_every_real_page_has_a_skip_link_and_one_h1():
+    for rel in PAGES:
+        p = pagecheck.parse(str(ROOT), rel)
+        assert p.first_focusable["href"].startswith("#"), rel
+        assert [h for h, _ in p.headings].count(1) == 1, rel

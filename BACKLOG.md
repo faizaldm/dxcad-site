@@ -59,7 +59,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: the feed parses as Atom with its required elements, one entry per release with
   its date; --check passes; tests/test_pages.py passes.
 
-- [ ] 4009. Accessibility checks on every page: headings in order, contrast, a skip link, named links and buttons (S)
+- [x] 4009. Accessibility checks on every page: headings in order, contrast, a skip link, named links and buttons (S)
   - tests/test_pages.py also checks: headings never skip a level; the text and background colours the site's CSS gives
     each kind of text reach WCAG AA contrast (computed in the test); every page starts with a "Skip to content" link;
     every link and button has a name a screen reader can say; no img alt is a file name. Whatever fails is mended in

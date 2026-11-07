@@ -43,3 +43,15 @@
   release as html content. Author is Designmatix Ltd. The feed is not a page, so it is not in sitemap.xml.
   4005's "nothing else changes" now reads: with a new release, releases.html and its feed change, and one date in the
   sitemap.
+- 4009: the checks are in tests/a11ycheck.py, called from pagecheck.check_page. Every real page already passed all
+  five rules, so no page and no part of build_pages.py needed mending. The rules as built: the first heading is an h1
+  and a heading never goes more than one level deeper than the one before it; the first link or control in the body
+  is a "Skip to content" link to an id that exists; every link and button has a name (its text, the alt of an image
+  inside it, aria-label or title; text inside aria-hidden does not count); no alt is a file name or the picture's own
+  file name; contrast is 4.5 : 1 for every text colour the CSS gives, large text included (stricter than AA's 3 : 1).
+- 4009: contrast is read from the pages' own CSS (var() resolved, @media rules included, inline style too): a rule
+  with a colour and a background is one pair; a rule with only a colour is tried on the page background and on every
+  light surface the CSS declares; a rule with only a background takes the colour of the same selector (so a hover rule
+  is held to its button's text colour). A colour it cannot read (hsl() and the like) is reported, not passed over.
+- 4009: the small test site's page template gained the skip link and a main element, and its one heading test now
+  starts at h1, because the new rules apply to it as to every page.
