@@ -432,6 +432,92 @@ def test_missing_addon_section_in_gui_md_is_an_error(tmp_path):
     assert result.returncode != 0 and "Fabrication" in result.stderr
 
 
+# --------------------------------------------------------------- tutorial ---
+
+def all_data_text():
+    """Every text file in data/, as one string."""
+    parts = []
+    for folder, dirs, files in os.walk(ROOT / "data"):
+        for name in sorted(files):
+            if name.endswith((".md", ".py", ".json", ".jsonl", ".txt")):
+                parts.append(read(Path(folder, name)))
+    return "\n".join(parts)
+
+
+DATA = all_data_text()
+
+
+def commands_on(page):
+    """Every shell command on a page: lines of the code blocks, and inline code."""
+    found = []
+    for block in re.findall(r'<pre class="script"><code>(.*?)</code></pre>', page, re.S):
+        found += [ln.strip() for ln in unescape(block).split("\n") if ln.strip()]
+    for inline_code in re.findall(r"<code>([^<\n]*)</code>", page):
+        found.append(unescape(inline_code))
+    return [c for c in found if c.startswith(("dxcad ", "pip ", "python "))]
+
+
+def test_tutorial_commands_all_appear_in_data():
+    page = read(ROOT / "tutorial.html")
+    commands = commands_on(page)
+    assert len(commands) >= 6
+    for cmd in commands:
+        assert cmd in DATA, "tutorial.html gives %r, which data/ does not" % cmd
+    for needed in ("pip install dxcad", "dxcad examples bracket", "dxcad gui bracket.py",
+                   "dxcad run bracket.py --output bracket.dxcprt",
+                   "dxcad describe bracket.dxcprt", "dxcad doctor", "dxcad export"):
+        assert needed in commands
+
+
+def test_tutorial_numbers_are_the_data_s():
+    page = read(ROOT / "tutorial.html")
+    text = unescape(re.sub(r"<[^>]+>", "", page))
+    script = read(EXAMPLES / "bracket.py")
+    for line in re.findall(r"(?m)^[A-Z_]+ = [\d.]+$", script):
+        assert line in text, line
+    story = re.sub(r"\s+", " ", read(EXAMPLES / "bracket.md"))
+    for number in ("33128.761", "41528.761", "10, 30, 50 and 70",
+                   "10, 36.667, 63.333 and 90", "80 x 30 x 46", "100 x 30 x 46"):
+        assert number in story and number in text
+    assert "F5" in text and "Export Parts..." in text and "STEP" in text
+    for item in ("Windows: an installer, or a portable zip that needs no Python; "
+                 "both carry dxcad.exe, the command line.",
+                 "macOS (Apple silicon) and Linux (x64) builds."):
+        assert item in text
+        assert item in re.sub(r"\s+", " ", DATA.replace("`", ""))
+
+
+def test_tutorial_is_linked_and_in_the_sitemap():
+    assert 'href="/tutorial.html"' in read(ROOT / "index.html")
+    assert "https://dxcad.designmatix.co.uk/tutorial.html" in pagecheck.sitemap_locs(str(ROOT))
+
+
+def test_changing_a_number_in_the_bracket_changes_the_tutorial(tmp_path):
+    root = copy_site(tmp_path / "site")
+    py = Path(root, "data", "core", "examples", "bracket.py")
+    py.write_bytes(read(py).replace("HOLE_DIAMETER = 5.0", "HOLE_DIAMETER = 6.0").encode())
+    assert run_script(root, "--check").returncode == 1
+    assert run_script(root).returncode == 0
+    assert "HOLE_DIAMETER = 6.0" in read(Path(root, "tutorial.html"))
+    assert pagecheck.check_site(root) == []
+
+
+def test_changing_the_bracket_story_changes_the_tutorial(tmp_path):
+    root = copy_site(tmp_path / "site")
+    md = Path(root, "data", "core", "examples", "bracket.md")
+    md.write_bytes(read(md).replace("33128.761", "33128.762").encode())
+    assert run_script(root).returncode == 0
+    assert "33128.762" in read(Path(root, "tutorial.html"))
+
+
+def test_the_tutorial_is_an_error_if_its_data_goes_missing(tmp_path):
+    root = copy_site(tmp_path / "site")
+    md = Path(root, "data", "core", "examples", "bracket.md")
+    md.write_bytes(read(md).replace("The answer is the bracket again", "Nothing").encode())
+    result = run_script(root)
+    assert result.returncode != 0 and "first volume" in result.stderr
+
+
 # ------------------------------------------------------------------- --all ---
 
 def snapshot(root):

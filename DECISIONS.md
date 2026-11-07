@@ -29,3 +29,9 @@
 - 4005: the sitemap keeps the date of a made page that is unchanged; only a changed or new made page takes the newest
   release's date. So --all with a new release changes releases.html and one date in sitemap.xml, nothing else.
   write_files writes only files that differ, leaving every other file untouched (line endings included).
+- 4006: data/ holds no cli.md or tutorials, so the tutorial uses only commands that appear in data/ with the
+  arguments data/ shows: `dxcad examples bracket`, `dxcad gui bracket.py`, `dxcad run bracket.py --output bracket.dxcprt`,
+  `dxcad describe bracket.dxcprt`, `dxcad doctor`, `pip install dxcad`. The STEP export is the window's
+  File > Export Parts... (gui.md), and `dxcad export` is named without arguments because data/ gives none.
+  Numbers (the script's, the volumes and hole centres) are read from bracket.py and bracket.md each time.
+- 4006: the index's Download paragraph gained one sentence linking /tutorial.html.

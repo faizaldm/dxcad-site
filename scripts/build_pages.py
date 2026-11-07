@@ -604,6 +604,140 @@ def build_addons(root, shell, date):
             for spec in (FABRICATION, DRAFTING_PRO)}
 
 
+# --------------------------------------------------------------- tutorial ---
+
+def need(pattern, text, what, flags=0):
+    m = re.search(pattern, text, flags)
+    if not m:
+        raise ValueError("%s: not found where the tutorial looks for it" % what)
+    return m
+
+
+def release_list(releases, version, heading):
+    for r in releases:
+        if r["version"] != version:
+            continue
+        take = False
+        for kind, value in r["blocks"]:
+            if kind == "h3":
+                take = value == heading
+            elif kind == "ul" and take:
+                return value
+    raise ValueError("RELEASE_NOTES.md: no '%s' list under %s" % (heading, version))
+
+
+def tutorial_page(root, shell):
+    """Install to a bracket with four holes, exported as STEP: every command and
+    number is read from data/core (release notes, gui.md, the bracket example)."""
+    core = os.path.join(root, "data", "core")
+    releases = parse_release_notes(read_text(os.path.join(core, "RELEASE_NOTES.md")))
+    install = release_list(releases, "0.1.0", "Install")
+    gui = read_text(os.path.join(core, "gui.md"))
+    story = read_text(os.path.join(core, "examples", "bracket.md"))
+    script = read_text(os.path.join(core, "examples", "bracket.py"))
+
+    doctor = [i for i in install if i.startswith("`dxcad doctor`")]
+    if not doctor:
+        raise ValueError("RELEASE_NOTES.md: no `dxcad doctor` line in 0.1.0's Install")
+    windows = [i for i in install if i.startswith("Windows:")]
+    others = [i for i in install if i.startswith("macOS")]
+    if not windows or not others:
+        raise ValueError("RELEASE_NOTES.md: no Windows or macOS install line in 0.1.0")
+
+    trial = need(r"Free for 30 days from first start, then a licence\. "
+                 r"Opening, viewing and exporting stay free\.",
+                 "\n".join(release_list(releases, "0.1.1", "Licensing")), "trial words").group(0)
+
+    # the numbers: the script's own lines, and the facts bracket.md gives
+    numbers = need(r"(?ms)^(LENGTH = .*?^INSET = [^\n]*)$", script, "bracket.py numbers").group(1)
+    holes_code = need(r"(?ms)^(pitch = .*?^part\([^\n]*\))$", script, "bracket.py hole lines").group(1)
+    flat = re.sub(r"\s+", " ", story)
+    vol80 = need(r"The answer is the bracket again: volume ([\d.]+)", flat, "first volume").group(1)
+    centres80 = need(r"with centres at x = ([\d., and]+?), y = ([\d.]+)\.", flat, "centres")
+    diam = need(r"each of diameter ([\d.]+) and depth ([\d.]+)", flat, "hole size")
+    vol100 = need(r"volume of ([\d.]+), which is 420 x 100", flat, "second volume").group(1)
+    centres100 = need(r"holes of diameter [\d.]+, now at x = (\d[\d., and]*?\d)\.\s", flat,
+                      "second centres").group(1)
+    size100 = need(r"the bracket is now ([\d.]+ x [\d.]+ x [\d.]+)", flat, "second size").group(1)
+    size80 = need(r"size ([\d.]+ x [\d.]+ x [\d.]+);", flat, "first size").group(1)
+    run_key = need(r"\| `Run Script` \| `(F5)` \|", gui, "Run Script key").group(1)
+    export = need(r"\| `(Export Parts\.\.\.)` \| \| Write the picked parts, or every part when "
+                  r"none is picked, to one (STEP), STL, 3MF or BREP file", gui, "Export Parts")
+    need(r"as `dxcad export` writes them", gui, "dxcad export")
+
+    def block(*lines):
+        return '    <pre class="script"><code>%s</code></pre>' % esc("\n".join(lines))
+
+    out = [
+        '    <p class="small"><a href="/gallery.html">Examples</a></p>',
+        '    <h1>Your first part in ten minutes</h1>',
+        '    <p class="lead">From installing DX-CAD to a bracket with four holes, exported as a '
+        'STEP file. The bracket is one of the examples that ships with DX-CAD: a short script '
+        'with its numbers at the top.</p>',
+        '    <h2>1. Install DX-CAD</h2>',
+        '    <p>%s</p>' % inline(windows[0]),
+        '    <p>%s</p>' % inline(others[0]),
+        '    <p>Or, with Python:</p>',
+        block("pip install dxcad"),
+        '    <p>%s</p>' % inline(doctor[0]),
+        '    <p>%s <a href="/#download">Download DX-CAD</a>.</p>' % esc(trial),
+        '    <h2>2. Get the bracket</h2>',
+        '    <p>Copy the example out, then open it in the window:</p>',
+        block("dxcad examples bracket", "dxcad gui bracket.py"),
+        '    <p>The window shows the model in a pane on the right, and the part it builds '
+        'on the left.</p>',
+        '    <h2>3. Read the numbers</h2>',
+        '    <p>The model is a script, <code>bracket.py</code>, and these are its numbers, '
+        'at the top of the file:</p>',
+        block(*numbers.split("\n")),
+        '    <p>The bracket is an L in section, drawn once and extruded along its length. '
+        'Every other size follows from these names.</p>',
+        '    <h2>4. Run it</h2>',
+        '    <p>In the window, choose Model &gt; Run Script, or press <code>%s</code>. '
+        'The same model builds from the command line into a project, and one more command '
+        'says in words what was built:</p>' % esc(run_key),
+        block("dxcad run bracket.py --output bracket.dxcprt", "dxcad describe bracket.dxcprt"),
+        '    <p>It is one valid solid, %s, with a volume of %s: the L\'s area times its length, '
+        'less four holes.</p>' % (esc(size80), esc(vol80)),
+        '    <h2>5. Four holes from one line</h2>',
+        '    <p>The script makes one drill, a cylinder through the base, and repeats it in '
+        'a row. The holes are spaced from the length, so they move when the length does:</p>',
+        block(*holes_code.split("\n")),
+        '    <p>Counting them, the part has four holes, each of diameter %s and depth %s, '
+        'with centres at x = %s, y = %s.</p>'
+        % (esc(diam.group(1)), esc(diam.group(2)), esc(centres80.group(1)), esc(centres80.group(2))),
+        '    <h2>6. Change a number</h2>',
+        '    <p>Change <code>LENGTH = 80.0</code> to <code>LENGTH = 100.0</code> in the pane '
+        'and run it again with <code>%s</code>. The bracket is now %s with a volume of %s, '
+        'and the four holes are at x = %s. That is the whole of DX-CAD\'s parametric model: '
+        'change a number and run it again.</p>'
+        % (esc(run_key), esc(size100), esc(vol100), esc(centres100)),
+        '    <h2>7. Export it as STEP</h2>',
+        '    <p>Choose File &gt; <code>%s</code>, pick %s as the file type and give it a name. '
+        'It writes the picked parts, or every part when none is picked, to one file; '
+        'the command line writes them the same way with <code>dxcad export</code>.</p>'
+        % (esc(export.group(1)), esc(export.group(2))),
+        '    <p>Save the project, with its model, with File &gt; Save.</p>',
+        '    <h2>Where next</h2>',
+        '    <ul>',
+        '      <li>See the bracket as it ships: <a href="/examples/bracket.html">the bracket '
+        'example</a>, with its whole script.</li>',
+        '      <li>Every other example, a script each: <a href="/gallery.html">the gallery</a>.</li>',
+        '      <li>What each release brought: <a href="/releases.html">release notes</a>.</li>',
+        '    </ul>',
+    ]
+    return make_page(
+        shell, "tutorial.html",
+        "Your first part in ten minutes: a bracket with four holes | DX-CAD by Designmatix",
+        "From installing DX-CAD to a bracket with four holes exported as a STEP file, "
+        "from one short script.",
+        "\n".join(out), GALLERY_STYLE)
+
+
+def build_tutorial(root, shell, date):
+    return {"tutorial.html": (tutorial_page(root, shell), date)}
+
+
 # ---------------------------------------------------------------- sitemap ---
 
 def page_files(root):
@@ -671,6 +805,7 @@ def build_all(root):
     date = made["releases.html"][1]      # the newest release's date
     made.update(build_gallery(root, shell, date))
     made.update(build_addons(root, shell, date))
+    made.update(build_tutorial(root, shell, date))
     files = {rel: content for rel, (content, _) in made.items()}
     files["sitemap.xml"] = build_sitemap(root, made)
     return files

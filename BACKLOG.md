@@ -41,7 +41,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: --all on a copy with a new release added to data/ adds its section to
   releases.html and nothing else changes; README.md names the three steps.
 
-- [ ] 4006. "Your first part in ten minutes": a tutorial page from the public SDK docs (S)
+- [x] 4006. "Your first part in ten minutes": a tutorial page from the public SDK docs (S)
   - tutorial.html: from installing DX-CAD to a bracket with four holes exported as STEP, every command and number as
     data/ (the release notes and the public SDK docs) gives them; nothing from a private repository. Made by
     scripts/build_pages.py, in the sitemap, linked from the index.
