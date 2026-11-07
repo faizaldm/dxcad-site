@@ -2,7 +2,7 @@
 
 Written by the owner. Each item: what to build, then the Accept line its tests check.
 
-- [ ] 4001. The site's checks: every page parses, every link and picture resolves, the sitemap matches the pages (S)
+- [x] 4001. The site's checks: every page parses, every link and picture resolves, the sitemap matches the pages (S)
   The site has no tests. A link or a picture renamed in one page breaks quietly.
   - tests/test_pages.py: every .html page parses (html.parser), has one title, a meta description, a canonical link
     to its own address on https://dxcad.designmatix.co.uk/, lang="en-GB"; every internal href and src resolves to a

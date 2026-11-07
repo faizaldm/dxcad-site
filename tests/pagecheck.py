@@ -1,0 +1,255 @@
+"""Checks for the site's pages, written so they can be run on any folder.
+
+The tests run them on this repository and, to show that they fail when they
+should, on copies made in a temporary folder.  Standard library only.
+"""
+
+import os
+import re
+import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
+from urllib.parse import unquote, urlsplit
+
+SITE = "https://dxcad.designmatix.co.uk/"
+MAX_PAGE_BYTES = 300 * 1024
+
+# Folders that hold the repository's own files, not pages a visitor reaches.
+SKIP_DIRS = {"data", "logs", "prompts", "scripts", "tests", "node_modules", "__pycache__"}
+
+VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+        "meta", "param", "source", "track", "wbr"}
+# Tags whose end tag HTML lets a page leave out.
+OPTIONAL_END = {"p", "li", "dt", "dd", "tr", "td", "th", "thead", "tbody",
+                "tfoot", "option", "optgroup", "colgroup", "caption", "html",
+                "head", "body"}
+EXTERNAL = ("http:", "https:", "mailto:", "tel:", "data:", "javascript:", "//")
+
+
+def page_files(root):
+    """Every .html file a visitor can reach, as paths relative to root with '/'."""
+    found = []
+    for folder, dirs, files in os.walk(root):
+        dirs[:] = sorted(d for d in dirs
+                         if not d.startswith(".") and d not in SKIP_DIRS)
+        for name in sorted(files):
+            if name.endswith(".html"):
+                rel = os.path.relpath(os.path.join(folder, name), root)
+                found.append(rel.replace(os.sep, "/"))
+    return found
+
+
+def canonical_for(rel):
+    """The address a page must give as its canonical link."""
+    if rel == "index.html":
+        return SITE
+    if rel.endswith("/index.html"):
+        return SITE + rel[: -len("index.html")]
+    return SITE + rel
+
+
+class Page(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.titles = []
+        self.metas = []          # attribute dicts of <meta>
+        self.links = []          # attribute dicts of <link>
+        self.refs = []           # (tag, attribute, value)
+        self.imgs = []           # attribute dicts of <img>
+        self.ids = set()
+        self.html_lang = None
+        self.errors = []
+        self._stack = []
+        self._in_title = False
+
+    def handle_starttag(self, tag, attrs):
+        a = {k: (v if v is not None else "") for k, v in attrs}
+        if tag == "html":
+            self.html_lang = a.get("lang")
+        if tag == "title":
+            self._in_title = True
+            self.titles.append("")
+        if tag == "meta":
+            self.metas.append(a)
+        if tag == "link":
+            self.links.append(a)
+        if tag == "img":
+            self.imgs.append(a)
+        if "id" in a:
+            self.ids.add(a["id"])
+        if tag == "a" and a.get("name"):
+            self.ids.add(a["name"])
+        for key in ("href", "src", "poster"):
+            if key in a:
+                self.refs.append((tag, key, a[key]))
+        if "srcset" in a:
+            for part in a["srcset"].split(","):
+                bits = part.split()
+                if bits:
+                    self.refs.append((tag, "srcset", bits[0]))
+        if tag not in VOID:
+            self._stack.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag not in VOID and self._stack and self._stack[-1] == tag:
+            self._stack.pop()
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self._in_title = False
+        if tag in VOID:
+            return
+        if tag in self._stack:
+            while self._stack:
+                top = self._stack.pop()
+                if top == tag:
+                    break
+                if top not in OPTIONAL_END:
+                    self.errors.append("<%s> is not closed before </%s>" % (top, tag))
+        else:
+            self.errors.append("</%s> closes nothing" % tag)
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.titles[-1] += data
+
+    def close(self):
+        super().close()
+        for top in self._stack:
+            if top not in OPTIONAL_END:
+                self.errors.append("<%s> is never closed" % top)
+
+
+def parse(root, rel):
+    p = Page()
+    with open(os.path.join(root, rel), encoding="utf-8") as f:
+        p.feed(f.read())
+    p.close()
+    return p
+
+
+def resolve(root, rel, ref):
+    """Path of the file a link points to, or None if it leaves the site."""
+    ref = ref.strip()
+    if not ref or ref.lower().startswith(EXTERNAL):
+        return None
+    parts = urlsplit(ref)
+    path = unquote(parts.path)
+    if not path:
+        return rel   # a '#fragment' or '?query' on this very page
+    if path.startswith("/"):
+        target = os.path.join(root, path.lstrip("/"))
+    else:
+        target = os.path.join(root, os.path.dirname(rel), path)
+    target = os.path.normpath(target)
+    if os.path.isdir(target):
+        target = os.path.join(target, "index.html")
+    return os.path.relpath(target, root).replace(os.sep, "/")
+
+
+def size_problems(root, rel, p=None):
+    """The page plus the pictures a browser loads with it must fit the limit.
+
+    A picture marked loading="lazy" is fetched only when the visitor scrolls to
+    it, so it is not part of the page's first load; each one must still fit the
+    limit on its own.
+    """
+    p = p or parse(root, rel)
+    total = os.path.getsize(os.path.join(root, rel))
+    out = []
+    seen = set()
+    for img in p.imgs:
+        target = resolve(root, rel, img.get("src", ""))
+        if not target or target in seen or not os.path.isfile(os.path.join(root, target)):
+            continue
+        seen.add(target)
+        size = os.path.getsize(os.path.join(root, target))
+        if img.get("loading", "").lower() == "lazy":
+            if size > MAX_PAGE_BYTES:
+                out.append("picture %s is %d KB, over the %d KB limit"
+                           % (target, size // 1024, MAX_PAGE_BYTES // 1024))
+        else:
+            total += size
+    if total > MAX_PAGE_BYTES:
+        out.append("is %d KB with its pictures, over the %d KB limit"
+                   % (total // 1024, MAX_PAGE_BYTES // 1024))
+    return out
+
+
+def check_page(root, rel):
+    """Problems with one page, as a list of plain sentences."""
+    out = []
+    p = parse(root, rel)
+    for e in p.errors:
+        out.append("does not parse cleanly: " + e)
+    if p.html_lang != "en-GB":
+        out.append('<html> has lang=%r, not "en-GB"' % p.html_lang)
+    if len(p.titles) != 1:
+        out.append("has %d <title> elements, not one" % len(p.titles))
+    elif not p.titles[0].strip():
+        out.append("its <title> is empty")
+    descs = [m for m in p.metas if m.get("name", "").lower() == "description"]
+    if len(descs) != 1 or not descs[0].get("content", "").strip():
+        out.append("has no single, filled meta description")
+    canon = [l for l in p.links if l.get("rel", "").lower() == "canonical"]
+    if len(canon) != 1:
+        out.append("has %d canonical links, not one" % len(canon))
+    elif canon[0].get("href") != canonical_for(rel):
+        out.append("canonical link is %r, should be %r"
+                   % (canon[0].get("href"), canonical_for(rel)))
+    for img in p.imgs:
+        if not img.get("alt", "").strip():
+            out.append("image %r has no alt text" % (img.get("src", "")[:60],))
+    for tag, attr, value in p.refs:
+        target = resolve(root, rel, value)
+        if target is None:
+            continue
+        if not os.path.isfile(os.path.join(root, target)):
+            out.append("<%s %s=%r> does not resolve to a file" % (tag, attr, value[:80]))
+            continue
+        frag = urlsplit(value).fragment
+        if frag and target.endswith(".html") and attr == "href":
+            ids = p.ids if target == rel else parse(root, target).ids
+            if unquote(frag) not in ids:
+                out.append("link %r points to a missing anchor" % (value[:80],))
+    out.extend(size_problems(root, rel, p))
+    return out
+
+
+def sitemap_locs(root):
+    tree = ET.parse(os.path.join(root, "sitemap.xml"))
+    ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    return [e.text.strip() for e in tree.getroot().findall("s:url/s:loc", ns)]
+
+
+def check_site(root):
+    """Problems for the whole folder, as (page, reason) pairs."""
+    problems = []
+    pages = page_files(root)
+    for rel in pages:
+        for reason in check_page(root, rel):
+            problems.append((rel, reason))
+    try:
+        locs = sitemap_locs(root)
+    except (OSError, ET.ParseError) as err:
+        problems.append(("sitemap.xml", "cannot be read: %s" % err))
+        locs = None
+    if locs is not None:
+        wanted = {canonical_for(rel): rel for rel in pages}
+        for dup in sorted({l for l in locs if locs.count(l) > 1}):
+            problems.append(("sitemap.xml", "lists %s more than once" % dup))
+        for addr, rel in sorted(wanted.items()):
+            if addr not in locs:
+                problems.append((rel, "is missing from sitemap.xml"))
+        for loc in locs:
+            if loc not in wanted:
+                problems.append(("sitemap.xml", "lists %s, which is no page here" % loc))
+    try:
+        with open(os.path.join(root, "robots.txt"), encoding="utf-8") as f:
+            robots = f.read()
+        pattern = r"(?im)^sitemap:\s*" + re.escape(SITE + "sitemap.xml") + r"\s*$"
+        if not re.search(pattern, robots):
+            problems.append(("robots.txt", "does not name " + SITE + "sitemap.xml"))
+    except OSError:
+        problems.append(("robots.txt", "is missing"))
+    return problems
