@@ -518,6 +518,95 @@ def test_the_tutorial_is_an_error_if_its_data_goes_missing(tmp_path):
     assert result.returncode != 0 and "first volume" in result.stderr
 
 
+# ------------------------------------------------------------------- feed ---
+
+ATOM = "{http://www.w3.org/2005/Atom}"
+MONTH_NUMBER = {m: i + 1 for i, m in enumerate(bp.MONTHS)}
+
+
+def parse_feed(path):
+    import xml.etree.ElementTree as ET
+    return ET.parse(path).getroot()
+
+
+def test_feed_is_atom_with_its_required_elements():
+    feed = parse_feed(ROOT / "releases.xml")
+    assert feed.tag == ATOM + "feed"
+    for tag in ("id", "title", "updated"):
+        assert feed.find(ATOM + tag) is not None and feed.find(ATOM + tag).text.strip()
+    assert feed.find(ATOM + "author/" + ATOM + "name").text.strip()
+    rels = {l.get("rel"): l.get("href") for l in feed.findall(ATOM + "link")}
+    assert rels["self"] == "https://dxcad.designmatix.co.uk/releases.xml"
+    assert rels["alternate"] == "https://dxcad.designmatix.co.uk/releases.html"
+    for entry in feed.findall(ATOM + "entry"):
+        for tag in ("id", "title", "updated"):
+            assert entry.find(ATOM + tag).text.strip(), tag
+        assert entry.find(ATOM + "link").get("href").startswith(
+            "https://dxcad.designmatix.co.uk/releases.html#v")
+        assert entry.find(ATOM + "summary").text.strip()
+        assert entry.find(ATOM + "content").get("type") == "html"
+    ids = [e.find(ATOM + "id").text for e in feed.findall(ATOM + "entry")]
+    assert len(ids) == len(set(ids))
+
+
+def test_feed_has_one_entry_per_release_newest_first_with_its_date():
+    feed = parse_feed(ROOT / "releases.xml")
+    entries = feed.findall(ATOM + "entry")
+    releases = notes_releases()
+    assert [e.find(ATOM + "title").text for e in entries] == \
+        ["DX-CAD " + v for v, _ in releases]
+    for entry, (version, date) in zip(entries, releases):
+        day, month, year = date.split()
+        want = "%04d-%02d-%02dT00:00:00Z" % (int(year), MONTH_NUMBER[month], int(day))
+        assert entry.find(ATOM + "updated").text == want
+        assert entry.find(ATOM + "id").text.endswith("#v" + version.replace(".", "-"))
+    updated = [e.find(ATOM + "updated").text for e in entries]
+    assert updated == sorted(updated, reverse=True)
+    assert feed.find(ATOM + "updated").text == updated[0]
+
+
+def test_feed_content_holds_the_release_lines():
+    import html
+    feed = parse_feed(ROOT / "releases.xml")
+    first = feed.findall(ATOM + "entry")[0]
+    content = html.unescape(first.find(ATOM + "content").text)
+    assert "<li>" in content and "<h3>Modelling</h3>" in content
+    assert "Go to Line (Ctrl+G)" in content
+
+
+def test_releases_page_head_links_to_the_feed():
+    page = read(ROOT / "releases.html")
+    head = page[:page.index("</head>")]
+    assert re.search(r'<link rel="alternate" type="application/atom\+xml"[^>]*href="/releases\.xml"',
+                     head)
+    assert (ROOT / "releases.xml").is_file()
+
+
+def test_feed_is_ascii_and_made_by_the_script():
+    raw = (ROOT / "releases.xml").read_bytes()
+    raw.decode("ascii")
+    assert read(ROOT / "releases.xml") == bp.build_all(str(ROOT))["releases.xml"]
+
+
+def test_a_new_release_is_a_new_entry_at_the_top_of_the_feed(tmp_path):
+    root = copy_site(tmp_path / "site")
+    notes = Path(root, "data", "core", "RELEASE_NOTES.md")
+    new = ("## 0.1.6\n\nAn update to 0.1.5, 9 November 2026. It has <angle> & `code`.\n\n"
+           "### Install\n\n- A line for 0.1.6.\n\n")
+    notes.write_bytes(read(notes).replace("## 0.1.5\n", new + "## 0.1.5\n", 1).encode())
+    assert run_script(root, "--check").returncode == 1
+    assert run_script(root).returncode == 0
+    feed = parse_feed(Path(root, "releases.xml"))
+    entries = feed.findall(ATOM + "entry")
+    assert len(entries) == len(notes_releases()) + 1
+    assert entries[0].find(ATOM + "title").text == "DX-CAD 0.1.6"
+    assert entries[0].find(ATOM + "updated").text == "2026-11-09T00:00:00Z"
+    assert "<angle> & code" in entries[0].find(ATOM + "summary").text
+    assert feed.find(ATOM + "updated").text == "2026-11-09T00:00:00Z"
+    assert run_script(root, "--check").returncode == 0
+    assert pagecheck.check_site(root) == []
+
+
 # ------------------------------------------------------------------- --all ---
 
 def snapshot(root):
@@ -540,7 +629,9 @@ def test_all_with_a_new_release_adds_its_section_and_changes_nothing_else(tmp_pa
     assert run_script(root, "--all").returncode == 0
     after = snapshot(root)
     changed = sorted(k for k in after if before.get(k) != after[k])
-    assert changed == ["data/core/RELEASE_NOTES.md", "releases.html", "sitemap.xml"]
+    # the release notes (the test's own edit), the page, its Atom feed (4008), the sitemap
+    assert changed == ["data/core/RELEASE_NOTES.md", "releases.html", "releases.xml",
+                       "sitemap.xml"]
     assert set(after) == set(before)
     page = after["releases.html"].decode()
     assert 'id="v0-1-6"' in page and "A line that is new in 0.1.6." in page

@@ -38,3 +38,8 @@
 - 4007: every hand-written page already carried the Open Graph and Twitter tags, and build_pages.py's make_page writes
   them on every page it makes (og:image is img/og-dxcad.png), so no page needed mending; the checks now hold them: all
   five tags present and filled, og:url equal to the canonical address, og:image a picture in img/ that exists.
+- 4008: releases.xml is an Atom feed with the page's own address as each entry's link (releases.html#vX-Y-Z), the
+  release's date as `updated` (midnight UTC; the notes give a day only), the first paragraph as summary and the whole
+  release as html content. Author is Designmatix Ltd. The feed is not a page, so it is not in sitemap.xml.
+  4005's "nothing else changes" now reads: with a new release, releases.html and its feed change, and one date in the
+  sitemap.

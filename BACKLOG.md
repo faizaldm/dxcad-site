@@ -53,7 +53,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     every page, made by scripts/build_pages.py where it makes the page.
   Accept: tests/test_pages.py fails on a page without them (made in a temporary folder) and passes on every page.
 
-- [ ] 4008. An Atom feed of the release pages (S)
+- [x] 4008. An Atom feed of the release pages (S)
   - releases.xml: one entry per release from data/core/RELEASE_NOTES.md, newest first, linked from releases.html's
     head; made by scripts/build_pages.py (standard library only).
   Accept: tests/test_build_pages.py: the feed parses as Atom with its required elements, one entry per release with

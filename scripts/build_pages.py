@@ -8,7 +8,8 @@ Standard library only.  Run from anywhere:
 
 Pages made here:
 
-    releases.html     from data/core/RELEASE_NOTES.md
+    releases.html, releases.xml
+                      from data/core/RELEASE_NOTES.md (the page, and its Atom feed)
     gallery.html, examples/NAME.html, img/gallery/...
                       from data/core/examples and data/core/gallery
     fabrication.html, drafting-pro.html
@@ -160,7 +161,7 @@ def read_shell(root):
     }
 
 
-def make_page(shell, path, title, description, body, extra_style=""):
+def make_page(shell, path, title, description, body, extra_style="", head_extra=""):
     """A whole page, as text.  path is the page's file name, e.g. releases.html."""
     url = SITE + path
     image = SITE + SOCIAL_IMAGE
@@ -195,6 +196,8 @@ def make_page(shell, path, title, description, body, extra_style=""):
         '<meta name="twitter:description" content="%s">' % d,
         '<meta name="twitter:image" content="%s">' % image,
     ]
+    if head_extra:
+        head.append(head_extra)
     head.append(shell["style"])
     if extra_style:
         head.append("<style>\n%s\n</style>" % extra_style.strip("\n"))
@@ -256,6 +259,64 @@ def releases_body(releases):
     return "\n".join(out)
 
 
+FEED = "releases.xml"
+
+
+def xml(text):
+    return html.escape(text, quote=True)
+
+
+def feed_content(release):
+    """A release's blocks as one string of HTML, for an entry's content."""
+    out = []
+    for kind, value in release["blocks"]:
+        if kind == "p":
+            out.append("<p>%s</p>" % inline(value))
+        elif kind == "h3":
+            out.append("<h3>%s</h3>" % esc(value))
+        else:
+            out.append("<ul>%s</ul>" % "".join("<li>%s</li>" % inline(i) for i in value))
+    return "".join(out)
+
+
+def plain(text):
+    """Notes text without its markup: `code` as code's words, links as their text."""
+    return re.sub(r"\s+", " ", inline(text).replace("<code>", "").replace("</code>", "")
+                  ).replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+
+
+def releases_feed(releases):
+    """An Atom feed (RFC 4287) of the releases, newest first."""
+    page = SITE + "releases.html"
+    stamp = lambda d: "%sT00:00:00Z" % d.isoformat()
+    out = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-GB">',
+        '  <id>%s</id>' % (SITE + FEED),
+        '  <title>DX-CAD releases</title>',
+        '  <subtitle>What each DX-CAD release brought, in plain words, newest first.</subtitle>',
+        '  <updated>%s</updated>' % stamp(releases[0]["date"]),
+        '  <link rel="self" type="application/atom+xml" href="%s"/>' % (SITE + FEED),
+        '  <link rel="alternate" type="text/html" href="%s"/>' % page,
+        '  <author><name>Designmatix Ltd</name></author>',
+    ]
+    for r in releases:
+        url = "%s#%s" % (page, anchor(r["version"]))
+        first = next((v for k, v in r["blocks"] if k == "p"), "")
+        out += [
+            '  <entry>',
+            '    <id>%s</id>' % url,
+            '    <title>DX-CAD %s</title>' % xml(r["version"]),
+            '    <updated>%s</updated>' % stamp(r["date"]),
+            '    <link rel="alternate" type="text/html" href="%s"/>' % url,
+            '    <summary type="text">%s</summary>' % xml(plain(first)),
+            '    <content type="html">%s</content>' % xml(feed_content(r)),
+            '  </entry>',
+        ]
+    out += ['</feed>', '']
+    return ascii_only("\n".join(out))
+
+
 def build_releases(root, shell):
     path = os.path.join(root, "data", "core", "RELEASE_NOTES.md")
     releases = parse_release_notes(read_text(path))
@@ -267,8 +328,11 @@ def build_releases(root, shell):
         "What is new in each DX-CAD release | DX-CAD by Designmatix",
         "What each DX-CAD release brought, in plain words, newest first. The latest is "
         "%s, %s." % (latest["version"], long_date(latest["date"])),
-        releases_body(releases))
-    return {"releases.html": (page, latest["date"])}
+        releases_body(releases),
+        head_extra='<link rel="alternate" type="application/atom+xml" '
+                   'title="DX-CAD releases" href="/%s">' % FEED)
+    return {"releases.html": (page, latest["date"]),
+            FEED: (releases_feed(releases), latest["date"])}
 
 
 # ---------------------------------------------------------------- gallery ---
