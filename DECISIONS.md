@@ -162,3 +162,19 @@
   button already shows. Node is not installed here, so the script's behaviour was not run: the test that runs it
   against the page is skipped without node, and the script is checked by reading it. The owner should try the
   buttons in a browser.
+- 4019: this repository has no CHANGELOG and no help text (it is a website, and the release notes in data/ are
+  DX-CAD's own, read-only). I did not start a CHANGELOG file: each item's change is its page (the "docs or help words
+  where a user meets it"), its entry in this file, and its commit subject, which names the item. README.md was the one
+  document that had gone stale (it did not name the tutorial, the feed, the download, questions or shortcuts pages,
+  and still said the footer came from index.html), so it was mended and a test now holds it to the script's file list.
+- 4019: names the owner's rule forbids (another CAD product, a person, an email address) were found, but all were
+  there before this run's first commit or are in read-only data/: the home page's trademark row, the support address in
+  the footer and the structured data, a package name in data/core/gui.md. None is mended, because the rules say to keep
+  the pages and the footer as they are and never to edit data/; they are listed for the owner in
+  docs/qa/owner-checks.md, section 14, and in REPORT.md. The commits' own Signed-off-by lines carry a name and an
+  address by the owner's own rule (-s); git history was not touched.
+- 4019: the one skip in the suite is the 4018 test that runs the gallery's script, which skips where node is not
+  installed (it is not here). It was added with a reason written in the test and above. Nothing was loosened: the
+  assertions removed from tests by this run's commits were each replaced by one that says the same or more (a changed
+  count, a picture's number, a file list gaining the new generated files, and a pound sign written as an escape so the
+  file stays ASCII).

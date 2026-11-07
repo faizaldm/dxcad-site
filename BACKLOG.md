@@ -126,7 +126,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_build_pages.py: each example's tags match the calls in its script; --check passes;
   tests/test_pages.py passes.
 
-- [ ] 4019. Run audit: everything this run committed, checked for what would surprise the owner's testing (M)
+- [x] 4019. Run audit: everything this run committed, checked for what would surprise the owner's testing (M)
   The owner's rule (7 Nov): the build he tests must hold no or minimal surprises.
   - For every commit on this branch since 7 November 2026, 09:40: tests added or changed to skip or xfail, assertions
     taken out, tolerances changed, a test left out of the suite by a marker or a name, debug prints, TODO or FIXME

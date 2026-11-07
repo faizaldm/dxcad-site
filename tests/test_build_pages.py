@@ -1870,3 +1870,72 @@ def test_the_filter_script_reads_the_tags_the_page_writes_and_sets_what_the_page
     assert 'id="filter"' in page and 'id="filter-count"' in page
     assert "[aria-pressed=\"true\"]" in page and ".shots li[hidden]" in page
     assert script.count("(") == script.count(")") and script.count("{") == script.count("}")
+
+
+# ------------------------------------------------------- README names what is made (4019) ---
+
+# The pages and folders the script makes from data/, as README.md must name them.
+MADE_NAMES = ("releases.html", "releases.xml", "gallery.html", "examples/NAME.html", "fabrication.html",
+              "drafting-pro.html", "tutorial.html", "docs/NAME.html", "download.html", "faq.html",
+              "shortcuts.html", "search.html", "search.json", "404.html", "sitemap.xml")
+
+
+def test_readme_names_every_file_the_script_makes():
+    text = read(ROOT / "README.md")
+    for name in MADE_NAMES:
+        assert "`%s`" % name in text, "README.md does not name %s" % name
+    # the list is not stale the other way: each plain name in it is a file the build makes
+    made = bp.build_all(str(ROOT))
+    for name in MADE_NAMES:
+        if "NAME" not in name:
+            assert name in made, "%s is in README.md but the script does not make it" % name
+
+
+QA = ROOT / "docs" / "qa" / "owner-checks.md"
+
+
+def _test_names(path):
+    return set(re.findall(r"(?m)^def (test_\w+)", read(path)))
+
+
+def test_owner_checks_name_a_real_test_for_every_automatic_entry():
+    text = read(QA)
+    text.encode("ascii")
+    part2 = text[text.index("## Part 2"):]
+    names = {"P": _test_names(ROOT / "tests" / "test_pages.py"),
+             "B": _test_names(ROOT / "tests" / "test_build_pages.py")}
+    rows = [l for l in part2.splitlines() if l.startswith("| ") and not l.startswith(("| What", "|---"))]
+    assert len(rows) >= 20
+    for row in rows:
+        cited = re.findall(r"\b([PB]) `(test_\w+)`", row) + [
+            ("?", n) for n in re.findall(r"`(test_\w+)`", row)]
+        assert cited, "no test named in: " + row[:60]
+        for letter, name in cited:
+            pool = names["P"] | names["B"] if letter == "?" else names[letter]
+            assert name in pool, "%s is named in owner-checks.md but is not a test" % name
+
+
+def test_owner_checks_have_steps_and_an_expected_result_for_every_manual_check():
+    text = read(QA)
+    part1 = text[text.index("## Part 1"):text.index("## Part 2")]
+    sections = re.split(r"(?m)^### ", part1)[1:]
+    assert len(sections) >= 12
+    for sec in sections:
+        title = sec.splitlines()[0]
+        assert re.search(r"(?m)^1\. ", sec), "no numbered steps in: " + title
+        assert re.search(r"(?i)expected|should|decide", sec), "no expected result in: " + title
+
+
+def test_every_manual_check_the_decisions_leave_for_the_owner_is_in_the_owner_checks():
+    text = read(QA).lower()
+    # each item whose decisions say the owner should look, try or decide has its section
+    for item in ("4001", "4006", "4008", "4011", "4012", "4013", "4014", "4018", "4019"):
+        assert "item %s" % item in text or "items %s" % item in text or "%s)" % item in text, item
+    for word in ("search page", "filter buttons", "dark theme", "404 page", "download page", "atom feed"):
+        assert word in text, word
+
+
+def test_readme_says_where_the_footer_and_the_owner_checks_are():
+    text = " ".join(read(ROOT / "README.md").split())
+    assert "footer from `FOOTER` in the script" in text
+    assert "docs/qa/owner-checks.md" in text
