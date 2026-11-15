@@ -146,3 +146,19 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
     first.
   Accept: every REVIEW manual check of this run is in the list with steps and an expected result; the automatic list
   names a test for each entry.
+- [x] 4021. Daily download counts from GitHub's running totals (S)
+  The owner wants the downloads counted day by day, with no tracking on the pages.
+  - scripts/download_stats.py (standard library only) adds each day's running total of every release file to
+    stats/totals.csv and remakes stats/README.md: downloads by day and by kind for 60 days, and the totals so far.
+  - .github/workflows/download-stats.yml runs it daily at 05:17 UTC, and by hand, on a branch "stats" of its own;
+    main is never touched.
+  Accept: tests/test_download_stats.py: a day is a file's total less the day before; a new file counts its whole
+  total on its first day; a lower total counts as none; a second run on one day replaces that day; drafts are left
+  out and every page of releases is read; the report is ASCII and names the totals.
+- [ ] 4022. An optional "email me updates" form beside the download buttons (S)
+  A plain HTML form (no script needed) posting one address to the licence service's subscribe address, which sends
+  a confirmation email and keeps the address only once it is confirmed; a line under it says what the address is
+  used for and links the privacy page. Waits on the licence service's subscribe endpoint (dx-licence item, queued
+  15 November 2026); build it once that endpoint is live, with its exact address and answers.
+  Accept: tests/test_pages.py: the form is on the home page, posts to the endpoint's https address, has a labelled
+  email field, needs no script, and links /privacy.html; every other check still passes.

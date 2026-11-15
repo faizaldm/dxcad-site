@@ -178,3 +178,6 @@
   assertions removed from tests by this run's commits were each replaced by one that says the same or more (a changed
   count, a picture's number, a file list gaining the new generated files, and a pound sign written as an escape so the
   file stays ASCII).
+- 4021 (15 Nov 2026): download counts come from GitHub's running totals once a day, kept on a branch "stats" so
+  the site's main is never rebuilt by them; the counts are public through GitHub's API anyway. The bot's commits
+  carry an empty email, as this repository names no email address. pip installs are not counted here.
