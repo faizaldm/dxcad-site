@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The window | DX-CAD documentation | DX-CAD by Designmatix</title>
+<meta name="description" content="dxcad gui opens the viewer: an OpenCASCADE scene on the left, the model.py in a pane on the right, and the output of the last run under it.">
+<link rel="canonical" href="https://dxcad.designmatix.co.uk/docs/gui.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1E2FE0">
+<meta name="author" content="Designmatix Ltd">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DX-CAD by Designmatix">
+<meta property="og:title" content="The window | DX-CAD documentation | DX-CAD by Designmatix">
+<meta property="og:description" content="dxcad gui opens the viewer: an OpenCASCADE scene on the left, the model.py in a pane on the right, and the output of the last run under it.">
+<meta property="og:url" content="https://dxcad.designmatix.co.uk/docs/gui.html">
+<meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DX-CAD: AI-powered 3D CAD for sheet metal, fabrication, industrial design and 3D printing. 30-day free trial.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The window | DX-CAD documentation | DX-CAD by Designmatix">
+<meta name="twitter:description" content="dxcad gui opens the viewer: an OpenCASCADE scene on the left, the model.py in a pane on the right, and the output of the last run under it.">
+<meta name="twitter:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
+<style>
+:root{--ink:#14213D;--ink-2:#4A5670;--blue:#1E2FE0;--blue-dark:#1624B8;--red:#C8201F;--line:#C9D1DC;--paper:#FFFFFF;--wash:#F3F5F9;
+--font:Bahnschrift,"DIN Alternate","Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+--cond:"Bahnschrift SemiCondensed","Bahnschrift","DIN Condensed","Arial Narrow","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+a{color:var(--blue)}a:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:2px}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:8px 12px;z-index:10}.skip:focus{left:8px}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.bar{border-bottom:1px solid var(--line)}.bar .wrap{display:flex;align-items:center;justify-content:space-between;min-height:72px;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.brand img{height:44px;width:auto;display:block}
+.brand .prod{font-family:var(--cond);font-weight:700;font-size:20px;border-left:1.5px solid var(--line);padding-left:14px}
+nav ul{list-style:none;display:flex;gap:24px;margin:0;padding:0;font-size:15px}nav a{color:var(--ink);text-decoration:none}nav a:hover{color:var(--blue)}
+@media (max-width:760px){nav ul{gap:14px;font-size:14px}nav li.opt{display:none}.brand img{height:36px}}
+.sheet{position:relative;margin:40px 0 0;border:1.5px solid var(--ink);padding:56px 48px 48px}
+.sheet::before{content:"";position:absolute;inset:8px;border:.75px solid var(--ink);pointer-events:none}
+@media (max-width:900px){.sheet{padding:40px 24px 32px}}
+h1,h2,h3{font-family:var(--cond);text-wrap:balance}
+.small{font-size:14px;color:var(--ink-2)}
+.btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:600;padding:12px 18px;border:0}
+.btn:hover{background:var(--blue-dark)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}.btn.ghost:hover{border-color:var(--blue);color:var(--blue)}
+section{padding:88px 0 0}
+h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;font-weight:700;margin:0 0 12px}
+.intro{color:var(--ink-2);max-width:62ch;margin:0 0 36px}
+code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:var(--wash);padding:2px 6px}
+.tb{margin:96px 0 40px;border:1.5px solid var(--ink);border-right:0;border-bottom:0;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;font-size:14px}
+@media (max-width:820px){.tb{grid-template-columns:1fr 1fr}}@media (max-width:480px){.tb{grid-template-columns:1fr}.tb .wide{grid-column:auto}}
+.tb div{min-width:0;overflow-wrap:anywhere;padding:10px 14px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.tb span{display:block;font-size:11.5px;color:var(--ink-2)}.tb strong{font-weight:600}.tb .wide{grid-column:span 2}.tb .full{grid-column:1/-1;font-size:13px;color:var(--ink-2)}.tb a{color:var(--ink)}
+
+.doc{max-width:74ch}
+.doc h1{font-size:clamp(30px,3.6vw,44px);line-height:1.08;font-weight:700;margin:0 0 8px}
+.doc .meta{color:var(--ink-2);font-size:15px;margin:0 0 32px}
+.doc h2{font-size:24px;margin:40px 0 10px;padding-top:10px;border-top:1px solid var(--line)}
+.doc h3{font-size:19px;margin:24px 0 6px}
+.doc p,.doc li{max-width:72ch}.doc ul,.doc ol{padding-left:22px}
+.doc .box{border:1px solid var(--ink);padding:16px 20px;margin:0 0 28px;background:var(--wash)}
+.doc table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0 16px}
+.doc th,.doc td{border-bottom:1px solid var(--line);padding:10px 12px 10px 0;text-align:left;vertical-align:top}
+.doc th{font-family:var(--cond);font-weight:700}
+.toc{border-left:3px solid var(--blue);padding:4px 0 4px 16px;margin:0 0 32px;font-size:15px}.toc ol{margin:6px 0 0;padding-left:20px}
+</style>
+<style>
+.doc .tw{overflow-x:auto;margin:8px 0 16px}.doc .tw table{margin:0;min-width:520px}
+.doc td,.doc th{overflow-wrap:anywhere}
+.doc blockquote{margin:0 0 16px;padding:4px 0 4px 16px;border-left:3px solid var(--line);color:var(--ink-2)}
+.doc blockquote p{margin:8px 0}
+.doc img.fig{display:block;max-width:100%;height:auto;border:1px solid var(--line);margin:0 0 16px}
+.doc .toc p{margin:0}
+.doc .toc ol{columns:2;column-gap:32px}.doc .toc li{break-inside:avoid}
+@media (max-width:640px){.doc .toc ol{columns:1}}
+pre.script{overflow-x:auto;border:1px solid var(--ink);background:var(--wash);padding:16px 20px;font-size:14px;line-height:1.5;max-width:none;tab-size:4}
+pre.script code{background:none;padding:0;font-size:inherit}
+@media print{
+.skip,.bar,.tb,.toc{display:none!important}
+body{background:#fff;color:#000;font-size:11pt}
+.wrap{max-width:none;padding:0}
+.sheet{border:0;margin:0;padding:0}.sheet::before{display:none}
+.doc{max-width:none}.doc a{color:#000}
+.doc a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;overflow-wrap:anywhere}
+.doc h1,.doc h2,.doc h3{break-after:avoid}
+.doc pre,.doc table,.doc img,.doc blockquote{break-inside:avoid}
+pre.script{white-space:pre-wrap;overflow:visible;border:1px solid #000;background:#fff}
+}
+</style>
+<style id="theme">
+@media (prefers-color-scheme:dark){
+:root{color-scheme:dark;--ink:#E6EAF2;--ink-2:#AEB8CC;--blue:#9DAAFF;--blue-dark:#C2CBFF;--red:#FF8F8D;--line:#3B4766;--paper:#0E1526;--wash:#18223A}
+.skip{background:var(--ink);color:var(--paper)}
+.btn{background:var(--blue);color:var(--paper)}
+.results mark{background:#FFE88A;color:#14213D}
+.brand img{background:#FFFFFF;padding:2px 6px}
+svg [stroke="#1E2FE0"]{stroke:var(--blue)}
+svg [stroke="#C8201F"]{stroke:var(--red)}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="DX-CAD home"><img src="data:image/png;base64,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" width="120" height="44" alt="Designmatix"><span class="prod">DX-CAD</span></a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="/#what">What it does</a></li>
+        <li class="opt"><a href="/#editions">Editions</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
+        <li><a href="/#download">Download</a></li>
+        <li class="opt"><a href="/download.html">All downloads</a></li>
+        <li><a href="/search.html">Search</a></li>
+        <li class="opt"><a href="https://ai.designmatix.co.uk/">Designmatix</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main">
+
+  <div class="sheet">
+  <article class="doc">
+    <p class="small"><a href="/docs/">DX-CAD documentation</a></p>
+    <h1 id="the-window">The window</h1>
+    <p><code>dxcad gui</code> opens the viewer: an OpenCASCADE scene on the left, the model.py
+in a pane on the right, and the output of the last run under it. Everything
+the window does to a document is an edit that can be undone, and everything it
+builds it builds through the same kernel the command line uses.</p>
+    <p>The window is the one part of DX-CAD&#8482; that needs a display. Every other command
+runs on a machine with none.</p>
+    <nav class="toc" aria-label="On this page">
+    <p><strong>On this page</strong></p>
+    <ol>
+      <li><a href="#opening-it">Opening it</a></li>
+      <li><a href="#tabs">Tabs</a></li>
+      <li><a href="#the-menus">The menus</a></li>
+      <li><a href="#the-help-window">The help window</a></li>
+      <li><a href="#the-panels">The panels</a></li>
+      <li><a href="#the-dialogs">The dialogs</a></li>
+      <li><a href="#keyboard-shortcuts">Keyboard shortcuts</a></li>
+      <li><a href="#the-model-pane">The model pane</a></li>
+      <li><a href="#the-model-a-project-carries">The model a project carries</a></li>
+    </ol>
+    </nav>
+    <h2 id="opening-it">Opening it</h2>
+    <p>On nothing, on a project, or on a model.py. These three are the whole of it:</p>
+    <pre class="script"><code>dxcad examples bracket
+dxcad run bracket.py --output bracket.dxcprt
+dxcad gui
+dxcad gui bracket.dxcprt
+dxcad gui bracket.py</code></pre>
+    <p><code>dxcad-gui</code> opens the same window with no console behind it, which is what a
+desktop shortcut points at. Every command here is in cli.md.</p>
+    <p>A file that cannot be opened is never met with silence (item 803). Started on
+one, by any of these names or by a double click in Explorer, DX-CAD brings its
+window up with nothing open and a box that names the file, why it cannot be
+opened (it does not exist; it is not a DX-CAD project; for a STEP file that
+does not read, the STEP reader's own error) and what would work. The same
+words go to the log and the output pane, and the exit status is 2 once the
+window is shut. A STEP file is not opened as a project: <code>dxcad import</code> makes
+a project of it, and a model's import_step reads it. With a window already
+open, that window says it instead, once. If DX-CAD cannot start at all, a
+message box of the system's own says why in one line and where the log is.</p>
+    <p>When anything keeps the window busy for a second, a large drawing being
+drawn, a model being built, an add-on's command, a small "Please wait" window
+appears over it with what is being done, and stays a second after the work
+ends so it never blinks away; a command that takes under a second never shows
+it. While a model builds it has a Stop button, which ends the run with the
+document as it was, as Stop on the status bar and Esc do.</p>
+    <h2 id="tabs">Tabs</h2>
+    <p>Several documents can be open at once, one tab each (item 570). Each tab has
+its own parts, model pane, undo history and file name, and the Parts and
+History docks, the title bar and the actions follow the tab in front. The
+tabs show above the view once there are two; drag one to move it, and
+<code>Ctrl+Tab</code> and <code>Ctrl+Shift+Tab</code> step through them. The button at the
+tabs' right, or Window &gt; Tile, shows them side by side instead. Closing the window asks
+once for each tab with unsaved changes. With a window open, <code>dxcad gui FILE</code>
+or a double click on a part, assembly or drawing file hands the file to that window as a tab. An
+agent over <code>dxcad serve --window</code> works on the tab in front, and each result
+names it.</p>
+    <h2 id="the-menus">The menus</h2>
+    <p>One section per menu, in the order the menu bar has them, and one row per
+action. A shortcut is written as Qt writes it, so <code>Ctrl+Shift+S</code> on Windows
+and Linux is Cmd+Shift+S on a Mac; an action with no shortcut has an empty
+cell. The test suite reads the menu bar offscreen and holds this list to it,
+row for row.</p>
+    <p>The menus and toolbars follow the tab in front (item 856). A command that
+does not apply to it is greyed, not hidden, so the menus keep their shape,
+and the pointer over it says why: a Model or Sheet Metal command on a
+drawing's tab says "Open a part or assembly for Flange", a Drawing command
+on a part's says "Needs a drawing tab: open a drawing for Add View", and a
+Sketch tool with no sketch in progress "Start a sketch for Line". Files,
+Undo, Redo, Delete, Zoom Window, Measure, the panels, the window and Help
+apply on every tab. A command that applies but is greyed for want of
+something says what it needs, such as "Fuse: Needs two parts or more". An
+add-on's command is greyed the same way where it says it does not apply.</p>
+    <h3 id="file">File</h3>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: File">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>New Part</code></td><td><code>Ctrl+N</code></td><td>An empty part in a new tab, with the model pane holding the template a new model starts from. A tab with nothing open is started again instead. It is saved as a part file, <code>.dxcprt</code>.</td></tr>
+        <tr><td><code>New Assembly</code></td><td></td><td>An empty assembly in a new tab, saved as an assembly file, <code>.dxcasm</code>: the model pane shows how parts are used from their own files with <code>use()</code> and placed with <code>place()</code>, and the Parts dock opens.</td></tr>
+        <tr><td><code>New Drawing</code></td><td></td><td>A drawing of the saved part or assembly in front, on the default sheet, in a tab of its own, saved as a drawing file, <code>.dxcdrg</code>; as <code>Drawing...</code> does at its default size.</td></tr>
+        <tr><td><code>Open...</code></td><td><code>Ctrl+O</code></td><td>Open a part, assembly or drawing file (.dxcprt, .dxcasm or .dxcdrg; an older .dxcad or .dxcaddrg opens as one of them) in a tab of its own; a file already open brings its tab forward. Nothing in it is run: a carried model is asked about at the first Run, unless it was trusted before with Trust This Project's Model.</td></tr>
+        <tr><td><code>Open Recent</code></td><td></td><td>The last 10 files opened or saved, newest first, each by its name with its full path as a tooltip and numbered 1 to 9 and 0 for the keyboard; kept from one session to the next. Opening or saving a file moves it to the top. A file that is gone is shown in italics, marked (not found); choosing it says so and takes it off the list. Clear Recent empties it, leaving a greyed No recent files. A file opens in a tab, as Open's does.</td></tr>
+        <tr><td><code>Close</code></td><td></td><td>Close the current tab, as its cross does; the last tab is put back as New leaves it: no parts, no model, no name, and any sketch ended. Unsaved changes are asked about first. Greyed while nothing is open.</td></tr>
+        <tr><td><code>Save</code></td><td><code>Ctrl+S</code></td><td>Write the document, and the pane's model with it, back where it came from; in a drawing's tab, the drawing as a .dxcdrg. A file opened as an older .dxcad or .dxcaddrg is saved in its new type beside it, the old file kept.</td></tr>
+        <tr><td><code>Save As...</code></td><td><code>Ctrl+Shift+S</code></td><td>Write the document to another file, which becomes the window's own.</td></tr>
+        <tr><td><code>Save Model</code></td><td><code>Ctrl+Shift+M</code></td><td>Write the pane's text back to the model.py it was opened from, and nothing else.</td></tr>
+        <tr><td><code>Export Model...</code></td><td></td><td>Write the pane's text to a new .py file, which the window then follows.</td></tr>
+        <tr><td><code>Import Model...</code></td><td></td><td>Read a model.py into the pane, leaving the document as it is until the next Run.</td></tr>
+        <tr><td><code>Export Drawing...</code></td><td></td><td>In a drawing's tab, write its sheet as a PDF or a DXF, as <code>dxcad drawing</code> does. Otherwise write the sketch being drawn, or else every Sketch the model names, as a DXF or an SVG drawing by the extension given, in millimetres, one layer or group per sketch: lines, arcs, circles, ellipses and splines each written as themselves.</td></tr>
+        <tr><td><code>Export Parts...</code></td><td></td><td>Write the picked parts, or every part when none is picked, to one STEP, STL, 3MF or BREP file, by the filter chosen or the name's ending, as <code>dxcad export</code> writes them; a 3MF keeps each part a named object. Greyed with no part, hidden in 2D drafting.</td></tr>
+        <tr><td><code>Drawing...</code></td><td></td><td>Make a drawing of the saved project in a tab of its own, on a sheet asked for, A4 to A1 or one of the ten ISO and ANSI sheets, as <code>dxcad drawing</code> draws one: the front, top, right and isometric views with hidden edges dashed, at one scale that fits, in the title block with the project, file, date, scale and sheet size filled in, and the bill of materials as a parts list. Each hole a view sees round may have its centre lines: Centre marks in Drawing properties, off on a new drawing unless the model calls <code>centre_marks(True)</code>. The drawing is a document of its own: drag a view to move it, the view and its sizes and label following the pointer while it moves, one undo entry when it is let go and Esc putting it back mid-drag; the top and right views stay in line with the front, moving with it, the top only up and down and the right only sideways, unless Unlock Alignment (on the view's right-click menu, or In line with the front view in Drawing properties) lets one move freely, Lock Alignment putting it back in line; right-click a view to show or hide its dashed hidden lines, and right-click the sheet for its scale, its title block fields and whether the dimensions and the parts list are shown, each one undo entry. While a drawing's tab is in front, the left dock shows Drawing properties: the sheet's size, its Title Block... and the parts list's columns, ticked and dragged into order (Item, Part number, Description, Material, Qty and Rev by default, Size and Mass to be had; the description and material are a part's own description and material properties when it has them), remembered for new drawings and for the bill's Save CSV..., and for the view clicked on the sheet its label and hidden lines. The scale is two number fields, 1 : N or N : 1 with any positive numbers (1 : 25, 1 : 7.5, 2 : 1), the standard ratios offered beside them and To fit as a button; it is applied as it is typed, after a short pause and without Enter, the title block following, and a field that is not a number above 0 is marked red and changes nothing. With a view clicked, the scale typed is that view's own: it alone is drawn at it, with its centre lines and hole callouts, its label says it ("TOP SCALE 1 : 10"), and the title block keeps the sheet's; To fit gives it the sheet's scale again. Save writes it as a .dxcdrg, which holds the project's path and no geometry, so the sheet is drawn again from the project whenever the drawing is opened or its tab comes forward, and the status bar says so; a project that is gone is named by its path. Export Drawing writes it as a PDF or DXF. A project not yet saved is asked to be saved first. Greyed with no part, hidden in 2D drafting.</td></tr>
+        <tr><td><code>Send to Slicer</code></td><td></td><td>Write the picked entry, or every entry when none is picked, to a 3MF and open it in the slicer, which is asked for once and remembered.</td></tr>
+        <tr><td><code>Where Used...</code></td><td></td><td>On a saved file: the assemblies and drawings in a folder chosen, and every folder below it, that use this file, each with how many copies it holds, as <code>dxcad where-used</code> lists them. Every part keeps a stable id through renames, so an assembly that uses a part by its old name still finds it, saying the new name in the model's output.</td></tr>
+        <tr><td><code>Title Block...</code></td><td></td><td>The fields a person fills in once for every drawing: company, drawn by, checked by, material, finish, general tolerance, drawing number and revision, and since item 974 every other text a title block shows, the title, scale, date and the others the sheet fills itself among them, each left blank to stay automatic; and the font the drawing is lettered in, the bundled DejaVuSans (the default) or any TrueType font the system has, with the height of its dimensions, labels and fields, 2.5, 3.5, 5 or 7 mm. Kept from one session to the next and used by every sheet File &gt; Drawing makes.</td></tr>
+        <tr><td><code>Trust This Project's Model</code></td><td></td><td>Trust the model the project in front carried, so it runs here with no question. Kept in the settings by the project's path and the SHA-256 of the model's text, never the text: opening the same file with the same model is trusted again, and any other model at that path is asked about. Answering Trust and run at the question does the same; a trusted project saved keeps its trust for the text saved. The model pane's header says whether a carried model is trusted. Greyed unless the model in front came in a file and is not trusted.</td></tr>
+        <tr><td><code>Revoke Trust in This Project's Model</code></td><td></td><td>Forget that trust: the model is asked about again before it runs. Greyed unless the model in front is trusted.</td></tr>
+        <tr><td><code>Settings...</code></td><td></td><td>Settings, in groups. Mode, the first, is 2D drafting or 3D modelling, 3D modelling at the start: 2D drafting hides every action that acts on a solid (Extrude, Revolve, Edit &gt; Mirror's part option, Sketch on Face, the printability actions and Send to Slicer) and names itself in the title, and 3D modelling shows everything. The mode changes the window only, not the kernel, the command line or the agent door, and is remembered between runs. View, the second, holds Show Planes and After a run (item 964): Keep the Camera, Fit the Model (the default) or Follow New Parts, the parts new or changed since the last run (all of them the first time), with Fill, from 0.5 to 1.2 and 1.0 at first, the share of the view's tighter side the parts fill; every fit after a run follows it, F5, Run on Change, the window's build commands, the end of an Assistant turn and the fit after an agent's quiet spell, while a model opened on its own keeps its first framing, and Keep the Camera leaves the view as it is and does not turn it; Runs (item 977), the seconds a run of the model is given before it is stopped, 60 at first and from 5 to 3600, which an agent's run in the window and a drawing export's run are held to as well, Model &gt; No Time Limit setting it aside; Recovery, the minutes between keeps of the unsaved tabs; Parts, the Default material: what a part with no material of its own is made of, mild steel as shipped, which the Parts dock and the Bill of Materials mark "(default)" (a sheet part is its spec's metal); Updates, Check for updates at start, on as shipped (Help &gt; Check for Updates). On macOS it is under the application menu. Controls (item 686) is DX-CAD's own or Classic CAD controls (middle-button orbit): under the second the middle button rotates, Ctrl+middle pans and Shift+middle and the wheel zoom, the left button only picks, <code>Ctrl+1</code> to <code>Ctrl+7</code> are Front, Back, Left, Right, Top, Bottom and Iso, <code>Ctrl+8</code> Normal To, and in the 3D view <code>F</code> fits, <code>Space</code> shows the View Selector and <code>S</code> the Shortcut Bar. The first start asks "Used to another CAD program?" once. Under the presets, Zoom about the cursor is View &gt; Zoom About the Cursor (item 963). Under either preset the arrow keys pan the 3D view while it has the focus, a tenth of the view a press and a hundredth with Shift, and not while the script pane or another field has it.</td></tr>
+        <tr><td><code>Quit</code></td><td></td><td>Close the window, asking first when there is an unsaved edit.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="edit">Edit</h3>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Edit">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Undo</code></td><td><code>Ctrl+Z</code></td><td>Take back the last edit to the document, the model pane following it.</td></tr>
+        <tr><td><code>Redo</code></td><td><code>Ctrl+Y</code></td><td>Put back the last edit that was undone.</td></tr>
+        <tr><td><code>Rename...</code></td><td></td><td>Give the picked entry another name, which the model is rewritten to match. A part made in a loop or a helper is renamed by a <code>rename()</code> statement after the parts.</td></tr>
+        <tr><td><code>Duplicate</code></td><td></td><td>A copy of the picked entry, under a name of its own, set its own width along x and left picked.</td></tr>
+        <tr><td><code>Move...</code></td><td></td><td>Move the picked part by dragging it in the view: after Move, press and drag, and the part follows the pointer in the plane of the screen, drawn where it would go with how far beside the pointer; let go and it is put there, one undo step, its line in the model wrapped in <code>translate</code>. Hold <code>X</code>, <code>Y</code> or <code>Z</code> to keep the drag to that axis of the model. Type a number for the distance instead, along the axis held or the way the drag is going, and <code>Enter</code> puts the part there. <code>Esc</code> leaves it where it was. A part held by mates moves only along what they leave it free to do, on its face or along its axis; where they leave nothing it does not move, and the status bar names the mate that holds it.</td></tr>
+        <tr><td><code>Mirror...</code></td><td></td><td>Add the picked entry mirrored in the XY, XZ or YZ plane, or in the picked face when one planar face is picked, as a part of its own after the original, writing <code>mirror</code> into the model.</td></tr>
+        <tr><td><code>Delete</code></td><td><code>Del</code></td><td>Take the picked entries out of the document.</td></tr>
+        <tr><td><code>Go to Line...</code></td><td><code>Ctrl+G</code></td><td>Put the caret in the model pane on a line, given as <code>120</code>, or on a line and column, <code>120:5</code>, each counted from 1, the line centred. A line past the end goes to the last line; anything else says what it takes.</td></tr>
+        <tr><td><code>Find...</code></td><td><code>Ctrl+F</code></td><td>Open the Find bar under the model pane, holding the words selected in it: every match highlighted and "n of m" said, with Match Case, Whole Word and Regular Expression. Enter or <code>F3</code> finds the next match, Shift+Enter or <code>Shift+F3</code> the previous, wrapping round the end and saying so; an expression that is not one is named in the bar. Escape closes it and takes the highlights away.</td></tr>
+        <tr><td><code>Find Next</code></td><td><code>F3</code></td><td>The next match of the Find bar's words after the caret, wrapping round.</td></tr>
+        <tr><td><code>Find Previous</code></td><td><code>Shift+F3</code></td><td>The match before the caret, wrapping round.</td></tr>
+        <tr><td><code>Replace...</code></td><td><code>Ctrl+H</code></td><td>The Find bar with a Replace field: Replace (or Enter in the field) changes the match the caret is on and finds the next; Replace All changes every match as one step, one Undo taking it all back, and says how many. Match Case and Whole Word are honoured, and with Regular Expression <code>\1</code> and <code>\g&lt;name&gt;</code> in the replacement are the match's groups.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="view">View</h3>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: View">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Fit</code></td><td></td><td>Frame everything the document holds.</td></tr>
+        <tr><td><code>Zoom About the Cursor</code></td><td></td><td>Off at first. While ticked the wheel zooms about the point under the cursor, the part there or the point on the plane the view turns about, which stays where it is on screen; unticked it zooms about the middle of the view. Also in Settings, under Controls. Kept for the next start.</td></tr>
+        <tr><td><code>Fit Selection</code></td><td><code>Shift+F</code></td><td>Frame the parts selected in the 3D view, keeping the view direction: they fill the view's tighter side to 1 / 1.15, centred. With nothing selected it frames every part shown. Also on the view's right-click menu.</td></tr>
+        <tr><td><code>Zoom Window</code></td><td><code>W</code></td><td>Drag a rectangle in the 3D view and it zooms to fit it, keeping the orientation: the rectangle is fitted at the depth of the nearest part under its centre (or of the parts' middle when nothing is there), its larger side filling the view; on a drawing's sheet the sheet does the same. Esc lets the rectangle go, and a click without a drag does nothing. Also on the View toolbar.</td></tr>
+        <tr><td><code>Measure</code></td><td></td><td>Measure by picking, in the 3D view, in a sketch being drawn (its own lines can be picked) and on a drawing's sheet, where a view's scale gives the model's sizes. It stays on until Esc. One pick: an edge's length; a circle's or an arc's radius and diameter; a face's area; a point's place. Two picks: the least distance between them with its dX, dY and dZ, the distance between their centres where both are circles or arcs, and the angle between two straight edges or flat faces. A third click starts again. A pick snaps to a vertex, the middle of an edge or the centre of a circle or an arc of what is under the pointer, with a marker there before the click. The status bar says what to pick ("Measure: pick a point, edge or face - Esc to finish") and then each measurement on a line ("Distance 60.000 mm  dX 60.000  dY 0  dZ 0"). The measurement is said by the picks and in the Measure panel, which opens on the left as a tab over the parts' properties and shuts when Measure ends; its Copy puts it on the clipboard. Sizes are in millimetres, to three decimals or a drawing's own. The button stays pressed while Measure is on, and pressing it again ends it. Nothing is added to the model, and no tolerance is checked. Also on the View toolbar.</td></tr>
+        <tr><td><code>Fit Sheet</code></td><td></td><td>On a drawing tab, show the whole sheet again. The sheet also zooms at the cursor with the wheel and pans with a middle drag, and keeps its zoom when it is drawn again.</td></tr>
+        <tr><td><code>Front</code></td><td></td><td>Look along +Y.</td></tr>
+        <tr><td><code>Back</code></td><td></td><td>Look along -Y.</td></tr>
+        <tr><td><code>Left</code></td><td></td><td>Look along +X.</td></tr>
+        <tr><td><code>Right</code></td><td></td><td>Look along -X.</td></tr>
+        <tr><td><code>Top</code></td><td></td><td>Look down from +Z.</td></tr>
+        <tr><td><code>Bottom</code></td><td></td><td>Look up from -Z.</td></tr>
+        <tr><td><code>Iso</code></td><td></td><td>The three-quarter view a part is usually drawn in.</td></tr>
+        <tr><td><code>Normal To</code></td><td></td><td>Look square at the picked planar face, from the side it faces; with none picked the status bar says to pick one. <code>Ctrl+8</code> under the classic CAD controls.</td></tr>
+        <tr><td><code>View Selector</code></td><td></td><td>A pop-up of the seven views and Normal To at the cursor; <code>Space</code> in the 3D view under the classic CAD controls.</td></tr>
+        <tr><td><code>Shortcut Bar</code></td><td></td><td>A pop-up at the cursor of the eight commands used most this session, most first, made up from Save, Undo, Redo, Fit, Iso, Run Script, Mate and Duplicate; <code>S</code> in the 3D view under the classic CAD controls.</td></tr>
+        <tr><td><code>Show Planes</code></td><td></td><td>Show or hide the three principal planes, XY, XZ and YZ: large, very faint squares about the origin, each tinted as the triad axis that stands out of it, the plane being sketched on a little stronger. Each fades as the view turns it edge on, over about a fifth of a second, and is not drawn at all edge on. Hidden, the plane a sketch is open on still shows. Also on the view's right-click menu and in File &gt; Settings; remembered between runs, on at the first.</td></tr>
+        <tr><td><code>Explode...</code></td><td></td><td>Draw the parts moved apart for an exploded view: each away from the assembly's centre of mass by the factor asked times its distance from it, 0 being assembled. Only the drawing moves; picking, measuring and every edit act on the real parts, and a click on a part as it is drawn picks it. Hidden in 2D drafting.</td></tr>
+        <tr><td><code>Hide</code></td><td><code>H</code></td><td>Hide the picked parts: they are not drawn and a click goes through them. Their rows in the Parts dock stay, greyed, with their eye unticked; the eye ticks or unticks one part, and the dock's right-click menu has Hide or Show for the part under it, Hide Others and Show All. Also on the view's right-click menu. Hiding is a view's state: nothing is written into the model, no undo step is made, and the file keeps the parts hidden.</td></tr>
+        <tr><td><code>Show</code></td><td></td><td>Show the picked hidden parts again, a part picked from its greyed row in the Parts dock.</td></tr>
+        <tr><td><code>Hide Others</code></td><td></td><td>Hide every part but the picked ones. Also on the view's right-click menu.</td></tr>
+        <tr><td><code>Show All</code></td><td><code>Shift+H</code></td><td>Show every hidden part again. Also on the view's and the Parts dock's right-click menus.</td></tr>
+        <tr><td><code>Section View</code></td><td></td><td>Cut the view with a plane, XY, XZ or YZ through the parts' middle or a picked face's plane, also on the Display toolbar: the side beyond the plane is not drawn and the cut faces are capped, hatched in each part's colour. Picking and measuring work on the cut view. Only the view changes, never the model; Esc or Section View again ends it. While it is on, a banner across the top of the view says so, with Turn off, and the cutting plane is drawn faintly; hidden parts and an exploded view are said the same way. The section is the document's: it stays with its file, a new file and an example start without one, and a file saved with one opens with it and its banner (Settings and their scope).</td></tr>
+        <tr><td><code>Section Offset...</code></td><td></td><td>Move the cutting plane along its normal by the distance typed, from where it started.</td></tr>
+        <tr><td><code>Flip Section</code></td><td></td><td>Show the other side of the cut, the plane where it is.</td></tr>
+        <tr><td><code>Continuous Orbit</code></td><td><code>Ctrl+Shift+O</code></td><td>While ticked, also on the Display toolbar, a drag let go keeps the view turning the way and as fast as it was dragged, until a click, Esc or any view command. The model is not rebuilt.</td></tr>
+        <tr><td><code>Turntable...</code></td><td></td><td>Spin the view steadily about the vertical axis, slow, medium or fast, for a presentation or a recording; untick, click, Esc or a view command stops it. Settings &gt; View &gt; Stop spinning when DX-CAD loses focus, on at first, stops either when another window takes the focus.</td></tr>
+        <tr><td><code>Turn the Model After a Run</code></td><td></td><td>Ticked at first. When Run Script (F5), an Assistant turn or a run of calls from Claude Desktop has built parts and ended without error, the view is fitted to everything, at the angle it is at, and then turned at the turntable's slow speed to show the model off; a press, the wheel or any key in the view stops it and leaves the view where it is, and does nothing else. Unticked, the view is only fitted. A run on change, made while you are at something else, fits and never turns; a run that fails, or that changes no part, leaves the view alone.</td></tr>
+        <tr><td><code>Shaded with Edges</code></td><td></td><td>Draw every part shaded with its face boundaries outlined. The mode at the start.</td></tr>
+        <tr><td><code>Shaded</code></td><td></td><td>Draw every part shaded, without its edges.</td></tr>
+        <tr><td><code>Wireframe</code></td><td></td><td>Draw every part as its edges alone.</td></tr>
+        <tr><td><code>Translucent</code></td><td></td><td>Draw every part shaded with edges at about half opacity, so what is inside can be seen.</td></tr>
+        <tr><td><code>Orthographic</code></td><td></td><td>Draw the 3D view without perspective, parallel edges parallel on screen, at the size perspective shows at the point the view turns about, so the switch does not jump there. Fit, the wheel, pan, orbit and Zoom Window work as in perspective. The document's saved view keeps it, and the last one chosen is how a new window starts.</td></tr>
+        <tr><td><code>Perspective</code></td><td></td><td>Draw the 3D view in perspective, as DX-CAD always has: what is nearer is larger. A file saved before Orthographic opens in perspective.</td></tr>
+        <tr><td><code>Theme</code></td><td></td><td>Light or Dark, switched at once and remembered between runs; light at the first. Light grades the background from white down to a pale grey-blue and draws a part with no colour of its own in steel blue-grey, outlined in near black; Dark grades from slate to near black and draws parts in pale blue-grey, outlined in near white. The sketch being drawn and its dimensions take a colour that reads on each. <code>dxcad render --theme</code> draws in either.</td></tr>
+        <tr><td><code>Script</code></td><td></td><td>Show or hide the model pane.</td></tr>
+        <tr><td><code>Output</code></td><td></td><td>Show or hide the output pane under it.</td></tr>
+        <tr><td><code>Parts</code></td><td></td><td>Show or hide the Parts dock on the left: the document's parts in model.py's order, a sub-assembly's parts listed under it as a tree, each with the operation that made it (extrude, revolve, fuse, place, hole...) and its placement when it was placed. Clicking a part picks it and puts the model pane's cursor on its statement, and a pick in the view marks its row. Under the list, the picked part's properties: its name (edit it to rename the part, as Rename does), volume, bounding box, a sheet part's flat size (its flat pattern's bounding rectangle, X by Y in mm; item 792), its material (a sheet part's spec's metal, else the Default material from Settings, marked "(default)"; choosing another here sets the default), its mass in that material, its colour (click the swatch to choose one: it is written into the part's statement as <code>color=</code>, one undo entry, and the view draws the part in it), and the file a placed or used part came from, with Open Source File to open it in a tab (item 576). When a file the model uses with <code>use()</code> is saved, here or elsewhere, the model runs again and the status bar says so. The list is read again from the model after every change and is never edited on its own. Open at the first run; the choice is remembered.</td></tr>
+        <tr><td><code>History</code></td><td></td><td>Show or hide the History tab beside Parts: every edit the undo history holds, oldest first, named as Undo and Redo name it ("Extrude sketch 5.0", "Fuse a, b", "Rename b to lid", "Pattern a 5 x 60"), under a Start row, the current one marked and the ones waiting to be redone greyed. Clicking an earlier entry undoes back to it and a later one redoes to it, step by step as Undo and Redo would. While a sketch is open its steps follow, and only they can be clicked. Open at the first run; the choice is remembered.</td></tr>
+        <tr><td><code>Feature Tree</code></td><td></td><td>Open or close the Feature Tree dock: each part in the order the model builds it, and beneath it its features, the calls of the statement that makes it, innermost first, then its sketches and its mates in the model's order. A click on a row picks the part and puts the model pane on that row's line. Nothing in the tree is dragged or re-ordered: the order of mates changes only by editing the model. Closed until opened.</td></tr>
+        <tr><td><code>Assistant</code></td><td><code>Ctrl+Shift+A</code></td><td>Show or hide the Assistant dock, along the bottom of the 3D view until it is moved (after an update from a version that kept it down the side it is moved to the bottom once, and then stays where it is put), "Assistant (powered by Claude)", also on the Display toolbar: type a request and Claude builds or changes the document in front with DX-CAD's own tools, each step shown in the chat, written into the model and one Undo, a render shown inline. It uses your own Anthropic API key (Set Key, or Settings &gt; Assistant's own API key field with Save Key, Forget Key and Test), kept encrypted for you by Windows, in the login Keychain on macOS and by the Secret Service (secret-tool) on Linux, and for the session where neither can; Test makes one small request and says whether it connected and how many models the provider lists, or that the key, the address or the network is wrong, and fills the Model list with the provider's own models, as Refresh beside it does (OpenAI's embedding, speech, transcription, image and moderation models left out), kept with the date for when nothing can be read; nothing is sent until you enable it, and the first use says what is sent (PRIVACY.md). While a turn runs, an hourglass drawn as a wireframe turns a quarter between steps (still when Windows' animations are off), a bar shows the steps done over the steps Claude planned, and a line says what is happening now, also on the status bar while the dock is shut. Stop ends a turn; the tokens each turn used show under the chat; Settings &gt; Assistant chooses the provider (your own Anthropic key; OpenAI; Azure OpenAI, a deployment in your company's own tenant; Google Gemini; an OpenAI-compatible endpoint, such as a company gateway or a local model under Ollama or LM Studio, which needs no key; or the DX-CAD account), its model (for Azure OpenAI the deployment's name) and its address; the dock's title names the provider, keys are kept per provider, each provider's note on what it is sent shows the first time it is used, and switching keeps the chat. Each document has its own chat. Asked to change a part by its name ("add returns to sheet"), an answer that builds the part again under a new name where the part is asks first, with nothing written yet, whether to change the part or make a copy: Yes changes the part itself, its solid and its line in the model, and No keeps it and places the new part beside it, 20 mm clear, named as a copy; a request that asks for a copy in so many words gets the copy without the question. Either way the answer is one Undo.</td></tr>
+        <tr><td><code>Start Page</code></td><td></td><td>Bring back the start page in the view's place: New, Open, the recent files, the launch examples as pictures (one click opens an example as a new unsaved tab, "NAME (example)", and builds it; nothing is written until Save, which starts in Documents\DX-CAD and puts any file the example reads beside it), a link to these docs, and Connect Claude Desktop, which links Claude Desktop to this copy of DX-CAD in one click: with no DX-CAD in Claude Desktop's settings it writes this one, driving the open window, as <code>dxcad serve --install</code> does, says "Connected to Claude Desktop." and offers Restart Claude Desktop now, which closes Claude Desktop and opens it again once you have said yes; with this copy's already there it says "Connected to Claude Desktop." and nothing else; with another copy of DX-CAD there (an old environment, another install) it asks one question, "Claude Desktop is linked to another copy of DX-CAD. Link it to this one?", with Link to this copy and Keep, and keeps the old settings beside the new; and with no Claude Desktop on the machine it says so, with where to get it, and writes nothing. The Python with a console (<code>python.exe</code>) and the one without (<code>pythonw.exe</code>) of one folder are one copy, and the one written is always the first, whichever started the window. The page is up when DX-CAD starts with nothing open and when the last tab closes, and gives way the moment a document opens.</td></tr>
+        <tr><td><code>Toolbars</code></td><td></td><td>Show or hide each of the six toolbars: View (Fit, Zoom Window, Measure and the seven views), Display (the four modes, Section View, Continuous Orbit and the Assistant), Edit (Undo, Redo, Rename, Duplicate, Delete), Sketch (the drawing tools, then the sketch actions), Operations (Run Script, Extrude, Revolve, Fuse, Cut, Common, Pattern) and Sheet Metal (Base Flange, Flange, Export Flat Pattern, Show Flat Pattern). Then one toolbar for each menu, so that every menu command is also on a toolbar: File Menu, Edit Menu, View Menu, Model Menu, Sketch Menu, Sheet Metal Menu, Drawing Menu, Window Menu and Help Menu, each with every command of its menu that the six above do not have, in the menu's order, each with an icon of its own. They are hidden until you switch them on here, in View &gt; Toolbars. Left out are Open Recent's list of files, these toggles themselves, and the add-ons' commands, which come with each add-on's own toolbar. The same list is on the right-click menu of any toolbar; the choice is remembered between runs. On every start the toolbars stand from the top left in the menus' order: File Menu, then Edit Menu and Edit, View Menu, View and Display, Model Menu and Operations, Sketch Menu and Sketch, Sheet Metal Menu and Sheet Metal, Drawing Menu, Window Menu and Help Menu, and last each add-on's, in the order of its menu; one switched off leaves no gap, and one dragged elsewhere is back in its place at the next start. When the window is too narrow for them in one row, the toolbars wrap to the next. A toolbar button has the toolbar's own grey background, and a checked one (the view looked from, the display mode, Measure while it is on) a pale blue one with a blue edge.</td></tr>
+        <tr><td><code>Toolbars...</code></td><td></td><td>Every toolbar in one box, the Toolbars box, in the order they stand: tick the ones to show, or Show All or Hide All, and OK shows and hides them together; Cancel changes nothing. Also from the Toolbars... button in File &gt; Settings.</td></tr>
+        <tr><td><code>Reset Layout</code></td><td></td><td>Put every dock back where a fresh install has it: the model pane on the right, the output pane and the Assistant under it along the bottom, Parts, History and the drawing's properties as tabs on the left with the Feature Tree under them, none floating. Which docks are open stays as it is. The Assistant's remembered place and height are forgotten, so it opens along the bottom at the next start too.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="model">Model</h3>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Model">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Run Script</code></td><td><code>F5</code></td><td>Run the pane's model and bring the document level with what it builds. A model that fails is shown in the pane, not in a box: its line marked in the margin and underlined, the cursor put on it, what went wrong in plain words in a strip under the pane (Copy Details copies the whole error, its kind and its trace), and "model.py line N: ..." on the status bar. The next good run clears it. A build that takes more than half a second shows the busy cursor and counts on the status bar ("Building model.py... 3 s, Esc to stop"), and then says how long it took. While it builds the window takes nothing but Stop: the view, the Parts list, the menus, the toolbars and the editor take no clicks and no keys, and none is kept for after. Stop, a button on the status bar, and <code>Esc</code> end the run at the model's next line with the document as it was before it; a run on change and an Assistant turn are held and stopped the same way, the turn as its own Stop ends it.</td></tr>
+        <tr><td><code>Run on Change</code></td><td></td><td>Keep running it whenever the file on disk changes, for an editor in another window.</td></tr>
+        <tr><td><code>No Time Limit</code></td><td></td><td>Let a run take as long as it likes, instead of the window's limit, a minute unless Settings &gt; Runs says otherwise. Remembered between sessions.</td></tr>
+        <tr><td><code>Check Model</code></td><td></td><td>Run the model and say what it would change, without changing anything.</td></tr>
+        <tr><td><code>Show in Script</code></td><td></td><td>Put the cursor on the line of the model that built the picked entry.</td></tr>
+        <tr><td><code>Adopt Parts</code></td><td></td><td>Write every part the model does not build to a file beside the project, and add the line that reads it back.</td></tr>
+        <tr><td><code>Save to Its Own File</code></td><td></td><td>On an assembly, with one part picked that the assembly's own model builds (a virtual part): write it as a part file, NAME.dxcprt, beside the assembly, and replace its statement in the model with <code>place(NAME, use("NAME.dxcprt", part=NAME))</code>, so the assembly uses it from there, where it was; one Undo takes the statement back. Also on the view's right-click menu while it applies. An assembly not yet saved is asked to be saved first.</td></tr>
+        <tr><td><code>Fuse</code></td><td></td><td>Make the picked parts (two or more; Ctrl+click adds one) one new part, <code>fuse</code> by name. The inputs stay in the model as plain variables the new part's line is built from. Also on the Operations toolbar; hidden in 2D drafting.</td></tr>
+        <tr><td><code>Cut</code></td><td></td><td>As Fuse, taking the other picked parts away from the first picked. On a sheet part a through cut normal to one face, round, rectangular or a rounded slot in any direction, and clear of the bends, is kept as that face's hole, cutout or slot, and the part stays sheet metal with no question. Such a prism through one face that runs on across a bend is cut as it will be bent, its outline on that face carried onto the flat and wrapped round the bend, as the shop floor cuts it on the flat and then folds it, since the straight tool's bite into a bend unfolds to no outline: the part stays sheet metal, nothing is asked, the status bar says "Cut across the bend as it will be bent: cut on the flat, then folded." and one Undo puts it back (item 923); see sheetmetal.md. A through cut of any other outline of lines and arcs normal to one face, clear of its edges and the bends, such as a window with rounded corners, is kept as that face's cut-out, its arcs cut as true arcs in the flat's DXF (item 959). Any other across a bend or a corner is refused, and any other cut asks whether to lose the flat.</td></tr>
+        <tr><td><code>Common</code></td><td></td><td>As Fuse, keeping only where the picked parts overlap; parts that do not meet are refused.</td></tr>
+        <tr><td><code>Pattern...</code></td><td></td><td>Repeat the one picked part as one new part, <code>pattern</code> by name: linear (along X, Y or Z, how many, how far apart), circular (about X, Y or Z through the origin, how many, over what angle) or grid (how many along X and along Y, how far apart each way). The original stays in the model as a plain variable the pattern's line is built from. A count below 2 is refused. Hidden in 2D drafting.</td></tr>
+        <tr><td><code>Pattern Feature...</code></td><td></td><td>Repeat the picked part's drilled feature, a <code>hole</code>, <code>countersink</code> or <code>counterbore</code> whose centre the model gives as <code>world=</code> numbers, across the same part, asked as Pattern... asks. The model's line becomes the one drill given every position, and the part is rebuilt. Places off the face or overlapping each other are refused with nothing cut. Hidden in 2D drafting. A part extruded from a Sketch works too when a circle inside its outline is the hole: the copies are written into that sketch as circles and the part is rebuilt; a circular pattern turns about the centre of another circle or arc of the sketch, the outline's by default, or a centre typed, and copies that would leave the outline or overlap are refused before anything is written.</td></tr>
+        <tr><td><code>Text...</code></td><td></td><td>Letters as a solid, <code>text3d</code> by name: the text, the bundled DejaVuSans (the default) or a font of the system's, the height of its capitals and its depth; with a planar face picked, raised on it or sunk its depth into it and cut, the part changing in place, and with nothing picked a part of its own on the XY, XZ or YZ plane. One undo entry. A font that is not found is refused.</td></tr>
+        <tr><td><code>Mate...</code></td><td></td><td>With two faces picked, the first on the part to move and the second on a part placed before it, place the one against the other: coincident, concentric (a hole's or a cylinder's wall picked), a distance or an angle. Writes <code>mate</code> into the model and runs it, as one undo entry; a mate the parts cannot meet with the mates before it is refused. The Parts dock's Mates row says what freedom a mated part has left.</td></tr>
+        <tr><td><code>Suggest Mates...</code></td><td></td><td>With a part picked, list the mates its features allow against the parts near it, best first: a cylinder to a hole it fits as concentric, opposed faces as coincident and as distance with the measured gap. Picking a row shows where the part would go. Check the ones to add and Accept Checked, or Accept All; each is written as its own <code>mate</code> and undo entry, and nothing is added without the accept. Ranked by how often you accepted the same kind of pair before. Moving a part near another says on the status bar that mates are suggested.</td></tr>
+        <tr><td><code>Printability</code></td><td></td><td>Say whether the picked entry will print: its mass, its overhangs and its thinnest wall, in a box and in the output pane.</td></tr>
+        <tr><td><code>Show Overhangs</code></td><td></td><td>Tick to colour the picked entry's overhanging faces in the view; picking something else, or unticking, takes them down. A Run, undo or edit that changes the entry's shape colours the new faces.</td></tr>
+        <tr><td><code>Printing Material...</code></td><td></td><td>Choose the filament the report assumes: PLA, PETG, ABS, ASA or TPU. PLA to begin with.</td></tr>
+        <tr><td><code>Bill of Materials...</code></td><td></td><td>List the parts as <code>dxcad bom</code> does: parts a model placed from one source as one shape are one line with a count, every other part a line of its own, with volume, mass in the printing material and size. Save CSV... writes what <code>dxcad bom --csv</code> prints. Hidden in 2D drafting.</td></tr>
+        <tr><td><code>Check Interference...</code></td><td></td><td>Check every pair of parts as <code>dxcad interference</code> does, list the pairs that overlap with the volume they share, and show each overlap in red in the view until the dialog is closed. Hidden in 2D drafting.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="sketch">Sketch</h3>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Sketch">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Sketch on Face</code></td><td></td><td>Start a sketch on the picked planar face.</td></tr>
+        <tr><td><code>Sketch on XY</code></td><td></td><td>Start a sketch on the XY plane.</td></tr>
+        <tr><td><code>Sketch on XZ</code></td><td></td><td>Start a sketch on the XZ plane.</td></tr>
+        <tr><td><code>Sketch on YZ</code></td><td></td><td>Start a sketch on the YZ plane.</td></tr>
+        <tr><td><code>Line</code></td><td></td><td>The drawing tool a sketch starts in: each click puts a point down, joined to the one before. Escape comes back to it from any tool, ending the figure being drawn. Return, a double click, Finish Figure or choosing a tool that draws a figure of its own ends the chain where it is, and the next click starts a new figure: a sketch holds many figures, open or closed. While a sketch is open the status bar reads where the pointer is on the sketch plane in millimetres, the snap firing there, and the measurement the live tool is waiting for: a line's length and angle, a rectangle's width and height, a circle's radius, an arc's radius and included angle, a polygon's across-flats and side, a slot's length and width, an ellipse's two half-axes. Typing a number instead of clicking opens a small entry beside the pointer for those measurements: Tab moves between the two, Return puts the point down at exactly that size and Escape goes back to clicking; lengths are millimetres and angles degrees. As each figure is finished the script pane shows it, written as <code>sketch = (Sketch(...)...)</code> after the model that was there, so the numbers can be read while drawing; Cancel Sketch takes the line out again, an extrude or revolve writes the part in its place, and typing in the pane while drawing leaves it to you. Anything the sketch refuses, a click it cannot draw, a corner too small for its fillet, an offset the shape cannot take, a constraint the others leave no room for, is shown in a box that says what was asked, why not and what would work, and the same words go to the output pane; the sketch is left as it was. The live tool is checked on the Sketch toolbar and named on the status bar, and a line from the last point follows the pointer.</td></tr>
+        <tr><td><code>Rectangle</code></td><td></td><td>Two clicks, one corner and then the opposite one, put down an axis-aligned rectangle as four points in a closed loop, ready to constrain or extrude. The outline follows the pointer after the first corner. It is a figure of its own, drawn beside whatever else the sketch holds.</td></tr>
+        <tr><td><code>Circle</code></td><td></td><td>Two clicks, the centre and then a point on the rim, put down a real circle, written into the model as one <code>circle</code> call. The rim follows the pointer after the centre, and the status bar reads the live radius. Circles are drawn beside whatever else is there: inside a closed outline they are holes, and on their own the largest is the outline. A rim on the centre draws nothing and says so.</td></tr>
+        <tr><td><code>Arc</code></td><td></td><td>A three-point arc in the chain being drawn: its start (the last point, or a first click on an empty sketch), its end, then a point on the arc. Three points in line draw a straight segment and say so. An end on the first point closes the loop.</td></tr>
+        <tr><td><code>Centre Arc</code></td><td></td><td>An arc about a centre, going anticlockwise: the centre, the start (the last point, or a click on an empty sketch), then the end, which lands on the circle towards the click. The status bar reads the radius. An end on the first point closes the loop.</td></tr>
+        <tr><td><code>Polygon</code></td><td></td><td>A regular polygon: the centre, then a corner on the circle around it. The number of sides, 3 to 24, is asked every time the tool is chosen, the last answer offered (6 the first time). The corners are points in a closed loop, ready to constrain or extrude. A figure of its own, beside the others.</td></tr>
+        <tr><td><code>Slot</code></td><td></td><td>Two centres, then a click as far from the line through them as half the slot is wide: two parallel sides capped by half circles, written into the model as one <code>slot</code> call. The status bar reads the width. A figure of its own, beside the others.</td></tr>
+        <tr><td><code>Ellipse</code></td><td></td><td>The centre, the end of the major axis, then a click as far from that axis as the minor half-axis is long: an exact ellipse, written into the model as one <code>ellipse</code> call. The status bar reads each half-axis as it is drawn. A figure of its own, beside the others.</td></tr>
+        <tr><td><code>Spline</code></td><td></td><td>A smooth curve through every point clicked, ended by a double click or Return. It is left open: Close Sketch joins its last point to its first with a straight line, when that is wanted. It needs three points at least; with fewer, Return says so and draws nothing. A figure of its own, beside the others.</td></tr>
+        <tr><td><code>Done with Line</code></td><td></td><td>Leave the live tool, as Escape does: the figure being drawn is ended where it is and Line is live again; Trim and Break are left without ending anything. The entry is named for the live tool ("Done with Break") and is first on the right-click menu while a sketch is open, where Cancel Sketch is last. Return does the same when no figure is under way; part way through one it ends the figure, as it always has. The status bar ends with what the live tool waits for and "Esc or Enter when done", and once figures are set aside it counts them and all their points ("7 figures, 14 points").</td></tr>
+        <tr><td><code>Finish Figure</code></td><td></td><td>End the figure being drawn where it is, open, and leave the sketch open for the next, as Return and a double click do; it is also on the right-click menu. Extrude and Revolve take every closed figure: side by side they are separate solids, and one inside another is a hole.</td></tr>
+        <tr><td><code>Close Sketch</code></td><td></td><td>Close the figure being drawn, so it can be extruded or revolved; the figures finished before it are left as they were.</td></tr>
+        <tr><td><code>Cancel Sketch</code></td><td></td><td>Throw the sketch away and leave the document as it was.</td></tr>
+        <tr><td><code>Horizontal...</code></td><td></td><td>Make the segment last under the cursor horizontal, or one asked for by number from 0 when the cursor was over none or has not moved over the view since the last constraint action; the points move as little as they can.</td></tr>
+        <tr><td><code>Vertical...</code></td><td></td><td>Make a segment vertical, the one under the cursor or one asked for by number.</td></tr>
+        <tr><td><code>Coincident...</code></td><td></td><td>Put two points in the same place: the first is the one under the cursor, or asked for by number like the second.</td></tr>
+        <tr><td><code>Dimension...</code></td><td></td><td>Make a segment, the one under the cursor or one asked for by number, the length asked for. A constraint that cannot be met with the others is said in the status bar and changes nothing.</td></tr>
+        <tr><td><code>Constraints...</code></td><td></td><td>List the sketch's constraints and remove the one chosen; the points stay where they are.</td></tr>
+        <tr><td><code>Radius...</code></td><td></td><td>Fix a circle's radius, the circle asked for by number from 0 in the order drawn; its centre stays where it is. On a sketch with arcs, a circle or an arc is chosen from a list, an arc named by its segment's number, and the arc's ends stay on their neighbours.</td></tr>
+        <tr><td><code>Diameter...</code></td><td></td><td>Fix a circle's diameter, as Radius does.</td></tr>
+        <tr><td><code>Tangent...</code></td><td></td><td>Make a segment's line, the one under the cursor or one asked for by number, touch a circle asked for by number. On a sketch with arcs, a straight segment or a circle is chosen, then a circle or an arc, so a line or a circle can touch an arc.</td></tr>
+        <tr><td><code>Concentric...</code></td><td></td><td>Give two circles, asked for by number, one centre; on a sketch with arcs, any two of its circles and arcs, chosen from a list.</td></tr>
+        <tr><td><code>Equal...</code></td><td></td><td>Make two segments the same length, or two circles or two arcs the same size, each chosen from a list. A constraint on circles or arcs that cannot be met is said in the status bar and changes nothing.</td></tr>
+        <tr><td><code>Fillet Corner...</code></td><td></td><td>Round a corner where two straight segments meet, the point under the cursor or one asked for by number, with an arc. The radius is asked every time, the last one offered (2.0 the first time). One too large for the corner is said in the status bar and changes nothing.</td></tr>
+        <tr><td><code>Chamfer Corner...</code></td><td></td><td>Cut a corner straight across, the same distance back along each side, picked as Fillet Corner picks. The distance is asked every time, the last one offered (2.0 the first time).</td></tr>
+        <tr><td><code>Offset...</code></td><td></td><td>Replace the closed sketch with its offset by a distance that is asked for, outwards, or inwards when negative, so a wall, a clearance or a gasket comes from a shape already drawn. Corners going outwards are rounded. After the distance it asks whether to keep the original, Keep both offered: kept, the offset and the original are the outline and the hole of one sketch, whichever is outside, so a gasket or a wall is one step; Replace swaps the loop for its offset. An inward offset the shape cannot take is said in the status bar and changes nothing.</td></tr>
+        <tr><td><code>Trim</code></td><td></td><td>A tool, like Line: while it is live the piece under the pointer lights up, and each click cuts the piece of line, arc, circle, ellipse or spline there back to where it next crosses another figure, or to its own end. A chain opens or comes apart there, a circle becomes the arc that is left and an ellipse the elliptical arc, and a slot is cut as its lines and caps. It stays live until another tool is chosen or Esc is pressed; a click on nothing, or on a piece that crosses nothing, says why in a box.</td></tr>
+        <tr><td><code>Mirror...</code></td><td></td><td>Copy figures across a line, keeping the originals or replacing them: every figure or one, across the X or Y axis of the sketch plane or any straight segment drawn.</td></tr>
+        <tr><td><code>Pattern...</code></td><td></td><td>Repeat a circle inside the outline of the sketch being drawn, as one sketch step: linear along the sketch's x or y, circular about the centre of another circle or arc or a centre typed, or a grid. Copies that would leave the outline, or overlap a hole or each other, are refused and nothing is drawn.</td></tr>
+        <tr><td><code>Linetype...</code></td><td></td><td>Draw figures in a linetype: every figure or one, continuous, dashed, centre or phantom, written as <code>linetype=</code> on the figure's call in the model. It changes how the figure is drawn and exported, not what an extrude or a revolve makes of it. Also on the right-click menu while sketching.</td></tr>
+        <tr><td><code>Break</code></td><td></td><td>A tool, like Trim: each click splits the line, arc or curve there in two at that place, keeping both; a closed loop or a whole ellipse opens there instead. A circle, which one cut leaves whole, is refused.</td></tr>
+        <tr><td><code>Extrude...</code></td><td></td><td>Extrude the closed sketch by a height that is asked for.</td></tr>
+        <tr><td><code>Revolve...</code></td><td></td><td>Revolve the closed sketch about an axis by an angle that is asked for. The axis is the sketch plane's own x axis, drawn in the view while the angle is asked. An outline with one straight side on the axis is turned into a solid with no hole; one that crosses the axis is refused, saying where: "the outline crosses the axis at (10, 0) and (0, 0)".</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>A sketch click snaps to what is within a few pixels of it, trying in order:
+a point already drawn, a straight segment's midpoint, an arc's or circle's
+centre, the nearest place on a straight segment, the sketch plane's own axes,
+and a grid whose spacing follows the zoom. A small mark at the pointer shows
+the snap that would fire. Hold Alt to snap to nothing.</p>
+    <p>A point already drawn can be dragged with the left button: it snaps as a
+click does, the constraints are solved again as it moves with every other
+point held, and a drag they will not allow leaves it where it was. One drag
+is one Undo. While a sketch is open, Delete (it reads Delete Segment) takes
+away the segment under the cursor: a closed loop opens there, and an open
+chain can lose either end segment. The picked parts are not touched.</p>
+    <h3 id="sheet-metal">Sheet Metal</h3>
+    <p>The same three are on the Sheet Metal toolbar.</p>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Sheet Metal">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Base Flange...</code></td><td></td><td>Make the closed sketch in hand, drawn with the line tool or as one rectangle with the rectangle tool, a sheet part: the outline a sheet's thickness thick, with each circle drawn wholly inside it cut through as a hole (an outline may hold arcs, as a slot's does, and one circle alone is a disc; no flange is bent on an arc, and the flat pattern keeps the arcs) and each rectangle drawn wholly inside it with the rectangle tool cut through as a cutout (<code>cutouts=</code> is written only when there are some), and each slot drawn wholly inside it with the slot tool cut through as a rounded slot, in any direction (<code>slots=</code> is written only when there are some). One dialog asks the material and a stocked gauge of it, or Custom and the thickness, the bend radius and the K-factor, each offered as it was last given; each number is checked as it is typed, the reason beside it, the view shows the plate faintly as it would be made, and OK, enabled only when it can be, writes a <code>base_flange</code> line into the model.</td></tr>
+        <tr><td><code>Flange...</code></td><td></td><td>Bend a flange on an edge of the picked sheet part. One dialog holds every choice: the edge (edge n runs from corner n to corner n + 1), from its list or by clicking it in the view, where the free edges are highlighted and the ones with a flange already are drawn grey and cannot be chosen, and after the outline's edges the list offers the edges of each flange already there, the two ends of its leg and its free edge, named as "Edge 3 leg, start end, 114 mm" and "Edge 3 return, free edge, 194 mm", each clicked in the view as the outline's are and written into the model as <code>(3, 'start')</code> or <code>(3, 'free')</code>; the length, and whether it runs to the leg or to the outside mould line (<code>length_from="outside"</code> is written only then); the angle (180 for an open hem); up or down; the flange's own bend radius (offered as the sheet's; <code>bend_radius=</code> is written only when it differs); how far in from the edge's start and end it begins and stops (0 for the full edge); whether to cut a bend relief slot beside each inset end; its return length, a second 90 degree bend at the leg's end and a return leg that long (0 for none; <code>return_length=</code> is written only when it is above 0); the holes through its leg, as one line <code>u, v, d; u, v, d</code> (u along the edge, v out from the bend, d the diameter; empty for none; <code>holes=</code> is written only when there are some); and the cutouts through its leg, as one line <code>u, v, w, h; u, v, w, h</code> (the centre's u and v as a hole's, w along the edge and h along the leg; empty for none; <code>cutouts=</code> is written only when there are some), and the rounded slots through its leg, as one line <code>u1, v1, u2, v2, w; ...</code> (the centres of each slot's two round ends, u and v as a hole's, and its width, in any direction; empty for none; <code>slots=</code> is written only when there are some; a line that is not groups of five numbers, or a slot that reaches the bend or meets a hole, keeps OK grey with its reason). Beside the fields a cross-section diagram shows what each means, the element of the field in focus highlighted. Each value is checked as it is typed, the reason beside its field; the view shows the flanged part faintly as it would be made; and OK is enabled only once it can be made, so nothing is refused after it. OK wraps the part's line in the model in <code>flange</code>, one undo entry.</td></tr>
+        <tr><td><code>Export Flat Pattern...</code></td><td></td><td>Write the picked sheet part's flat pattern as a DXF for a laser or a plasma table: the outline on layer CUT, the bend lines on BEND and each bend's label on NOTES, its number and its note, turned along its bend line and placed so that no two labels touch and none touches the outline; the blank's rectangle and its size on BLANK; and the bend table on BEND-TABLE, a row a bend with its angle, up or down, its radius, its allowance and how far its line lies from the blank's edge chosen in Settings &gt; View, and an ORDER column left empty to be filled in by whoever bends the part. A shop's export profile writes the flat its own way, without these. The save dialog offers DXF and SVG: a name ending .svg is written as an SVG, with the bend lines dashed, and any other as a DXF, as <code>dxcad flat --output</code> does.</td></tr>
+        <tr><td><code>Show Flat Pattern</code></td><td><code>Ctrl+Shift+F</code></td><td>Switch the view between Formed and Flat, the toggle staying pressed while Flat is shown; it is on the view's right-click menu too. Flat draws the picked sheet part as its flat alone, the other parts hidden and nothing of the formed part: the flat outline extruded by the sheet's thickness, every hole and cutout cut through it, flat on the XY plane, looked at straight down and fitted, with each bend's line and its label, turned along the line and clear of the others, the blank's rectangle drawn faintly with its size over it, and the bend table under it. Again, Formed puts the part, the other parts and the camera back as they were. It is a view, so the model, the parts and the undo history are unchanged, and the part is still counted once. Settings &gt; View can show the formed part faintly behind the flat.</td></tr>
+        <tr><td><code>Bend Table</code></td><td></td><td>On the Sheet Metal menu and the Sheet Metal Menu toolbar, not the Sheet Metal toolbar: show the picked sheet part's bend table in a box, one line per bend as <code>dxcad flat --bends</code> prints it, such as <code>bend 1: UP 90 R2, allowance 4.524 mm, length 50.000 mm</code>, or <code>No bends.</code> for a part with none. With no sheet part picked it is refused as Export Flat Pattern is. Changes nothing and adds no undo step.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="drawing">Drawing</h3>
+    <p>What is put on a drawing; off unless a drawing tab is in front.</p>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Drawing">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Key</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Add View...</code></td><td></td><td>Put one more view on the drawing: Front, Top, Right, Left, Back, Bottom or Isometric, of the whole model or, where it has several parts, of one part or one sub-assembly of it. Once chosen the view follows the cursor over the sheet, and a click puts it there, at the drawing's scale, with its hidden lines and its label; <code>Esc</code> leaves it and adds nothing. A view projected from the front goes in line with the front view where the sheet has one: Top and Bottom above and below it, Right, Left and Back beside it, so only how far along that line is taken from the click; the Front and the Isometric go where they are clicked. Each add is one undo step, the file keeps it, and it is a view like any other: a click selects it, a drag moves it and Delete takes it off. Also on the sheet's right-click menu.</td></tr>
+        <tr><td><code>Add Part Sheets...</code></td><td></td><td>Give parts of the drawing's model a sheet each. The model's sub-assemblies and parts are listed with a tick box each, none ticked; every ticked one gets a sheet of its own, on the drawing's sheet size and title block with the part's name, part number and material filled in, drawn alone in the sheet's four views: front, top, right and isometric. The sheets show as tabs along the bottom of the drawing, each named after its part, after the drawing's own sheet, which stays first; a click on a tab brings that sheet to the front, and every command of a drawing then works on it. They are made five at a time: after each five the window says which were made and asks whether to make the next, with <code>Next 5</code>, <code>Stop here</code>, which keeps those made, and <code>Cancel</code>, which takes every sheet of the run back. The sheets made are one undo step, and the drawing's file keeps them.</td></tr>
+        <tr><td><code>Line</code></td><td></td><td>Draw a straight line on the drawing's sheet: click where it starts and where it ends. Each click snaps to the nearest drawn point of a view within reach, as an add-on's sheet tools do, and with <code>Ortho</code> on the line runs across or up the sheet; a green line follows the pointer from the first point, and <code>Esc</code> takes the first point back, or with none ends the command. The line is drawn in the drawing's line type, chosen under Line type in Drawing properties: thin, thick (printed as a view's visible edges), centre (long dash and short) or hidden (dashed). Right-click a line for its own Line Type, and for Attach to View, which makes a line drawn over a view move with the view when it is dragged or rescaled, or Detach from View, which leaves it where it is on the sheet. A click selects a line, its points show as handles to drag, and Delete takes it off. Each change is one undo step, the drawing's file keeps the lines, and the PDF and DXF exports carry them on their own layers: LINES, LINES_THICK, LINES_CENTRE and LINES_HIDDEN.</td></tr>
+        <tr><td><code>Polyline</code></td><td></td><td>Draw lines through several points on the drawing's sheet: click each point, then press <code>Enter</code> to finish, with two points or more. The points snap, and follow <code>Ortho</code>, as <code>Line</code>'s do; <code>Esc</code> takes the last point back, or with none ends the command. The polyline is one line of the drawing's line type, and everything said of <code>Line</code> holds for it.</td></tr>
+        <tr><td><code>Ortho</code></td><td><code>F8</code></td><td>Turn Ortho on or off: while it is on, each new segment of a <code>Line</code> or <code>Polyline</code> runs across or up the sheet, whichever is nearer the pointer.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="window">Window</h3>
+    <p>How the open documents are laid out (item 681). The window opens them as the
+last window left them.</p>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Window">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Tile</code></td><td></td><td>Show every open document at once, as inner windows side by side filling the window, each with its own 3D view of its own parts, its own minimise, maximise and close buttons, and its file name as its title. A click on one brings its document to the front, and the Parts, History and other docks follow it; its cross closes it as its tab's does, asking to save it first when it has changes; maximising it goes back to tabs. The same button, a rectangle split in two, is at the right of the tabs.</td></tr>
+        <tr><td><code>Cascade</code></td><td></td><td>The open documents as inner windows, as Tile, overlapping from the top left.</td></tr>
+        <tr><td><code>Tabs</code></td><td></td><td>Back to one tab per document, the one in front filling the window. The default.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="drafting-pro">Drafting Pro</h3>
+    <p>Drafting Pro is a paid add-on (item 742). Until it is installed, its commands are listed here in italics with a padlock, each named with the add-on's name; command search finds them too. Once it is installed, enabled or disabled, its own menu is the only Drafting Pro menu and none of these is listed (item 901): it counts as installed when a plugin named Drafting Pro, or from the dxcad-drafting-pro distribution, is there. What a listed command's panel says depends on where your licence stands: during your 30-day trial, the add-on is free, so the panel says "Free during your trial": download Drafting Pro and install it with Help &gt; Add-ons &gt; Install from File, with a Download button, and Help &gt; Add-ons says the same. After the lock day, unless a licence names it, the panel gives its price and a Buy link.</p>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Drafting Pro">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Dimensions - Drafting Pro</code></td><td></td><td>Place dimensions on a drawing's views by picking edges and points. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Balloons - Drafting Pro</code></td><td></td><td>Number the parts on a drawing with balloons that match its parts list. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Hole tables - Drafting Pro</code></td><td></td><td>List a view's holes in a table, with their positions and sizes. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Tolerances - Drafting Pro</code></td><td></td><td>Give a dimension its limits or fits. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>GD&amp;T frames and datums - Drafting Pro</code></td><td></td><td>Add geometric tolerance frames and datum symbols. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Surface texture and weld symbols - Drafting Pro</code></td><td></td><td>Add surface texture and weld symbols to a drawing. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Revision table and notes - Drafting Pro</code></td><td></td><td>Keep a drawing's revisions in a table, and its general notes. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Automatic dimensioning and ballooning - Drafting Pro</code></td><td></td><td>Dimension and balloon a drawing's views in one step. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Section view - Drafting Pro</code></td><td></td><td>A drawing view cut along a line through the part. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Detail view - Drafting Pro</code></td><td></td><td>An enlarged view of part of another view. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Shaded view - Drafting Pro</code></td><td></td><td>A drawing view shaded as the 3D view shows the part. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Exploded view - Drafting Pro</code></td><td></td><td>A drawing view of an assembly with its parts drawn apart. Greyed: it opens a panel saying what Drafting Pro adds, and how to get it, and runs nothing.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="fabrication">Fabrication</h3>
+    <p>Fabrication is a paid add-on (item 742). Until it is installed, its commands are listed here in italics with a padlock, each named with the add-on's name; command search finds them too. Once it is installed, enabled or disabled, its own menu is the only Fabrication menu and none of these is listed (item 901): it counts as installed when a plugin named Fabrication, or from the dxcad-fabrication distribution, is there. What a listed command's panel says depends on where your licence stands: during your 30-day trial, the add-on is free, so the panel says "Free during your trial": download Fabrication and install it with Help &gt; Add-ons &gt; Install from File, with a Download button, and Help &gt; Add-ons says the same. After the lock day, unless a licence names it, the panel gives its price and a Buy link.</p>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Fabrication">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>Shape library - Fabrication</code></td><td></td><td>Ready-made sheet-metal shapes, sized from a few numbers. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Cones - Fabrication</code></td><td></td><td>A sheet-metal cone or frustum, and its flat. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Transitions - Fabrication</code></td><td></td><td>Square-to-round and other transitions, and their flats. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Elbows - Fabrication</code></td><td></td><td>Segmented elbows for ducts and pipes, and their flats. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Branches - Fabrication</code></td><td></td><td>Tees and branches where two ducts meet, and their flats. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Weldments - Fabrication</code></td><td></td><td>Frames of structural members, cut and listed. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Nesting - Fabrication</code></td><td></td><td>Lay the flats out on sheets of stock with as little waste as fits. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Bend allowance tables - Fabrication</code></td><td></td><td>A shop's own bend allowances by material, thickness and tool. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+        <tr><td><code>Calibration wizard - Fabrication</code></td><td></td><td>Work out a press brake's K-factors from test bends. Greyed: it opens a panel saying what Fabrication adds, and how to get it, and runs nothing.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 id="help">Help</h3>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Help">
+    <table>
+      <thead><tr><th scope="col">Action</th><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>User Guide</code></td><td></td><td>Open this guide inside DX-CAD, in a help window of its own, at its first page. The pages are the ones DX-CAD was installed with, so it opens with no network.</td></tr>
+        <tr><td><code>Help on This</code></td><td><code>F1</code></td><td>Open the guide at the topic of what you are at: the dialog that is open, the command a menu has highlighted or the toolbar button under the pointer, the command being carried out, or the panel the focus is in; see <a href="#the-help-window">The help window</a>. With none of those it opens the first page.</td></tr>
+        <tr><td><code>Licence...</code></td><td></td><td>Where this install's licence stands: free for 30 days from this install's first start, then a licence; editing locks at 23:59 UK time on the trial's last day (from 30 days before, the notice "Your 30-day trial ends on DATE", also shown at start 30, 14 and 7 days before). An install first started under 0.1.0 keeps until 23:59 UK time on 15 November 2026, if that is later than its 30 days. The paid add-ons, Fabrication and Drafting Pro, are free through the trial while no licence key is held, and lock with editing on the lock day; the line under the status names them and the day, as the notices do. Type a key (DXC-XXXXX-XXXXX-XXXXX-XXXXX) and press Activate, or sign in with your email: type the address the licence was bought with, press Send code, type the six digits from the email and press Sign in (one licence activates at once; several are listed to choose from); Deactivate gives the seat back for another computer. An activated licence works offline for up to 14 days. With no trial or licence, every file still opens, shows and exports, and only editing and saving are locked. The box shows the install id the licence service counts a seat by.</td></tr>
+        <tr><td><code>Add-ons...</code></td><td></td><td>List every installed plugin with its version, publisher, licence state and whether it is enabled. Install from File... takes a plugin wheel (.whl), checks it is a DX-CAD plugin for this platform and plugin API, refusing it with the reason if not, and installs it into DX-CAD's own add-ons folder; Disable keeps the plugin picked installed but not loaded, Enable loads it again, and Remove uninstalls it. Each change takes effect when DX-CAD is restarted. <code>dxcad addons</code> does the same from the command line. While your trial makes Fabrication or Drafting Pro free and it is not installed, a line over the list says so, "Free during your trial: download Fabrication and install it with Help &gt; Add-ons &gt; Install from File.", with a Download button for each.</td></tr>
+        <tr><td><code>Licences...</code></td><td></td><td>Show THIRD-PARTY-NOTICES.md as this copy of DX-CAD ships it: every library it runs on with its version and licence, and the LGPL texts in full.</td></tr>
+        <tr><td><code>Keyboard Shortcuts</code></td><td></td><td>A table of every action that has a shortcut, by menu, action and keys, read from the window's own actions, with a box to search it. The same table is under <a href="#keyboard-shortcuts">Keyboard shortcuts</a> below.</td></tr>
+        <tr><td><code>Search Commands...</code></td><td><code>Ctrl+K</code></td><td>A box over every command that can be used now: each word typed narrows the list to the commands whose name holds it, or another name it commonly goes by (Base Flange/Tab, Edge Flange, Hem, Miter Flange, Flat Pattern, Flatten, Mate, SmartMates, Exploded View, Bill of Materials), and Enter or a double click runs the one picked. Those commands' tooltips say the other names too ("Also called: ...").</td></tr>
+        <tr><td><code>Open Log Folder</code></td><td></td><td>Open the folder DX-CAD's log is kept in, <code>DX-CAD\logs</code> under your local app data on Windows. The log holds the version, the platform, each action and each refusal, and any error in full, in five files of up to 1 MB; nothing in it is sent anywhere.</td></tr>
+        <tr><td><code>Copy Support Report</code></td><td></td><td>Put the support report on the clipboard, the text <code>dxcad doctor --report</code> prints, for a bug report: the versions of DX-CAD, Python, OCCT and Qt, the OS, the OpenGL renderer and version, where the settings and the log are kept, the plugins and their state, the theme and the log's last 50 lines. Your own folder is written as <code>~</code>, and nothing personal is in it.</td></tr>
+        <tr><td><code>Check for Updates</code></td><td></td><td>Ask GitHub for DX-CAD's latest release and say either "DX-CAD is up to date" or "Version X is available", with a link to the release. Offline, or on any error, the status bar says it could not check. Nothing is sent but the request itself. Settings &gt; Updates &gt; Check for updates at start, on as shipped, asks as the window opens (one request to github.io for latest.json, with no identifier) and says only a newer release, in the status bar; with no network it says nothing and the window does not wait. Untick it there to switch it off.</td></tr>
+        <tr><td><code>About DX-CAD</code></td><td></td><td>Say which version of DX-CAD this is and the commit it was built from, the Python, OCCT (cadquery-ocp) and Qt it runs on, and the platform; the licence (the DX-CAD EULA, free for 30 days from first start, then a licence, with opening, viewing and exporting free; the SDK under Apache 2.0), with a link to the third-party notices; the patent line and Designmatix Ltd; and links to the website, these docs and the issues. Copy puts the version lines on the clipboard for a bug report: the same lines <code>dxcad --version --verbose</code> prints.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Every 5 minutes, and each time a model is run, every tab with changes that
+are not saved is kept in a recovery folder (<code>DX-CAD\recovery</code> under your
+local app data on Windows), one file per tab, gone once the tab is saved or
+closed. If DX-CAD did not close cleanly, the next start lists what was kept,
+by name and time, with <code>Recover</code> (each opens as a tab with its changes; Run
+builds it again), <code>Discard</code> and <code>Later</code>. How often is a setting, under
+Recovery in the Settings dialog; 0 switches it off.</p>
+    <p>When something goes wrong that DX-CAD did not expect, it writes the whole
+story to the log and shows a box with one line saying what happened and
+three buttons: <code>Copy Details</code> puts the version, the platform and the error in
+full on the clipboard, for a bug report; <code>Open Log Folder</code> opens the log; and
+<code>Continue</code> closes the box, and the window carries on.</p>
+    <h2 id="the-help-window">The help window</h2>
+    <p>Help &gt; User Guide opens this guide in a window of DX-CAD's own, at its first
+page. <code>F1</code> opens it at the topic of what you are at, looked for in this
+order: the dialog that is open; the command a menu has highlighted, or the
+toolbar button under the pointer; the command being carried out (the sketch
+tool that is live, a part being moved, a view being placed on a drawing,
+Zoom Window waiting for its rectangle, a section view); the panel the focus
+is in; and, with none of those, the first page. Every dialog of DX-CAD's own
+has a <code>?</code> button beside its other buttons that opens the same topic as <code>F1</code>
+does there. An add-on's dialogs are the add-on's own and have none.</p>
+    <p>In the help window, Back and Forward go through the pages looked at, Start
+goes to the first page, and a link opens the page it names; a link to a web
+address opens in your browser. The box at the top searches the topics, every
+heading of the guide and every command by the words typed, and Enter or a
+click opens the one picked. The window takes the light or the dark theme
+with the view, and it stays open while a dialog is.</p>
+    <p>A command that is carried out in steps has them at the top of its topic, a
+line each. Asked for while the command is under way, with <code>F1</code> or <code>?</code>, the
+help says which step you are on, marked, and the steps left: a line being
+drawn, a part being moved, a view being placed, a rectangle being dragged for
+Zoom Window. The commands a new user meets first also have a short
+animation of the command carried out on an example, shown above the page: it
+plays as the topic opens and goes round until Pause is pressed, and Play
+starts it again.</p>
+    <h2 id="the-panels">The panels</h2>
+    <p>What each part of the window is, which is where <code>F1</code> lands with the focus in
+it.</p>
+    <h3 id="the-3d-view">The 3D view</h3>
+    <p>The document's parts, drawn by the OpenCASCADE viewer. A left drag orbits,
+a middle drag pans and the wheel zooms at the pointer; a click picks the
+part, face or edge under it, and Ctrl+click adds one to what is picked.
+File &gt; Settings &gt; Controls can make the middle button orbit instead. The view's right-click menu has the
+commands that act on what is picked. Fit, the seven views and the display
+modes are under View and on the View and Display toolbars.</p>
+    <h3 id="the-drawing-sheet">The drawing sheet</h3>
+    <p>A drawing tab shows its sheet in the view's place: the views, their sizes
+and labels, the title block and the parts list. A click selects a view and a
+drag moves it; the wheel zooms at the pointer and a middle drag pans, and
+View &gt; Fit Sheet shows the whole sheet again. A right-click on a view or on
+the sheet has what can be changed there. With several sheets, the tabs along
+the bottom choose the one shown.</p>
+    <p>A view may be turned a quarter turn at a time about its own centre, which
+stays where it is: Rotate 90 Anticlockwise and Rotate 90 Clockwise on the
+view's right-click menu, or Rotation in Drawing properties, 0, 90, 180 or 270
+degrees anticlockwise. Its lines, hidden lines, centre lines and sizes turn
+with it; a size says what it said before, and the words and the view's label
+stay level. Each turn is one undo step, and the drawing keeps it when saved.
+A top or right view turned is no longer kept in line with the front, as one
+unlocked; turning the front turns only the front.</p>
+    <p>Every text of the title block, a field's value and a cell's caption alike,
+can be dragged to another place on the sheet, as a view is; only the text
+dragged moves while the pointer does. Each drag is one undo step, the drawing
+keeps how far each text was moved when saved, and the sheet, the DXF and the
+PDF draw it there. Reset Text Positions, on the title block's right-click
+menu, puts every text back where the template has it, as one undo step.</p>
+    <h3 id="the-parts-list">The Parts list</h3>
+    <p>The Parts dock, on the left: the document's parts in the model's order, a
+sub-assembly's parts under it. A click on a row picks the part and puts the
+model pane on its line, and the eye beside a row hides or shows the part.
+Under the list are the picked part's properties: its name, volume, size,
+material, mass and colour. View &gt; Parts shows or hides the dock.</p>
+    <h3 id="the-history-list">The History list</h3>
+    <p>The History tab beside Parts: every edit the undo history holds, oldest
+first, the current one marked. A click on an earlier entry undoes back to
+it, and on a later one redoes to it. View &gt; History shows or hides it.</p>
+    <h3 id="the-feature-tree">The Feature Tree</h3>
+    <p>Each part in the order the model builds it and, beneath it, its features,
+its sketches and its mates. A click on a row picks the part and puts the
+model pane on that row's line. Nothing in the tree is dragged or
+re-ordered. View &gt; Feature Tree opens and closes it. A double click on a
+flange's row, or Edit Flange... on its right-click menu, opens
+<a href="#the-flange-dialog">the Flange dialog</a> on that flange.</p>
+    <h3 id="the-output-pane">The output pane</h3>
+    <p>Under the model pane: what the last run printed, and what a command
+refused and why. View &gt; Output shows or hides it.</p>
+    <h3 id="the-assistant">The Assistant</h3>
+    <p>The Assistant dock, along the bottom of the view: type a request and the
+steps taken to build or change the document show in the chat, each one
+written into the model and one Undo. Stop ends a turn. View &gt; Assistant, or
+<code>Ctrl+Shift+A</code>, shows or hides it, and File &gt; Settings &gt; Assistant chooses
+the provider and its model.</p>
+    <p>Each request carries model.py whole, as far as the provider has room for
+it: 200,000 characters to Claude (your own Anthropic key or the DX-CAD
+account), 100,000 to OpenAI, Azure OpenAI and Gemini, and 24,000 to an
+OpenAI-compatible endpoint, or two characters for each token of its Context
+size (tokens) in Settings &gt; Assistant where you give it. A longer script is
+cut at the end of a line, and the request says after which line it was cut.</p>
+    <h3 id="drawing-properties">Drawing properties</h3>
+    <p>While a drawing tab is in front, the left dock shows the sheet's size, its
+Title Block..., the parts list's columns and, for the view clicked on the
+sheet, its label, its scale and its hidden lines.</p>
+    <p>A new view's hidden lines are off: tick Hidden lines to show that view's, a
+view Add View put there as much as one of the sheet's four. Leave out small
+parts, with a size in mm, leaves the parts whose largest size is under it
+out of that view's lines only; the other views, the view's sizes and the
+parts list are as they were.</p>
+    <p>A new drawing's centre marks, the two centre lines across each hole a view
+sees round, are off, unless its model calls <code>centre_marks(True)</code>. Centre
+marks under the sheet turns them on or off for the whole drawing, and Centre
+marks under the view clicked for that view alone, over the drawing's; each
+is one undo entry and the .dxcdrg keeps both. A drawing saved before them
+opens with them on.</p>
+    <p>Line type is the type Drawing &gt; Line and Polyline draw with: Thin, Thick,
+Centre or Hidden. The drawing's file keeps it, and a change is one undo
+step; a line already drawn keeps its own type, changed on its right-click
+menu.</p>
+    <p>Text height is the height the drawing letters in: Sheet's own, 2.5, 3.5, 5
+or 7 mm. The views' labels, the title block's fields, the dimensions and an
+add-on's annotations take it; the drawing's file keeps it, and a change is
+one undo step.</p>
+    <h3 id="large-assemblies-on-a-drawing">Large assemblies on a drawing</h3>
+    <p>A drawing of a model of more than 100 parts (the number is in File &gt;
+Settings, under Drawings) asks once, as it is made: "This is a large
+assembly. Lay it out for speed: one view per sheet, scaled to half the sheet
+and centred, the parts list on a sheet of its own, hidden lines off?" Yes
+makes a sheet each for the front, top, right and isometric views and one for
+the parts list, as tabs along the bottom; No makes the usual sheet. Either
+way each sheet is one like any other afterwards: its scale, its view's
+place, its hidden lines and what it shows are changed as on any sheet, and a
+view taken off is put back with Add View.</p>
+    <p>Only the sheet on screen is worked out; another is worked out when its tab
+is shown. Export Drawing writes every sheet: a page each in a PDF, side by
+side in a DXF.</p>
+    <p>A large view shows at once as its outline, every edge seen straight through,
+and its lines, with what is hidden taken out, come in behind while the
+window stays free; the status bar says how many views are still being worked
+out.</p>
+    <h3 id="the-start-page">The start page</h3>
+    <p>Shown when nothing is open: New, Open, the recent files, the examples as
+pictures (one click opens an example as a new unsaved tab), a link to these
+docs and Connect Claude Desktop. View &gt; Start Page brings it back.</p>
+    <h2 id="the-dialogs">The dialogs</h2>
+    <p>One topic for each dialog of DX-CAD's own, which is where its <code>?</code> button
+and <code>F1</code> open this guide. The command that opens each is under
+<a href="#the-menus">The menus</a>.</p>
+    <h3 id="the-about-box">The About box</h3>
+    <p>Help &gt; About DX-CAD: the version and the commit it was built from, the
+Python, OCCT and Qt it runs on, the platform, the licence and the links.
+Copy puts the version lines on the clipboard for a bug report; Close shuts
+the box.</p>
+    <h3 id="the-add-ons-box">The Add-ons box</h3>
+    <p>Help &gt; Add-ons...: every installed plugin with its version, publisher,
+licence state and whether it is enabled. Install from File... takes a plugin
+wheel, Disable and Enable switch the one picked off and on, and Remove
+uninstalls it. Each change takes effect when DX-CAD is started again. An
+install or a removal also says so in a message box ("Installed NAME VERSION.
+Restart DX-CAD to load it."), and until DX-CAD restarts the Version of an
+add-on installed over another reads "VERSION (after restart)", since the one
+running is still the old one.
+While your trial makes an add-on on sale free and it is
+not installed, a line over the list says where to download it, with a
+Download button; one installed, enabled or disabled, is never offered. It
+counts as installed by its plugin's name or its distribution's, as its
+menu does (item 901). Install from File... installs the wheel downloaded.</p>
+    <h3 id="the-bill-of-materials-box">The Bill of Materials box</h3>
+    <p>Model &gt; Bill of Materials...: the parts as lines, with how many of each,
+volume, mass and size. Save CSV... writes the same table to a file; Close
+shuts the box and changes nothing.</p>
+    <h3 id="the-command-search">The command search</h3>
+    <p>Help &gt; Search Commands..., or <code>Ctrl+K</code>: type part of a command's name, or
+of another name it commonly goes by, and the list narrows to the commands
+that can be used now. Enter or a double click runs the one picked; Esc
+leaves without running anything.</p>
+    <h3 id="the-error-box">The error box</h3>
+    <p>Shown when something went wrong that DX-CAD did not expect: one line saying
+what happened, with the whole story in the log. Copy Details puts the
+version, the platform and the error on the clipboard, Open Log Folder opens
+where the log is kept, and Continue closes the box; the window carries on.</p>
+    <h3 id="the-flange-dialog">The Flange dialog</h3>
+    <p>Sheet Metal &gt; Flange...: every choice of a flange on an edge of the picked
+sheet part, the edge, the length, the angle, up or down, the bend radius,
+the insets, the reliefs, the return, and the holes, cutouts and rounded slots
+through its leg; the diagram's legend says the leg takes all three. Each value is checked as it is typed, with the reason beside its
+field, the picture beside the fields shows what the field in focus means,
+and the view shows the part faintly as it would be made. OK is enabled only
+when the flange can be made. The Edge list holds the outline's edges and
+then the edges of the flanges already there: the two ends of each one's leg
+and its free edge, so a part with a flange on every edge of its base can
+take more. On one of those Direction reads "towards the inside", the side
+that flange's own bend has its inside, and "outward", and relief is
+refused. F1 shows the command's steps, the one in hand marked. The corner
+post of the tutorial is built with this dialog
+alone. Return angle and Return turns bend a return its own way: any angle
+above 0 and below 180, turned in, back over the base, or out, away from it;
+they are read only when Return length is above 0. Hem makes the flange a
+hem by name: closed, the leg folded flat onto the base, or teardrop, bent
+past 180 round Teardrop radius until its free edge comes down to the base.
+While one is chosen Angle and Bend radius are grey, since a hem has its own,
+and Teardrop radius is read for a teardrop alone; an open hem is still
+Angle 180 with Hem left at none.</p>
+    <p>All edges puts a flange on every free edge of the outline in one go. Ticked,
+a table opens under the fields with a row for each of those edges: the edge,
+then its Length, Length to, Angle, Direction, Bend radius, Return length,
+Start inset, End inset and Corners. Every row starts with the fields' values
+as they stood and is then its own; a number is typed in its cell and a choice
+made in its list. A row whose edge is unticked gets no flange. The flanges
+are made in the rows' order and are one undo step. A table's flanges take no
+relief, holes or cutouts: those are given to one flange, with the box
+unticked.</p>
+    <p>When a value is wrong the dialog says which edge, which value and why, as
+"Edge 2: Angle 200: an angle is above 0 and at most 180." When each value is
+right in itself but the flange would run into the part, it names the length
+to shorten, the return first and then the leg, and the longest that works
+there, which it finds by making the flange shorter.</p>
+    <p>Edit Flange changes a flange the model already has. Double-click the
+flange's row in the Feature tree, or right-click it and choose Edit
+Flange...: the dialog opens with the values the flange was written with, its
+edge kept. OK writes the flange() call again and builds the part from that
+flange on, everything made after it included, as one undo step. The view
+shows nothing of the edit until then. A flange whose values the model works
+out, from a variable or a loop, is changed in the model pane, which is put
+on its line; an edit after which a later step no longer builds is refused
+with that step's reason, and nothing changes.</p>
+    <h3 id="the-base-flange-dialog">The Base Flange dialog</h3>
+    <p>Sheet Metal &gt; Base Flange...: the material and a stocked gauge of it, or
+Custom with the thickness, the bend radius and the K-factor, for the sheet
+part made from the closed sketch in hand. Each number is checked as it is
+typed, and OK is enabled only when the part can be made.</p>
+    <h3 id="the-check-interference-box">The Check Interference box</h3>
+    <p>Model &gt; Check Interference...: the pairs of parts that overlap, each with
+the volume they share. The overlaps show in red in the view until the box
+is closed.</p>
+    <h3 id="the-licences-box">The Licences box</h3>
+    <p>Help &gt; Licences...: the third-party notices as this copy of DX-CAD ships
+them, every library it runs on with its version and licence, and the LGPL
+texts in full.</p>
+    <h3 id="the-licence-box">The Licence box</h3>
+    <p>Help &gt; Licence...: where this install's licence stands. Type a licence key
+and press Activate, or sign in with the email address the licence was
+bought with: Send code, then the six digits from the email and Sign in.
+Deactivate gives the seat back for another computer. The box shows the
+install id a seat is counted by.</p>
+    <p>Licences go on sale on 1 November 2026, or the day the release's latest.json
+names. Until that day, Activate, Send code and Sign in contact nothing: each
+says, in a box titled "Licences from 1 November 2026", that licences (a paid
+subscription) are available from that day, and that DX-CAD and its add-ons
+cost nothing until your trial ends. Until then the box and the trial's
+notices say "Licences are available from 1 November 2026." where they would
+give a link to buy one. The box says each date once: one line for DX-CAD's
+trial (the days left, its last day and the day editing and saving lock
+without a licence) and one for the add-ons, "Free during your 30-day trial
+(ends DATE)", which lock with editing unless a licence names them; it grows
+to show every line in full, also after an answer. Deactivate is greyed
+unless a licence is activated on this computer. When the licence service
+cannot be reached, it says only "DX-CAD could not reach the licence service.
+Check your internet connection and try again."; what went wrong is written
+to DX-CAD's log, with no key, code, email or token in it. latest.json may
+also name a day no trial ends before (its <code>trial_until</code>): a trial that would
+end sooner then locks at 23:59 UK time on that day, and the box and the
+notices say that day.</p>
+    <p>An activated licence is checked online at least every 14 days: at each start
+and every 8 hours while DX-CAD is open, the status bar saying "Checking the
+licence..." at a start that needs it until the answer comes. If it could
+not be (the computer offline that long, or the clock set back past the last
+check), the box, the status bar and the command line say "Your licence could
+not be checked online in the last 14 days", not that a trial has ended; the
+next start with the network back checks it again with nothing typed, and the
+key box holds the key last used, ready to activate again.</p>
+    <p>DX-CAD keeps the latest date and time it has seen on this computer, a moment
+and nothing else, and never moves it back. If the computer's clock is set
+more than a day before it and no licence is active, the box and the status
+bar say "The computer's clock is set earlier than the last time DX-CAD ran",
+with that day, and editing and saving wait until the clock is set right;
+opening, viewing and exporting still work. This keeps a clock set back from
+reopening a trial that has ended. It never locks before that day has
+really passed, so never during the trial, which lets everyone edit
+whatever the clock says, and never with a licence active, whose
+add-ons stay granted too; a clock that jumps more
+than two days ahead is not believed until a server's date agrees, so a
+clock set ahead by mistake and set right again locks nothing; and a server's
+date wins over the computer's. When DX-CAD has asked the network anyway
+(the update check, the licence service), it compares the computer's clock
+with the server's: more than an hour apart, the box says so ("Your
+computer's clock is 3 hours behind the server's"), and a server more than a
+day ahead counts as the latest time seen. Nothing locks on the gap alone.</p>
+    <h3 id="an-add-ons-panel">An add-on's panel</h3>
+    <p>A greyed command of an add-on that is not installed opens a short panel:
+the command, the add-on it belongs to and what the add-on adds, with a Buy
+button that opens the add-on's page in your browser. Nothing is run and
+nothing is sent.</p>
+    <h3 id="the-add-part-sheets-box">The Add Part Sheets box</h3>
+    <p>Drawing &gt; Add Part Sheets...: the model's sub-assemblies and parts, each
+with a tick box, none ticked. Tick the ones that are to have a sheet of
+their own and press Make Sheets; Cancel adds nothing. The sheets are
+made five at a time, with a question after each five.</p>
+    <h3 id="the-recovery-box">The recovery box</h3>
+    <p>Shown at the start when DX-CAD did not close cleanly: the tabs that had
+changes not saved, each by its name and when it was kept. Recover opens
+every one as a tab with its changes, Discard throws them away, and Later
+leaves them for the next start.</p>
+    <h3 id="the-settings-dialog">The Settings dialog</h3>
+    <p>File &gt; Settings...: the settings in groups. Mode is 2D drafting or 3D
+modelling; View holds Show Planes; Runs, the seconds a run of the model is
+given; Recovery, the minutes between keeps of
+the unsaved tabs; Parts, the default material; Updates, whether to check at
+the start; Controls, DX-CAD's own mouse and keys or the classic CAD
+controls; and Assistant, its provider, model and address. OK keeps the
+changes and Cancel leaves everything as it was. View's Toolbars... button
+opens the Toolbars box, whose OK shows and hides the toolbars at once.</p>
+    <h3 id="the-keyboard-shortcuts-box">The Keyboard Shortcuts box</h3>
+    <p>Help &gt; Keyboard Shortcuts: every action that has a shortcut, by menu,
+action and keys, read from the window's own actions. The box at the top
+searches actions and keys.</p>
+    <h3 id="the-suggest-mates-box">The Suggest Mates box</h3>
+    <p>Model &gt; Suggest Mates...: the mates the picked part's features allow
+against the parts near it, best first. Picking a row shows where the part
+would go. Tick the ones to add and press Accept Checked, or Accept All;
+Cancel adds none.</p>
+    <h3 id="the-title-block-dialog">The Title Block dialog</h3>
+    <p>File &gt; Title Block...: the fields filled in once for every drawing,
+company, drawn by, checked by, material, finish, general tolerance, drawing
+number and revision, and the font and height the drawing is lettered in. OK
+keeps them for every drawing made after; Cancel leaves them as they were.</p>
+    <p>Every text a title block shows has a line (item 974), the ones the sheet
+fills itself too: title, model, scale, size, sheet and date, and the default
+sheets' customer, project, drawing type and status, manufacturing order
+number, copyright statement, sheet count and revision table. A text the
+sheet fills itself shows what it fills it with, greyed, as its hint: left
+blank it stays automatic, typed it is used instead. File &gt; Title Block...
+lists every sheet's texts, as defaults for each new drawing; the Title
+Block... button in Drawing properties lists the texts of the drawing in
+front's own sheet, kept in its .dxcdrg, and OK there is one undo step. The
+lines scroll; the font, the text height, OK and Cancel stay in view.</p>
+    <h3 id="the-toolbars-box">The Toolbars box</h3>
+    <p>View &gt; Toolbars..., or the Toolbars... button in File &gt; Settings: every
+toolbar the window has, the add-ons' too, in the order they stand, ticked
+if it is shown. Show All ticks every one and Hide All unticks them; OK shows
+and hides them together and keeps the choice for the next start, and Cancel
+leaves them as they were.</p>
+    <h3 id="the-whats-new-box">The What's New box</h3>
+    <p>Shown once after an update: what changed in the version now installed, as
+its release notes say it. Close shuts it.</p>
+    <h2 id="keyboard-shortcuts">Keyboard shortcuts</h2>
+    <p>Every action that has a shortcut, as Help &gt; Keyboard Shortcuts lists it.
+The table is written by <code>python -m dxcad.docsgen shortcuts</code> from the
+window's own actions, and a test fails if it drifts. Ctrl is Cmd on a Mac.</p>
+    <div class="tw" role="region" tabindex="0" aria-label="Table: Keyboard shortcuts">
+    <table>
+      <thead><tr><th scope="col">Menu</th><th scope="col">Action</th><th scope="col">Keys</th></tr></thead>
+      <tbody>
+        <tr><td>File</td><td>New Part</td><td><code>Ctrl+N</code></td></tr>
+        <tr><td>File</td><td>Open...</td><td><code>Ctrl+O</code></td></tr>
+        <tr><td>File</td><td>Save</td><td><code>Ctrl+S</code></td></tr>
+        <tr><td>File</td><td>Save As...</td><td><code>Ctrl+Shift+S</code></td></tr>
+        <tr><td>File</td><td>Save Model</td><td><code>Ctrl+Shift+M</code></td></tr>
+        <tr><td>Edit</td><td>Undo</td><td><code>Ctrl+Z</code></td></tr>
+        <tr><td>Edit</td><td>Redo</td><td><code>Ctrl+Y</code></td></tr>
+        <tr><td>Edit</td><td>Delete</td><td><code>Del</code></td></tr>
+        <tr><td>Edit</td><td>Go to Line...</td><td><code>Ctrl+G</code></td></tr>
+        <tr><td>Edit</td><td>Find...</td><td><code>Ctrl+F</code></td></tr>
+        <tr><td>Edit</td><td>Find Next</td><td><code>F3</code></td></tr>
+        <tr><td>Edit</td><td>Find Previous</td><td><code>Shift+F3</code></td></tr>
+        <tr><td>Edit</td><td>Replace...</td><td><code>Ctrl+H</code></td></tr>
+        <tr><td>View</td><td>Fit Selection</td><td><code>Shift+F</code></td></tr>
+        <tr><td>View</td><td>Zoom Window</td><td><code>W</code></td></tr>
+        <tr><td>View</td><td>Hide</td><td><code>H</code></td></tr>
+        <tr><td>View</td><td>Show All</td><td><code>Shift+H</code></td></tr>
+        <tr><td>View</td><td>Continuous Orbit</td><td><code>Ctrl+Shift+O</code></td></tr>
+        <tr><td>View</td><td>Assistant</td><td><code>Ctrl+Shift+A</code></td></tr>
+        <tr><td>Model</td><td>Run Script</td><td><code>F5</code></td></tr>
+        <tr><td>Sheet Metal</td><td>Show Flat Pattern</td><td><code>Ctrl+Shift+F</code></td></tr>
+        <tr><td>Drawing</td><td>Ortho</td><td><code>F8</code></td></tr>
+        <tr><td>Help</td><td>Help on This</td><td><code>F1</code></td></tr>
+        <tr><td>Help</td><td>Search Commands...</td><td><code>Ctrl+K</code></td></tr>
+        <tr><td>Window</td><td>Next Tab</td><td><code>Ctrl+Tab</code></td></tr>
+        <tr><td>Window</td><td>Previous Tab</td><td><code>Ctrl+Shift+Tab</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h2 id="the-model-pane">The model pane</h2>
+    <p>The pane on the right is the model.py, and it is the document's source of
+truth: the shapes in the scene are what the last run of that text built.
+Typing in it changes nothing until the model is run.</p>
+    <ul>
+      <li><strong>Run Script</strong>, or <strong>F5</strong>, runs it. What it prints goes to the output pane, and a model that raises puts the cursor on the line that raised, with the helper file's own line above it when the failure was in a file beside the model.</li>
+      <li><strong>Run on Change</strong> watches the model.py on disk, and its helpers, and runs the model again whenever one of them is saved. It is for an editor in another window: the pane follows the file rather than the other way round. It is off for every new window and is taken off again by New and by Open.</li>
+      <li><strong>No Time Limit</strong> lifts the limit a run is given, a minute unless Settings &gt; Runs sets another, from 5 s to an hour. A run happens on the window's own thread, so a model that never ends is a window that never answers again; the limit is there so that a typo costs a minute rather than everything typed since the last save. A run or a check the limit stops says so in one sentence, on the status line, in the output pane and in Copy Details alike ("Stopped at the 60 s time limit; Model &gt; No Time Limit lifts it"), with no trace and no line of the model marked, and the document is as it was before the run. The tick is remembered from one session to the next, and stays through New, Open and a change of tab; an agent's run in the window is held to the same limit.</li>
+      <li><strong>Check Model</strong> runs the model and says what it would change without changing anything, and <strong>Show in Script</strong> goes the other way, from a part in the scene to the line that built it.</li>
+      <li><strong>Adopt Parts</strong> is for a document holding parts no model builds, which is what an older project looks like: it writes each of them to a file beside the project and adds the line that reads it back, so the model builds everything again.</li>
+    </ul>
+    <h2 id="the-model-a-project-carries">The model a project carries</h2>
+    <p>A part or assembly file is something people are sent, and the model inside one is a program.
+So a project opened from a file is asked about before its model is run for the
+first time, by Run, by F5 or by Run on Change: the question says that a model
+is Python and runs with your own permissions, and names the project. Answering
+no runs nothing and changes nothing. Answering yes runs it, and the window
+does not ask again until it is given another project.</p>
+    <p>A model you opened by name, one you typed into a new project and one the
+window wrote itself are your own and are never asked about.</p>
+    <p>Whether any of this looks right on a desktop is a manual check: the suite
+drives the window offscreen, where nothing is drawn. The scene itself, the
+orbiting and the picking, is the one part of DX-CAD no test can see.</p>
+    <p class="small">From the DX-CAD documentation, <code>gui.md</code>. <a href="/docs/">All the pages</a>.</p>
+  </article>
+  </div>
+
+  <footer class="tb" aria-label="Company details">
+    <div><span>Product</span><strong><a href="/">DX-CAD</a></strong></div>
+    <div><span>Made by</span><strong>Designmatix Ltd</strong></div>
+    <div><span>Company number</span><strong>12697280</strong></div>
+    <div><span>Registered in</span><strong>England and Wales</strong></div>
+    <div class="wide"><span>Registered office</span><strong>71-75 Shelton Street, London WC2H 9JQ, United Kingdom</strong></div>
+    <div><span>Email</span><strong><a href="mailto:support@designmatix.co.uk">support@designmatix.co.uk</a></strong></div>
+    <div><span>Telephone</span><strong><a href="tel:+442088651947">+44 (0) 20 8865 1947</a></strong></div>
+    <div><span>Licence</span><strong><a href="/eula.html">Licence agreement</a></strong></div>
+    <div><span>Refunds</span><strong><a href="/refunds.html">Refund policy</a></strong></div>
+    <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
+    <div><span>Releases</span><strong><a href="/releases.html">What is new in each release</a></strong></div>
+    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a> &middot; <a href="/faq.html">Questions</a> &middot; <a href="/shortcuts.html">Shortcuts</a></strong></div>
+    <div><span>Find</span><strong><a href="/search.html">Search</a> &middot; <a href="/download.html">All downloads</a></strong></div>
+    <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
+    <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
+  </footer>
+</main>
+</body>
+</html>

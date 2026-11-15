@@ -83,6 +83,17 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
 .doc th{font-family:var(--cond);font-weight:700}
 .toc{border-left:3px solid var(--blue);padding:4px 0 4px 16px;margin:0 0 32px;font-size:15px}.toc ol{margin:6px 0 0;padding-left:20px}
 </style>
+<style id="theme">
+@media (prefers-color-scheme:dark){
+:root{color-scheme:dark;--ink:#E6EAF2;--ink-2:#AEB8CC;--blue:#9DAAFF;--blue-dark:#C2CBFF;--red:#FF8F8D;--line:#3B4766;--paper:#0E1526;--wash:#18223A}
+.skip{background:var(--ink);color:var(--paper)}
+.btn{background:var(--blue);color:var(--paper)}
+.results mark{background:#FFE88A;color:#14213D}
+.brand img{background:#FFFFFF;padding:2px 6px}
+svg [stroke="#1E2FE0"]{stroke:var(--blue)}
+svg [stroke="#C8201F"]{stroke:var(--red)}
+}
+</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -95,6 +106,8 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
         <li class="opt"><a href="/#editions">Editions</a></li>
         <li><a href="/#pricing">Pricing</a></li>
         <li><a href="/#download">Download</a></li>
+        <li class="opt"><a href="/download.html">All downloads</a></li>
+        <li><a href="/search.html">Search</a></li>
         <li class="opt"><a href="https://ai.designmatix.co.uk/">Designmatix</a></li>
       </ul>
     </nav>
@@ -188,7 +201,7 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
   </div>
 
   <footer class="tb" aria-label="Company details">
-    <div><span>Product</span><strong>DX-CAD</strong></div>
+    <div><span>Product</span><strong><a href="/">DX-CAD</a></strong></div>
     <div><span>Made by</span><strong>Designmatix Ltd</strong></div>
     <div><span>Company number</span><strong>12697280</strong></div>
     <div><span>Registered in</span><strong>England and Wales</strong></div>
@@ -198,7 +211,10 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:15px;background:va
     <div><span>Licence</span><strong><a href="/eula.html">Licence agreement</a></strong></div>
     <div><span>Refunds</span><strong><a href="/refunds.html">Refund policy</a></strong></div>
     <div><span>Privacy</span><strong><a href="/privacy.html">Privacy notice</a></strong></div>
-    <div><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
+    <div><span>Releases</span><strong><a href="/releases.html">What is new in each release</a></strong></div>
+    <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a> &middot; <a href="/faq.html">Questions</a> &middot; <a href="/shortcuts.html">Shortcuts</a></strong></div>
+    <div><span>Find</span><strong><a href="/search.html">Search</a> &middot; <a href="/download.html">All downloads</a></strong></div>
+    <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
     <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
   </footer>
 </main>
