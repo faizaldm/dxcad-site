@@ -28,6 +28,9 @@ These are the pages.
 | [admin.md](admin.md) | AI policy for IT departments: the allowed providers, the agent door, what may be sent, and AI features off, with sample registry and policy files. |
 | [limitations.md](limitations.md) | Known limitations: what DX-CAD cannot do or does unreliably on OCCT, why, and what to do instead, with every robustness case's outcome. |
 | [settings.md](settings.md) | Settings and their scope: everything DX-CAD keeps, and whether it is the document's, the session's or yours. |
+| [animate.md](animate.md) | Animations: a short video of an assembly from one of three recipes, explode, turntable or build, its sizes and its formats, MP4 and GIF, with a GIF of each. |
+| [3d-web-page.md](3d-web-page.md) | 3D web pages: the model as one .html file that turns, pans, zooms and measures in any browser or phone, offline. |
+| [3d-pdf.md](3d-pdf.md) | 3D PDF: the model on one PDF page that turns, pans, zooms and measures in Acrobat Reader, a picture of it in browsers. |
 | [examples/README.md](examples/README.md) | The example parts, a model.py each, with what every one of them shows and how to run it. |
 | [examples/bracket.md](examples/bracket.md) | The worked example: a bracket with four holes, made by an agent from one sentence. |
 | [examples/dimensions.md](examples/dimensions.md) | Where each fastener figure in the examples comes from. |

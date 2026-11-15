@@ -44,6 +44,7 @@ the plane of a face of a part already built.
 | [robot_arm.py](robot_arm.py) | A six-axis industrial robot arm in a working pose, with a parallel gripper. |
 | [sheet_door.py](sheet_door.py) | A cabinet door bent from 1.5 mm mild steel, with flanges and return lips. |
 | [steel_structure.py](steel_structure.py) | A two-level industrial steel platform, 3 x 2 bays. |
+| [tight_fits.py](tight_fits.py) | A shaft in a housing with two collars and a cover, at fits of 0.05 to 0.2 mm. |
 | [tray.py](tray.py) | A sheet metal tray, a flange bent up on each edge of its base. |
 
 Seven of them show what v0.1 adds: sheet metal with relief and holes

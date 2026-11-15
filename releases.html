@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What is new in each DX-CAD release | DX-CAD by Designmatix</title>
-<meta name="description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.5, 3 November 2026.">
+<meta name="description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.6, 13 November 2026.">
 <link rel="canonical" href="https://dxcad.designmatix.co.uk/releases.html">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1E2FE0">
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DX-CAD by Designmatix">
 <meta property="og:title" content="What is new in each DX-CAD release | DX-CAD by Designmatix">
-<meta property="og:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.5, 3 November 2026.">
+<meta property="og:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.6, 13 November 2026.">
 <meta property="og:url" content="https://dxcad.designmatix.co.uk/releases.html">
 <meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
 <meta property="og:image:width" content="1200">
@@ -24,7 +24,7 @@
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What is new in each DX-CAD release | DX-CAD by Designmatix">
-<meta name="twitter:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.5, 3 November 2026.">
+<meta name="twitter:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.6, 13 November 2026.">
 <meta name="twitter:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
 <link rel="alternate" type="application/atom+xml" title="DX-CAD releases" href="/releases.xml">
 <script type="application/ld+json">
@@ -35,14 +35,14 @@
  "url": "https://dxcad.designmatix.co.uk/",
  "applicationCategory": "DesignApplication",
  "operatingSystem": "Windows 10, Windows 11, macOS 13 or later (Apple silicon), Linux (x86_64)",
- "softwareVersion": "0.1.5",
+ "softwareVersion": "0.1.6",
  "releaseNotes": "https://dxcad.designmatix.co.uk/releases.html",
  "publisher": {
   "@type": "Organization",
   "name": "Designmatix Ltd",
   "url": "https://designmatix.co.uk/"
  },
- "downloadUrl": "https://pypi.org/project/dxcad/0.1.5/"
+ "downloadUrl": "https://pypi.org/project/dxcad/0.1.6/"
 }
 </script>
 <style>
@@ -124,10 +124,11 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
   <div class="sheet">
   <article class="doc">
     <h1>What is new in each release</h1>
-    <p class="meta">DX-CAD by Designmatix Ltd. Newest first. The latest is 0.1.5, 3 November 2026.</p>
+    <p class="meta">DX-CAD by Designmatix Ltd. Newest first. The latest is 0.1.6, 13 November 2026.</p>
     <p>What each release of DX-CAD brings, in plain words. Each one installs over the one before, and your files, settings and add-ons are kept.</p>
     <nav class="toc" aria-label="Releases"><strong>Releases</strong>
       <ol>
+        <li><a href="#v0-1-6">DX-CAD 0.1.6</a>, 13 November 2026</li>
         <li><a href="#v0-1-5">DX-CAD 0.1.5</a>, 3 November 2026</li>
         <li><a href="#v0-1-4">DX-CAD 0.1.4</a>, 1 November 2026</li>
         <li><a href="#v0-1-3">DX-CAD 0.1.3</a>, 31 October 2026</li>
@@ -136,6 +137,42 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
         <li><a href="#v0-1-0">DX-CAD 0.1.0</a>, 16 October 2026</li>
       </ol>
     </nav>
+
+    <div class="release" id="v0-1-6">
+    <h2>DX-CAD 0.1.6</h2>
+    <p class="meta"><time datetime="2026-11-13">13 November 2026</time></p>
+    <p>An update to 0.1.5, 13 November 2026. It installs over 0.1.5, and your files, settings and add-ons are kept. Drawings get clearer dimensions you can style, make your own and edit, and title-block values you change where they stand. Long work shows how far it has got and can be cancelled. STEP and DXF files come in through a wizard, mates are edited from the Feature tree, and a model can hold levels, types, hosted elements and schedules. Claude Desktop can be allowed to build models, and changes many lines at once. Add-ons get plugin API 7.</p>
+    <h3>Modelling</h3>
+    <ul>
+      <li>Connect Claude Desktop now asks once whether Claude may run models. In 0.1.5 it could change a model's lines but never build it; Allow lets it run a trusted project's model, and Settings &gt; Runs changes your answer.</li>
+      <li>Claude Desktop changes several places in a model in one step, one undo for the lot, so a change to a big model takes far less time.</li>
+      <li>File &gt; Import... brings in a STEP file or a DXF drawing step by step, checking what it holds, and its units, before anything is added.</li>
+      <li>Right-click or double-click a mate in the Feature tree to change its kind and value, or delete it, one undo step.</li>
+      <li>A model can name levels and grid lines and stand parts on a level, give elements a type whose values they override one by one, host an element in another so it cuts it and moves with it, and list element values in a read-only schedule you can save as CSV. View &gt; Project Browser lists the levels, drawings and schedules.</li>
+    </ul>
+    <h3>Drawings</h3>
+    <ul>
+      <li>Dimensions keep clear of the views and of their own text. Drawing properties &gt; Dimensions sets the arrow size, text height, gaps and spacing; Settings &gt; Drawings sets them for new drawings.</li>
+      <li>Make Dimensions Editable turns a view's automatic sizes and hole callouts into dimensions of your own, to move, edit, type over and delete.</li>
+      <li>Double-click a title-block value on the sheet to change it there.</li>
+      <li>"Please wait" shows a bar, the percent done and the time left, and Cancel stops an export with nothing written.</li>
+      <li>The sheet on screen draws what the PDF draws, its texts centred where they belong; a long status message can be read in full by clicking it.</li>
+      <li>Hidden lines on big assemblies are worked out faster, every line as before.</li>
+    </ul>
+    <h3>Measure</h3>
+    <ul>
+      <li>Check Interference... can also list the pairs of parts closer than a gap you type, each with its gap and a red line between the nearest points.</li>
+    </ul>
+    <h3>Add-ons</h3>
+    <ul>
+      <li>Plugin API 7: an add-on's commands can show their progress and be cancelled, be greyed with their own reason and carry tooltips; its drawing views follow the drawing's units and turn by 90 degrees; its sheet tools can take clicks until Enter; and its flat patterns can carry marking on layers of their own and go several to one DXF. Add-ons for buildings can read a model's levels, types, hosts and schedules.</li>
+    </ul>
+    <h3>Known limitations</h3>
+    <ul>
+      <li>Hidden lines on a very big assembly still take minutes for each view; the quick outline shows meanwhile, with a notice on the sheet.</li>
+      <li>Those of 0.1.0, below, still hold.</li>
+    </ul>
+    </div>
 
     <div class="release" id="v0-1-5">
     <h2>DX-CAD 0.1.5</h2>

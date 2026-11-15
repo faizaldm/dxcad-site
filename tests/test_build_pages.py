@@ -140,25 +140,25 @@ def test_changing_a_line_of_the_data_changes_the_page(tmp_path):
 def test_changing_a_release_date_changes_page_and_sitemap(tmp_path):
     root = copy_site(tmp_path / "site")
     notes = Path(root, "data", "core", "RELEASE_NOTES.md")
-    notes.write_bytes(read(notes).replace("3 November 2026", "4 November 2026").encode())
+    notes.write_bytes(read(notes).replace("13 November 2026", "14 November 2026").encode())
     assert run_script(root).returncode == 0
     page = read(Path(root, "releases.html"))
-    assert "4 November 2026" in page and 'datetime="2026-11-04"' in page
+    assert "14 November 2026" in page and 'datetime="2026-11-14"' in page
     sitemap = read(Path(root, "sitemap.xml"))
-    assert re.search(r"releases\.html</loc>\s*<lastmod>2026-11-04<", sitemap)
+    assert re.search(r"releases\.html</loc>\s*<lastmod>2026-11-14<", sitemap)
 
 
 def test_a_new_release_adds_its_section(tmp_path):
     root = copy_site(tmp_path / "site")
     notes = Path(root, "data", "core", "RELEASE_NOTES.md")
     text = read(notes)
-    new = ("## 0.1.6\n\nAn update to 0.1.5, 9 November 2026. A test release.\n\n"
+    new = ("## 0.1.7\n\nAn update to 0.1.6, 20 November 2026. A test release.\n\n"
            "### Install\n\n- A new line for the test.\n\n")
-    notes.write_bytes(text.replace("## 0.1.5\n", new + "## 0.1.5\n", 1).encode())
+    notes.write_bytes(text.replace("## 0.1.6\n", new + "## 0.1.6\n", 1).encode())
     assert run_script(root).returncode == 0
     page = read(Path(root, "releases.html"))
-    assert page.index('id="v0-1-6"') < page.index('id="v0-1-5"')
-    assert "9 November 2026" in page and "A new line for the test." in page
+    assert page.index('id="v0-1-7"') < page.index('id="v0-1-6"')
+    assert "20 November 2026" in page and "A new line for the test." in page
     assert pagecheck.check_site(root) == []
 
 
@@ -571,7 +571,7 @@ def test_feed_content_holds_the_release_lines():
     first = feed.findall(ATOM + "entry")[0]
     content = html.unescape(first.find(ATOM + "content").text)
     assert "<li>" in content and "<h3>Modelling</h3>" in content
-    assert "Go to Line (Ctrl+G)" in content
+    assert "Right-click or double-click a mate in the Feature tree" in content
 
 
 def test_releases_page_head_links_to_the_feed():
@@ -591,18 +591,18 @@ def test_feed_is_ascii_and_made_by_the_script():
 def test_a_new_release_is_a_new_entry_at_the_top_of_the_feed(tmp_path):
     root = copy_site(tmp_path / "site")
     notes = Path(root, "data", "core", "RELEASE_NOTES.md")
-    new = ("## 0.1.6\n\nAn update to 0.1.5, 9 November 2026. It has <angle> & `code`.\n\n"
-           "### Install\n\n- A line for 0.1.6.\n\n")
-    notes.write_bytes(read(notes).replace("## 0.1.5\n", new + "## 0.1.5\n", 1).encode())
+    new = ("## 0.1.7\n\nAn update to 0.1.6, 20 November 2026. It has <angle> & `code`.\n\n"
+           "### Install\n\n- A line for 0.1.7.\n\n")
+    notes.write_bytes(read(notes).replace("## 0.1.6\n", new + "## 0.1.6\n", 1).encode())
     assert run_script(root, "--check").returncode == 1
     assert run_script(root).returncode == 0
     feed = parse_feed(Path(root, "releases.xml"))
     entries = feed.findall(ATOM + "entry")
     assert len(entries) == len(notes_releases()) + 1
-    assert entries[0].find(ATOM + "title").text == "DX-CAD 0.1.6"
-    assert entries[0].find(ATOM + "updated").text == "2026-11-09T00:00:00Z"
+    assert entries[0].find(ATOM + "title").text == "DX-CAD 0.1.7"
+    assert entries[0].find(ATOM + "updated").text == "2026-11-20T00:00:00Z"
     assert "<angle> & code" in entries[0].find(ATOM + "summary").text
-    assert feed.find(ATOM + "updated").text == "2026-11-09T00:00:00Z"
+    assert feed.find(ATOM + "updated").text == "2026-11-20T00:00:00Z"
     assert run_script(root, "--check").returncode == 0
     assert pagecheck.check_site(root) == []
 
@@ -623,9 +623,9 @@ def test_all_with_a_new_release_adds_its_section_and_changes_nothing_else(tmp_pa
     root = copy_site(tmp_path / "site")
     before = snapshot(root)
     notes = Path(root, "data", "core", "RELEASE_NOTES.md")
-    new = ("## 0.1.6\n\nAn update to 0.1.5, 9 November 2026. It mends one thing.\n\n"
-           "### Install\n\n- A line that is new in 0.1.6.\n\n")
-    notes.write_bytes(read(notes).replace("## 0.1.5\n", new + "## 0.1.5\n", 1).encode())
+    new = ("## 0.1.7\n\nAn update to 0.1.6, 20 November 2026. It mends one thing.\n\n"
+           "### Install\n\n- A line that is new in 0.1.7.\n\n")
+    notes.write_bytes(read(notes).replace("## 0.1.6\n", new + "## 0.1.6\n", 1).encode())
     assert run_script(root, "--all").returncode == 0
     after = snapshot(root)
     changed = sorted(k for k in after if before.get(k) != after[k])
@@ -634,14 +634,14 @@ def test_all_with_a_new_release_adds_its_section_and_changes_nothing_else(tmp_pa
                        "search.json", "sitemap.xml"]
     assert set(after) == set(before)
     page = after["releases.html"].decode()
-    assert 'id="v0-1-6"' in page and "A line that is new in 0.1.6." in page
-    assert page.index('id="v0-1-6"') < page.index('id="v0-1-5"')
+    assert 'id="v0-1-7"' in page and "A line that is new in 0.1.7." in page
+    assert page.index('id="v0-1-7"') < page.index('id="v0-1-6"')
     # the sitemap changed in one date only: releases.html's
     old_lines = before["sitemap.xml"].decode().replace("\r\n", "\n").split("\n")
     new_lines = after["sitemap.xml"].decode().split("\n")
     diff = [(a, b) for a, b in zip(old_lines, new_lines) if a != b]
     assert len(old_lines) == len(new_lines)
-    assert diff == [("    <lastmod>2026-11-03</lastmod>", "    <lastmod>2026-11-09</lastmod>")]
+    assert diff == [("    <lastmod>2026-11-13</lastmod>", "    <lastmod>2026-11-20</lastmod>")]
     # and a second run has nothing more to do
     assert run_script(root, "--check").returncode == 0
 

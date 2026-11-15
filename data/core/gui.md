@@ -38,8 +38,24 @@ When anything keeps the window busy for a second, a large drawing being
 drawn, a model being built, an add-on's command, a small "Please wait" window
 appears over it with what is being done, and stays a second after the work
 ends so it never blinks away; a command that takes under a second never shows
-it. While a model builds it has a Stop button, which ends the run with the
-document as it was, as Stop on the status bar and Esc do.
+it. While a model builds it has a Cancel button, which ends the run with
+the document as it was, as Stop on the status bar and Esc do.
+
+A message too long for the status bar is cut with "...", and its whole text
+is kept: it is the bar's tooltip, and a click on the bar opens it in full in
+a small box with Copy and Close, so the end of a long refusal, what to do
+about it, is never lost. A message that fits has neither.
+
+Work that knows its steps says how far it has got: drawing a sheet's views
+(view n of N) and exporting a drawing, each of its sheets' views a step. It
+shows a bar with the percent done and, once at least 5 percent is done and 5
+seconds have passed, the time left ("About 3 minutes left": whole minutes
+above a minute, tens of seconds below). Work whose steps are not known, such
+as a model build, shows a moving bar and the time so far ("2 min 10 s so
+far"), never a made-up percent. An export can be cancelled too: Cancel stops
+it at its next view, no file is written, nothing is changed, and the status
+bar says "Cancelled: nothing was changed". Work that cannot stop shows no
+Cancel. The window stays the size it is whatever it says.
 
 ## Tabs
 
@@ -86,17 +102,21 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Save` | `Ctrl+S` | Write the document, and the pane's model with it, back where it came from; in a drawing's tab, the drawing as a .dxcdrg. A file opened as an older .dxcad or .dxcaddrg is saved in its new type beside it, the old file kept. |
 | `Save As...` | `Ctrl+Shift+S` | Write the document to another file, which becomes the window's own. |
 | `Save Model` | `Ctrl+Shift+M` | Write the pane's text back to the model.py it was opened from, and nothing else. |
+| `Version History...` | | The model's versions, newest first: each save, each run after an edit and each change the Assistant makes keeps one in the project, with its time, who made it (you, or the Assistant with the first line of what it was asked) and one line saying what changed; the last 200, the oldest let go first. A chosen version is compared with the pane as text, the lines taken out and put in. Restore builds it, one undo step, and keeps it as a new version; Save as .py... writes it to a file. No key or token is kept in a version. |
 | `Export Model...` | | Write the pane's text to a new .py file, which the window then follows. |
 | `Import Model...` | | Read a model.py into the pane, leaving the document as it is until the next Run. |
+| `Import...` | | Bring a STEP file or a DXF drawing in through [the Import wizard](#the-import-wizard): the file, its format read from what it holds; a check of what it holds before anything is added; how it is placed; a summary, and Finish writes it into the model, one step for Undo. After a DXF the window works in 2D drafting, and after a STEP in 3D modelling; File > Settings... > Mode switches back. A DWG is refused: save it as DXF from the program that made it. |
 | `Export Drawing...` | | In a drawing's tab, write its sheet as a PDF or a DXF, as `dxcad drawing` does. Otherwise write the sketch being drawn, or else every Sketch the model names, as a DXF or an SVG drawing by the extension given, in millimetres, one layer or group per sketch: lines, arcs, circles, ellipses and splines each written as themselves. |
-| `Export Parts...` | | Write the picked parts, or every part when none is picked, to one STEP, STL, 3MF or BREP file, by the filter chosen or the name's ending, as `dxcad export` writes them; a 3MF keeps each part a named object. Greyed with no part, hidden in 2D drafting. |
+| `Export Parts...` | | Write the picked parts, or every part when none is picked, to one STEP, STL, 3MF, BREP or glTF binary (.glb) file, by the filter chosen or the name's ending, as `dxcad export` writes them; a 3MF keeps each part a named object, and a .glb each part a named node in its colour and place, meshed as the 3D view meshes it, for web pages and other 3D tools. Greyed with no part, hidden in 2D drafting. |
 | `Drawing...` | | Make a drawing of the saved project in a tab of its own, on a sheet asked for, A4 to A1 or one of the ten ISO and ANSI sheets, as `dxcad drawing` draws one: the front, top, right and isometric views with hidden edges dashed, at one scale that fits, in the title block with the project, file, date, scale and sheet size filled in, and the bill of materials as a parts list. Each hole a view sees round may have its centre lines: Centre marks in Drawing properties, off on a new drawing unless the model calls `centre_marks(True)`. The drawing is a document of its own: drag a view to move it, the view and its sizes and label following the pointer while it moves, one undo entry when it is let go and Esc putting it back mid-drag; the top and right views stay in line with the front, moving with it, the top only up and down and the right only sideways, unless Unlock Alignment (on the view's right-click menu, or In line with the front view in Drawing properties) lets one move freely, Lock Alignment putting it back in line; right-click a view to show or hide its dashed hidden lines, and right-click the sheet for its scale, its title block fields and whether the dimensions and the parts list are shown, each one undo entry. While a drawing's tab is in front, the left dock shows Drawing properties: the sheet's size, its Title Block... and the parts list's columns, ticked and dragged into order (Item, Part number, Description, Material, Qty and Rev by default, Size and Mass to be had; the description and material are a part's own description and material properties when it has them), remembered for new drawings and for the bill's Save CSV..., and for the view clicked on the sheet its label and hidden lines. The scale is two number fields, 1 : N or N : 1 with any positive numbers (1 : 25, 1 : 7.5, 2 : 1), the standard ratios offered beside them and To fit as a button; it is applied as it is typed, after a short pause and without Enter, the title block following, and a field that is not a number above 0 is marked red and changes nothing. With a view clicked, the scale typed is that view's own: it alone is drawn at it, with its centre lines and hole callouts, its label says it ("TOP SCALE 1 : 10"), and the title block keeps the sheet's; To fit gives it the sheet's scale again. Save writes it as a .dxcdrg, which holds the project's path and no geometry, so the sheet is drawn again from the project whenever the drawing is opened or its tab comes forward, and the status bar says so; a project that is gone is named by its path. Export Drawing writes it as a PDF or DXF. A project not yet saved is asked to be saved first. Greyed with no part, hidden in 2D drafting. |
+| `Export 3D Web Page...` | | The parts as one .html file that anyone can open in a browser or on a phone, with no CAD, no plugin and no internet: they turn, pan and zoom the model, pick a named view (the view on screen when you exported it first, then Front, Top, Right and Isometric), show or hide each part in its list, and measure between two corners in mm ([3D web pages](3d-web-page.md)). The page is made at each fineness first under a bar with Cancel, so the question that follows, Normal (as the 3D view), Coarse or Fine, gives the size of the file each makes; then name the file. It is written beside its name and renamed when complete; Cancel at any step leaves no file. Nothing in the model changes. `dxcad export-web` writes the same page from the command line. Greyed with no part, hidden in 2D drafting. |
+| `Export 3D PDF...` | | The parts as a PDF with one landscape page, A4, A3 or Letter, whose model turns, pans, zooms and measures in Adobe Acrobat Reader once the reader clicks Trust this document, each part named in its model tree, with named views: the view on screen when you exported it, the default, then Front, Top, Right and Isometric ([3D PDF](3d-pdf.md)). Readers with no 3D, browsers among them, show a picture of the default view instead; a line under the model names the project, DX-CAD's version and the date, and says lengths are in mm. Pick the paper, name the file, and the PDF is made under a bar with Cancel; it is written beside its name and renamed when complete, and Cancel at any step leaves no file. Nothing in the model changes. `dxcad export-3dpdf` writes the same kind of file from the command line. Greyed with no part, hidden in 2D drafting. |
 | `Send to Slicer` | | Write the picked entry, or every entry when none is picked, to a 3MF and open it in the slicer, which is asked for once and remembered. |
 | `Where Used...` | | On a saved file: the assemblies and drawings in a folder chosen, and every folder below it, that use this file, each with how many copies it holds, as `dxcad where-used` lists them. Every part keeps a stable id through renames, so an assembly that uses a part by its old name still finds it, saying the new name in the model's output. |
 | `Title Block...` | | The fields a person fills in once for every drawing: company, drawn by, checked by, material, finish, general tolerance, drawing number and revision, and since item 974 every other text a title block shows, the title, scale, date and the others the sheet fills itself among them, each left blank to stay automatic; and the font the drawing is lettered in, the bundled DejaVuSans (the default) or any TrueType font the system has, with the height of its dimensions, labels and fields, 2.5, 3.5, 5 or 7 mm. Kept from one session to the next and used by every sheet File > Drawing makes. |
 | `Trust This Project's Model` | | Trust the model the project in front carried, so it runs here with no question. Kept in the settings by the project's path and the SHA-256 of the model's text, never the text: opening the same file with the same model is trusted again, and any other model at that path is asked about. Answering Trust and run at the question does the same; a trusted project saved keeps its trust for the text saved. The model pane's header says whether a carried model is trusted. Greyed unless the model in front came in a file and is not trusted. |
 | `Revoke Trust in This Project's Model` | | Forget that trust: the model is asked about again before it runs. Greyed unless the model in front is trusted. |
-| `Settings...` | | Settings, in groups. Mode, the first, is 2D drafting or 3D modelling, 3D modelling at the start: 2D drafting hides every action that acts on a solid (Extrude, Revolve, Edit > Mirror's part option, Sketch on Face, the printability actions and Send to Slicer) and names itself in the title, and 3D modelling shows everything. The mode changes the window only, not the kernel, the command line or the agent door, and is remembered between runs. View, the second, holds Show Planes and After a run (item 964): Keep the Camera, Fit the Model (the default) or Follow New Parts, the parts new or changed since the last run (all of them the first time), with Fill, from 0.5 to 1.2 and 1.0 at first, the share of the view's tighter side the parts fill; every fit after a run follows it, F5, Run on Change, the window's build commands, the end of an Assistant turn and the fit after an agent's quiet spell, while a model opened on its own keeps its first framing, and Keep the Camera leaves the view as it is and does not turn it; Runs (item 977), the seconds a run of the model is given before it is stopped, 60 at first and from 5 to 3600, which an agent's run in the window and a drawing export's run are held to as well, Model > No Time Limit setting it aside; Recovery, the minutes between keeps of the unsaved tabs; Parts, the Default material: what a part with no material of its own is made of, mild steel as shipped, which the Parts dock and the Bill of Materials mark "(default)" (a sheet part is its spec's metal); Updates, Check for updates at start, on as shipped (Help > Check for Updates). On macOS it is under the application menu. Controls (item 686) is DX-CAD's own or Classic CAD controls (middle-button orbit): under the second the middle button rotates, Ctrl+middle pans and Shift+middle and the wheel zoom, the left button only picks, `Ctrl+1` to `Ctrl+7` are Front, Back, Left, Right, Top, Bottom and Iso, `Ctrl+8` Normal To, and in the 3D view `F` fits, `Space` shows the View Selector and `S` the Shortcut Bar. The first start asks "Used to another CAD program?" once. Under the presets, Zoom about the cursor is View > Zoom About the Cursor (item 963). Under either preset the arrow keys pan the 3D view while it has the focus, a tenth of the view a press and a hundredth with Shift, and not while the script pane or another field has it. |
+| `Settings...` | | Settings, in groups. Mode, the first, is 2D drafting or 3D modelling, 3D modelling at the start: 2D drafting hides every action that acts on a solid (Extrude, Revolve, Edit > Mirror's part option, Sketch on Face, the printability actions and Send to Slicer) and names itself in the title, and 3D modelling shows everything. The mode changes the window only, not the kernel, the command line or the agent door, and is remembered between runs. View, the second, holds Show Planes and After a run (item 964): Keep the Camera, Fit the Model (the default) or Follow New Parts, the parts new or changed since the last run (all of them the first time), with Fill, from 0.5 to 1.2 and 1.0 at first, the share of the view's tighter side the parts fill; every fit after a run follows it, F5, Run on Change, the window's build commands, the end of an Assistant turn and the fit after an agent's quiet spell, while a model opened on its own keeps its first framing, and Keep the Camera leaves the view as it is and does not turn it; Runs (item 977), the seconds a run of the model is given before it is stopped, 60 at first and from 5 to 3600, which an agent's run in the window and a drawing export's run are held to as well, Model > No Time Limit setting it aside, and Let Claude run models from Claude Desktop (item 988), the answer to the question Connect Claude Desktop asks once, which writes this copy's link again to match; Recovery, the minutes between keeps of the unsaved tabs; Parts, the Default material: what a part with no material of its own is made of, mild steel as shipped, which the Parts dock and the Bill of Materials mark "(default)" (a sheet part is its spec's metal); Updates, Check for updates at start, on as shipped (Help > Check for Updates). On macOS it is under the application menu. Controls (item 686) is DX-CAD's own or Classic CAD controls (middle-button orbit): under the second the middle button rotates, Ctrl+middle pans and Shift+middle and the wheel zoom, the left button only picks, `Ctrl+1` to `Ctrl+7` are Front, Back, Left, Right, Top, Bottom and Iso, `Ctrl+8` Normal To, and in the 3D view `F` fits, `Space` shows the View Selector and `S` the Shortcut Bar. The first start asks "Used to another CAD program?" once. Under the presets, Zoom about the cursor is View > Zoom About the Cursor (item 963). Under either preset the arrow keys pan the 3D view while it has the focus, a tenth of the view a press and a hundredth with Shift, and not while the script pane or another field has it. |
 | `Quit` | | Close the window, asking first when there is an unsaved edit. |
 
 ### Edit
@@ -110,6 +130,7 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Move...` | | Move the picked part by dragging it in the view: after Move, press and drag, and the part follows the pointer in the plane of the screen, drawn where it would go with how far beside the pointer; let go and it is put there, one undo step, its line in the model wrapped in `translate`. Hold `X`, `Y` or `Z` to keep the drag to that axis of the model. Type a number for the distance instead, along the axis held or the way the drag is going, and `Enter` puts the part there. `Esc` leaves it where it was. A part held by mates moves only along what they leave it free to do, on its face or along its axis; where they leave nothing it does not move, and the status bar names the mate that holds it. |
 | `Mirror...` | | Add the picked entry mirrored in the XY, XZ or YZ plane, or in the picked face when one planar face is picked, as a part of its own after the original, writing `mirror` into the model. |
 | `Delete` | `Del` | Take the picked entries out of the document. |
+| `Select Category...` | | Pick every element whose type is in one category, chosen from the categories the model's elements are in (`element_type` and `values_of`, item 1145). Greyed when no element has a type. |
 | `Go to Line...` | `Ctrl+G` | Put the caret in the model pane on a line, given as `120`, or on a line and column, `120:5`, each counted from 1, the line centred. A line past the end goes to the last line; anything else says what it takes. |
 | `Find...` | `Ctrl+F` | Open the Find bar under the model pane, holding the words selected in it: every match highlighted and "n of m" said, with Match Case, Whole Word and Regular Expression. Enter or `F3` finds the next match, Shift+Enter or `Shift+F3` the previous, wrapping round the end and saying so; an expression that is not one is named in the bar. Escape closes it and takes the highlights away. |
 | `Find Next` | `F3` | The next match of the Find bar's words after the caret, wrapping round. |
@@ -148,6 +169,7 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Continuous Orbit` | `Ctrl+Shift+O` | While ticked, also on the Display toolbar, a drag let go keeps the view turning the way and as fast as it was dragged, until a click, Esc or any view command. The model is not rebuilt. |
 | `Turntable...` | | Spin the view steadily about the vertical axis, slow, medium or fast, for a presentation or a recording; untick, click, Esc or a view command stops it. Settings > View > Stop spinning when DX-CAD loses focus, on at first, stops either when another window takes the focus. |
 | `Turn the Model After a Run` | | Ticked at first. When Run Script (F5), an Assistant turn or a run of calls from Claude Desktop has built parts and ended without error, the view is fitted to everything, at the angle it is at, and then turned at the turntable's slow speed to show the model off; a press, the wheel or any key in the view stops it and leaves the view where it is, and does nothing else. Unticked, the view is only fitted. A run on change, made while you are at something else, fits and never turns; a run that fails, or that changes no part, leaves the view alone. |
+| `Animate...` | | A short video of the model, for a presentation or a web page, from the view on screen: the Animate box ([The Animate box](#the-animate-box)) offers three choices, Explode and back (the parts come apart as an exploded view, hold, and come back together), Turn around (the camera goes once round the model) and Build it up (the parts arrive one at a time in the model's order); a tick, and turn while it moves, adds a turn to the first and the last; the Length, 3 to 30 seconds, 8 at first; the Size, Video 720p, Video 1080p, Square or Small GIF; and the Format, MP4 (H.264) or GIF. Preview plays it small in the box, looping, as it will be saved. Save... asks for the file and writes it under a bar with Cancel, which stops it and leaves no file. The parts move only as an exploded view or a camera moves them: no joints, no mates, never a feature before and after a change. Also on the Display toolbar; `dxcad animate` makes the same videos from the command line ([dxcad animate](cli.md#animate)). The recipes, sizes and formats, with a GIF of each recipe: [Animations](animate.md). |
 | `Shaded with Edges` | | Draw every part shaded with its face boundaries outlined. The mode at the start. |
 | `Shaded` | | Draw every part shaded, without its edges. |
 | `Wireframe` | | Draw every part as its edges alone. |
@@ -160,9 +182,11 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Parts` | | Show or hide the Parts dock on the left: the document's parts in model.py's order, a sub-assembly's parts listed under it as a tree, each with the operation that made it (extrude, revolve, fuse, place, hole...) and its placement when it was placed. Clicking a part picks it and puts the model pane's cursor on its statement, and a pick in the view marks its row. Under the list, the picked part's properties: its name (edit it to rename the part, as Rename does), volume, bounding box, a sheet part's flat size (its flat pattern's bounding rectangle, X by Y in mm; item 792), its material (a sheet part's spec's metal, else the Default material from Settings, marked "(default)"; choosing another here sets the default), its mass in that material, its colour (click the swatch to choose one: it is written into the part's statement as `color=`, one undo entry, and the view draws the part in it), and the file a placed or used part came from, with Open Source File to open it in a tab (item 576). When a file the model uses with `use()` is saved, here or elsewhere, the model runs again and the status bar says so. The list is read again from the model after every change and is never edited on its own. Open at the first run; the choice is remembered. |
 | `History` | | Show or hide the History tab beside Parts: every edit the undo history holds, oldest first, named as Undo and Redo name it ("Extrude sketch 5.0", "Fuse a, b", "Rename b to lid", "Pattern a 5 x 60"), under a Start row, the current one marked and the ones waiting to be redone greyed. Clicking an earlier entry undoes back to it and a later one redoes to it, step by step as Undo and Redo would. While a sketch is open its steps follow, and only they can be clicked. Open at the first run; the choice is remembered. |
 | `Feature Tree` | | Open or close the Feature Tree dock: each part in the order the model builds it, and beneath it its features, the calls of the statement that makes it, innermost first, then its sketches and its mates in the model's order. A click on a row picks the part and puts the model pane on that row's line. Nothing in the tree is dragged or re-ordered: the order of mates changes only by editing the model. Closed until opened. |
+| `Parameters` | | Open or close the Parameters dock: the model's named values as a form, read from the model pane as it is typed, never by running it. Each top-level `NAME = value` line is a field: a number or a text typed and taken on Enter, a true or false a tick box, a choice a drop-down, under the model's own comment headings. A comment on the value's line gives its unit and range (`WIDTH = 2400  # mm, 1200..4000`) or its choices (`FINISH = "paint"  # paint | galvanised | powder`). A value worked out from others (`DEPTH = WIDTH / 2`) is shown read-only with its expression. A change writes only that value into the model and rebuilds it, one Undo for both; a value outside its range is refused in plain words and nothing changes. Closed until opened. |
+| `Project Browser` | | Open or close the Project Browser dock: the model's levels with their heights, each open drawing's views and each open drawing, and the model's schedules, under four headings in the document's order. A double click on a drawing brings its tab to the front, on a view brings its drawing's tab with the view selected, and on a level says its height. Nothing in it is dragged or re-ordered. Closed until opened (item 1147). |
 | `Assistant` | `Ctrl+Shift+A` | Show or hide the Assistant dock, along the bottom of the 3D view until it is moved (after an update from a version that kept it down the side it is moved to the bottom once, and then stays where it is put), "Assistant (powered by Claude)", also on the Display toolbar: type a request and Claude builds or changes the document in front with DX-CAD's own tools, each step shown in the chat, written into the model and one Undo, a render shown inline. It uses your own Anthropic API key (Set Key, or Settings > Assistant's own API key field with Save Key, Forget Key and Test), kept encrypted for you by Windows, in the login Keychain on macOS and by the Secret Service (secret-tool) on Linux, and for the session where neither can; Test makes one small request and says whether it connected and how many models the provider lists, or that the key, the address or the network is wrong, and fills the Model list with the provider's own models, as Refresh beside it does (OpenAI's embedding, speech, transcription, image and moderation models left out), kept with the date for when nothing can be read; nothing is sent until you enable it, and the first use says what is sent (PRIVACY.md). While a turn runs, an hourglass drawn as a wireframe turns a quarter between steps (still when Windows' animations are off), a bar shows the steps done over the steps Claude planned, and a line says what is happening now, also on the status bar while the dock is shut. Stop ends a turn; the tokens each turn used show under the chat; Settings > Assistant chooses the provider (your own Anthropic key; OpenAI; Azure OpenAI, a deployment in your company's own tenant; Google Gemini; an OpenAI-compatible endpoint, such as a company gateway or a local model under Ollama or LM Studio, which needs no key; or the DX-CAD account), its model (for Azure OpenAI the deployment's name) and its address; the dock's title names the provider, keys are kept per provider, each provider's note on what it is sent shows the first time it is used, and switching keeps the chat. Each document has its own chat. Asked to change a part by its name ("add returns to sheet"), an answer that builds the part again under a new name where the part is asks first, with nothing written yet, whether to change the part or make a copy: Yes changes the part itself, its solid and its line in the model, and No keeps it and places the new part beside it, 20 mm clear, named as a copy; a request that asks for a copy in so many words gets the copy without the question. Either way the answer is one Undo. |
 | `Start Page` | | Bring back the start page in the view's place: New, Open, the recent files, the launch examples as pictures (one click opens an example as a new unsaved tab, "NAME (example)", and builds it; nothing is written until Save, which starts in Documents\DX-CAD and puts any file the example reads beside it), a link to these docs, and Connect Claude Desktop, which links Claude Desktop to this copy of DX-CAD in one click: with no DX-CAD in Claude Desktop's settings it writes this one, driving the open window, as `dxcad serve --install` does, says "Connected to Claude Desktop." and offers Restart Claude Desktop now, which closes Claude Desktop and opens it again once you have said yes; with this copy's already there it says "Connected to Claude Desktop." and nothing else; with another copy of DX-CAD there (an old environment, another install) it asks one question, "Claude Desktop is linked to another copy of DX-CAD. Link it to this one?", with Link to this copy and Keep, and keeps the old settings beside the new; and with no Claude Desktop on the machine it says so, with where to get it, and writes nothing. The Python with a console (`python.exe`) and the one without (`pythonw.exe`) of one folder are one copy, and the one written is always the first, whichever started the window. The page is up when DX-CAD starts with nothing open and when the last tab closes, and gives way the moment a document opens. |
-| `Toolbars` | | Show or hide each of the six toolbars: View (Fit, Zoom Window, Measure and the seven views), Display (the four modes, Section View, Continuous Orbit and the Assistant), Edit (Undo, Redo, Rename, Duplicate, Delete), Sketch (the drawing tools, then the sketch actions), Operations (Run Script, Extrude, Revolve, Fuse, Cut, Common, Pattern) and Sheet Metal (Base Flange, Flange, Export Flat Pattern, Show Flat Pattern). Then one toolbar for each menu, so that every menu command is also on a toolbar: File Menu, Edit Menu, View Menu, Model Menu, Sketch Menu, Sheet Metal Menu, Drawing Menu, Window Menu and Help Menu, each with every command of its menu that the six above do not have, in the menu's order, each with an icon of its own. They are hidden until you switch them on here, in View > Toolbars. Left out are Open Recent's list of files, these toggles themselves, and the add-ons' commands, which come with each add-on's own toolbar. The same list is on the right-click menu of any toolbar; the choice is remembered between runs. On every start the toolbars stand from the top left in the menus' order: File Menu, then Edit Menu and Edit, View Menu, View and Display, Model Menu and Operations, Sketch Menu and Sketch, Sheet Metal Menu and Sheet Metal, Drawing Menu, Window Menu and Help Menu, and last each add-on's, in the order of its menu; one switched off leaves no gap, and one dragged elsewhere is back in its place at the next start. When the window is too narrow for them in one row, the toolbars wrap to the next. A toolbar button has the toolbar's own grey background, and a checked one (the view looked from, the display mode, Measure while it is on) a pale blue one with a blue edge. |
+| `Toolbars` | | Show or hide each of the six toolbars: View (Fit, Zoom Window, Measure and the seven views), Display (the four modes, Section View, Continuous Orbit, the Assistant and Animate), Edit (Undo, Redo, Rename, Duplicate, Delete), Sketch (the drawing tools, then the sketch actions), Operations (Run Script, Extrude, Revolve, Fuse, Cut, Common, Pattern) and Sheet Metal (Base Flange, Flange, Export Flat Pattern, Show Flat Pattern). Then one toolbar for each menu, so that every menu command is also on a toolbar: File Menu, Edit Menu, View Menu, Model Menu, Sketch Menu, Sheet Metal Menu, Drawing Menu, Window Menu and Help Menu, each with every command of its menu that the six above do not have, in the menu's order, each with an icon of its own. They are hidden until you switch them on here, in View > Toolbars. Left out are Open Recent's list of files, these toggles themselves, the add-ons' commands, which come with each add-on's own toolbar, and File > Import..., which would put the Edit toolbar on a row of its own in a 1366 px window. The same list is on the right-click menu of any toolbar; the choice is remembered between runs. On every start the toolbars stand from the top left in the menus' order: File Menu, then Edit Menu and Edit, View Menu, View and Display, Model Menu and Operations, Sketch Menu and Sketch, Sheet Metal Menu and Sheet Metal, Drawing Menu, Window Menu and Help Menu, and last each add-on's, in the order of its menu; one switched off leaves no gap, and one dragged elsewhere is back in its place at the next start. When the window is too narrow for them in one row, the toolbars wrap to the next. A toolbar button has the toolbar's own grey background, and a checked one (the view looked from, the display mode, Measure while it is on) a pale blue one with a blue edge. |
 | `Toolbars...` | | Every toolbar in one box, the Toolbars box, in the order they stand: tick the ones to show, or Show All or Hide All, and OK shows and hides them together; Cancel changes nothing. Also from the Toolbars... button in File > Settings. |
 | `Reset Layout` | | Put every dock back where a fresh install has it: the model pane on the right, the output pane and the Assistant under it along the bottom, Parts, History and the drawing's properties as tabs on the left with the Feature Tree under them, none floating. Which docks are open stays as it is. The Assistant's remembered place and height are forgotten, so it opens along the bottom at the next start too. |
 
@@ -185,11 +209,13 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Text...` | | Letters as a solid, `text3d` by name: the text, the bundled DejaVuSans (the default) or a font of the system's, the height of its capitals and its depth; with a planar face picked, raised on it or sunk its depth into it and cut, the part changing in place, and with nothing picked a part of its own on the XY, XZ or YZ plane. One undo entry. A font that is not found is refused. |
 | `Mate...` | | With two faces picked, the first on the part to move and the second on a part placed before it, place the one against the other: coincident, concentric (a hole's or a cylinder's wall picked), a distance or an angle. Writes `mate` into the model and runs it, as one undo entry; a mate the parts cannot meet with the mates before it is refused. The Parts dock's Mates row says what freedom a mated part has left. |
 | `Suggest Mates...` | | With a part picked, list the mates its features allow against the parts near it, best first: a cylinder to a hole it fits as concentric, opposed faces as coincident and as distance with the measured gap. Picking a row shows where the part would go. Check the ones to add and Accept Checked, or Accept All; each is written as its own `mate` and undo entry, and nothing is added without the accept. Ranked by how often you accepted the same kind of pair before. Moving a part near another says on the status bar that mates are suggested. |
+| `Edit Mate...` | | With a mate's row picked in the Feature Tree (also on that row's right-click menu, or a double click on it): change the mate's kind, and its value in mm or degrees, in [the Edit Mate box](#the-edit-mate-box). The new `mate` is written on the same line of the model and the model run, one step for Undo; a mate the model refuses leaves the model as it was. A mate made in a loop or from variables is not rewritten: the window names its line and shows it. |
+| `Delete Mate` | | With a mate's row picked in the Feature Tree (also on that row's right-click menu): take that mate's line out of the model and run it, one step for Undo. The part keeps its other mates. |
 | `Printability` | | Say whether the picked entry will print: its mass, its overhangs and its thinnest wall, in a box and in the output pane. |
 | `Show Overhangs` | | Tick to colour the picked entry's overhanging faces in the view; picking something else, or unticking, takes them down. A Run, undo or edit that changes the entry's shape colours the new faces. |
 | `Printing Material...` | | Choose the filament the report assumes: PLA, PETG, ABS, ASA or TPU. PLA to begin with. |
 | `Bill of Materials...` | | List the parts as `dxcad bom` does: parts a model placed from one source as one shape are one line with a count, every other part a line of its own, with volume, mass in the printing material and size. Save CSV... writes what `dxcad bom --csv` prints. Hidden in 2D drafting. |
-| `Check Interference...` | | Check every pair of parts as `dxcad interference` does, list the pairs that overlap with the volume they share, and show each overlap in red in the view until the dialog is closed. Hidden in 2D drafting. |
+| `Check Interference...` | | Check every pair of parts as `dxcad interference` does, list the pairs that overlap with the volume they share, and show each overlap in red in the view until the dialog is closed. Given a clearance in mm in the box, also list the pairs closer than it, each with its gap and a red line between its nearest points. Hidden in 2D drafting. |
 
 ### Sketch
 
@@ -199,6 +225,7 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Sketch on XY` | | Start a sketch on the XY plane. |
 | `Sketch on XZ` | | Start a sketch on the XZ plane. |
 | `Sketch on YZ` | | Start a sketch on the YZ plane. |
+| `Import DXF...` | | Bring a DXF's profile into the model as a sketch: [the Import wizard](#the-import-wizard), from its first page, picks the file, the plane to draw it on, a scale and the layers. Its LINE, ARC, CIRCLE, LWPOLYLINE (bulges as arcs) and POLYLINE entities are read on every layer, in millimetres by the file's `$INSUNITS` (millimetres when it says none), then scaled; ends within 1e-6 mm are joined, so each closed chain is a loop ready to extrude, a loop inside another a hole. The sketch is written into model.py as its own lines, named after the file (`plate.dxf` gives `plate_dxf`), so the file stays the model and the DXF is not needed again; the lines and the status bar say what the file held that is not read (text, dimensions, splines, blocks and the rest). A model can also call `import_dxf(path, plane, scale=, offset=, layers=)` itself. |
 | `Line` | | The drawing tool a sketch starts in: each click puts a point down, joined to the one before. Escape comes back to it from any tool, ending the figure being drawn. Return, a double click, Finish Figure or choosing a tool that draws a figure of its own ends the chain where it is, and the next click starts a new figure: a sketch holds many figures, open or closed. While a sketch is open the status bar reads where the pointer is on the sketch plane in millimetres, the snap firing there, and the measurement the live tool is waiting for: a line's length and angle, a rectangle's width and height, a circle's radius, an arc's radius and included angle, a polygon's across-flats and side, a slot's length and width, an ellipse's two half-axes. Typing a number instead of clicking opens a small entry beside the pointer for those measurements: Tab moves between the two, Return puts the point down at exactly that size and Escape goes back to clicking; lengths are millimetres and angles degrees. As each figure is finished the script pane shows it, written as `sketch = (Sketch(...)...)` after the model that was there, so the numbers can be read while drawing; Cancel Sketch takes the line out again, an extrude or revolve writes the part in its place, and typing in the pane while drawing leaves it to you. Anything the sketch refuses, a click it cannot draw, a corner too small for its fillet, an offset the shape cannot take, a constraint the others leave no room for, is shown in a box that says what was asked, why not and what would work, and the same words go to the output pane; the sketch is left as it was. The live tool is checked on the Sketch toolbar and named on the status bar, and a line from the last point follows the pointer. |
 | `Rectangle` | | Two clicks, one corner and then the opposite one, put down an axis-aligned rectangle as four points in a closed loop, ready to constrain or extrude. The outline follows the pointer after the first corner. It is a figure of its own, drawn beside whatever else the sketch holds. |
 | `Circle` | | Two clicks, the centre and then a point on the rim, put down a real circle, written into the model as one `circle` call. The rim follows the pointer after the centre, and the status bar reads the live radius. Circles are drawn beside whatever else is there: inside a closed outline they are holes, and on their own the largest is the outline. A rim on the centre draws nothing and says so. |
@@ -265,7 +292,8 @@ What is put on a drawing; off unless a drawing tab is in front.
 | Action | Key | What it does |
 |---|---|---|
 | `Add View...` | | Put one more view on the drawing: Front, Top, Right, Left, Back, Bottom or Isometric, of the whole model or, where it has several parts, of one part or one sub-assembly of it. Once chosen the view follows the cursor over the sheet, and a click puts it there, at the drawing's scale, with its hidden lines and its label; `Esc` leaves it and adds nothing. A view projected from the front goes in line with the front view where the sheet has one: Top and Bottom above and below it, Right, Left and Back beside it, so only how far along that line is taken from the click; the Front and the Isometric go where they are clicked. Each add is one undo step, the file keeps it, and it is a view like any other: a click selects it, a drag moves it and Delete takes it off. Also on the sheet's right-click menu. |
-| `Add Part Sheets...` | | Give parts of the drawing's model a sheet each. The model's sub-assemblies and parts are listed with a tick box each, none ticked; every ticked one gets a sheet of its own, on the drawing's sheet size and title block with the part's name, part number and material filled in, drawn alone in the sheet's four views: front, top, right and isometric. The sheets show as tabs along the bottom of the drawing, each named after its part, after the drawing's own sheet, which stays first; a click on a tab brings that sheet to the front, and every command of a drawing then works on it. They are made five at a time: after each five the window says which were made and asks whether to make the next, with `Next 5`, `Stop here`, which keeps those made, and `Cancel`, which takes every sheet of the run back. The sheets made are one undo step, and the drawing's file keeps them. |
+| `Add Part Sheets...` | | Give parts of the drawing's model a sheet each. The model's sub-assemblies and parts are listed with a tick box each, none ticked; every ticked one gets a sheet of its own, on the drawing's sheet size and title block with the part's name, part number and material filled in, drawn alone in the sheet's four views: front, top, right and isometric. The sheets show as tabs along the bottom of the drawing, each named after its part, after the drawing's own sheet, which stays first; a click on a tab brings that sheet to the front, and every command of a drawing then works on it. They are made five at a time: after each five the window says which were made and asks whether to make the next, with `Next 5`, `Stop here`, which keeps those made, and `Cancel`, which takes every sheet of the run back. The sheets made are one undo step, and the drawing's file keeps them. A sheet metal part's sheet shows its flat pattern too, unless the box's tick "Show the flat pattern on sheet metal parts' sheets" is taken off: see `Add Flat Pattern View`. |
+| `Add Flat Pattern View` | | Show the flat pattern of a sheet metal part on that part's sheet, one made by `Add Part Sheets...` before it showed them: a fifth view, FLAT PATTERN, the flat seen from above as `Show Flat Pattern` makes it, at the sheet's scale. Its bend lines are thin chain lines, each with its direction, angle and inside radius beside it ("UP 90 R1.5"), and its overall length and width are dimensioned in the sheet's style. It goes where the sheet has room beside the four views; where there is none, the whole sheet takes the next smaller standard scale that makes room. A sheet whose scale is set keeps it, and a flat with no room at it is left off, the sheet's warnings saying so. The parts list, the bill and the mass count the part once. One undo step; the drawing's file keeps it, and the PDF and DXF exports carry it, its lines on VIEW_FLAT, FLAT_BENDS, FLAT_MARKS and FLAT_NOTES. On any other sheet the status bar says why nothing was added. |
 | `Line` | | Draw a straight line on the drawing's sheet: click where it starts and where it ends. Each click snaps to the nearest drawn point of a view within reach, as an add-on's sheet tools do, and with `Ortho` on the line runs across or up the sheet; a green line follows the pointer from the first point, and `Esc` takes the first point back, or with none ends the command. The line is drawn in the drawing's line type, chosen under Line type in Drawing properties: thin, thick (printed as a view's visible edges), centre (long dash and short) or hidden (dashed). Right-click a line for its own Line Type, and for Attach to View, which makes a line drawn over a view move with the view when it is dragged or rescaled, or Detach from View, which leaves it where it is on the sheet. A click selects a line, its points show as handles to drag, and Delete takes it off. Each change is one undo step, the drawing's file keeps the lines, and the PDF and DXF exports carry them on their own layers: LINES, LINES_THICK, LINES_CENTRE and LINES_HIDDEN. |
 | `Polyline` | | Draw lines through several points on the drawing's sheet: click each point, then press `Enter` to finish, with two points or more. The points snap, and follow `Ortho`, as `Line`'s do; `Esc` takes the last point back, or with none ends the command. The polyline is one line of the drawing's line type, and everything said of `Line` holds for it. |
 | `Ortho` | `F8` | Turn Ortho on or off: while it is on, each new segment of a `Line` or `Polyline` runs across or up the sheet, whichever is nearer the pointer. |
@@ -434,7 +462,32 @@ its sketches and its mates. A click on a row picks the part and puts the
 model pane on that row's line. Nothing in the tree is dragged or
 re-ordered. View > Feature Tree opens and closes it. A double click on a
 flange's row, or Edit Flange... on its right-click menu, opens
-[the Flange dialog](#the-flange-dialog) on that flange.
+[the Flange dialog](#the-flange-dialog) on that flange. A mate's row has
+Edit Mate... and Delete Mate on its right-click menu, and a double click on
+it opens [the Edit Mate box](#the-edit-mate-box); neither moves a row.
+
+### The Parameters form
+
+The model's named values as a form (View > Parameters). Each top-level
+`NAME = value` line of the model pane is a field, under the model's own
+comment headings; the comment on its line gives its unit, its range
+(`# mm, 1200..4000`) or its choices (`# paint | galvanised | powder`, or
+`# "flat" or "pitched"`). A unit word anywhere in the comment is the
+value's, unless it follows another number (`# under the 4 mm lid` is the
+lid's); a range counts in brackets of its own, `(1..17)`, or as a clause of
+its own, never inside a sentence; choices may be named on the indented
+comment lines just below the value. A tuple of numbers is a field per
+member, `X_DOOR[0]` and `X_DOOR[1]`, and `A, B = 80, 50` a field per name.
+Private names (a leading underscore), names DX-CAD gives every model, and
+tables holding text are left out. Type a value and press Enter, tick a box or pick
+a choice: only that value is written into the model, the model is rebuilt,
+and one Undo takes both back. A value out of its range, or not a number
+where one is wanted, is refused at the top of the form and on the status
+bar, and nothing changes. A value worked out from others is shown with its
+expression and cannot be typed into: change the values it is made from.
+The form holds no rules between values: it is the model's own values,
+nothing more. An agent reads and sets the same values with the
+`get_parameters` and `set_parameter` tools.
 
 ### The output pane
 
@@ -484,6 +537,31 @@ Text height is the height the drawing letters in: Sheet's own, 2.5, 3.5, 5
 or 7 mm. The views' labels, the title block's fields, the dimensions and an
 add-on's annotations take it; the drawing's file keeps it, and a change is
 one undo step.
+
+Dimensions sets how the drawing's dimensions are drawn, each in the sheet's
+millimetres: Arrow size (0.5 to 10), Text height (2.5, 3.5, 5 or 7, over the
+drawing's), Text gap from the line (0.2 to 5), First line from the view and
+Spacing between lines (2 to 40 each), and Extension line gap (0 to 5) and
+overshoot (0 to 10). A field left empty is the sheet's own, which it shows
+greyed; a value outside its range is refused in words on the status bar.
+Each change is one undo step, the drawing's file keeps it and the DXF's
+DXCAD dimension style carries it. The sheet's own sizes, hole callouts and
+HOLES NOT DIMENSIONED note stand clear of the views' lines, by their text's
+real height, and every dimension's text stands the gap off its line; a
+dimension an add-on placed stays where it was put. Settings > Drawings holds
+the style a new drawing starts with.
+
+Make Dimensions Editable, on a view's right-click menu for that view or on
+the sheet's for every view, makes the sheet's own sizes, hole callouts and
+HOLES NOT DIMENSIONED note the drawing's own, where they stand and saying
+what they said, as one undo step; the sheet then draws none of its own for
+that view. Each is then selected by a click, moved by its handle, edited by a
+double-click (a value typed over the one measured, which is marked as typed,
+and a tolerance after it; an empty value gives the measured one back) and
+taken off by Delete, one undo step each, nothing else on the sheet moving.
+Their values are measured from the model whenever the sheet is drawn, so a
+change of the model updates them; the drawing's file keeps them, and the PDF
+and DXF carry them. A drawing never asked draws as it did.
 
 ### Large assemblies on a drawing
 
@@ -540,6 +618,25 @@ not installed, a line over the list says where to download it, with a
 Download button; one installed, enabled or disabled, is never offered. It
 counts as installed by its plugin's name or its distribution's, as its
 menu does (item 901). Install from File... installs the wheel downloaded.
+
+### The Animate box
+
+View > Animate...: a short video of the model, from the view on screen, in
+the window's theme. Pick one of the three choices, Explode and back, Turn
+around or Build it up; tick and turn while it moves for a turn as well (Turn
+around is a turn already); choose the Length, 3 to 30 seconds, the Size,
+Video 720p (1280 x 720), Video 1080p (1920 x 1080), Square (1080 x 1080) or
+Small GIF, and the Format. MP4 (H.264) is greyed, with the reason beside it,
+where this machine has no H.264 encoder, and for Small GIF; a GIF is drawn at
+most 800 pixels wide, 15 frames a second. Type a Title for a two-second card
+with it at the start, or leave it empty for none; the title is not kept for
+the next time. Build it up names each part as it arrives. Preview plays the animation small
+in the box, looping, as it will be saved, and Stop or any change of choice
+stops it. Save... closes the box, asks for the file and writes it under a bar
+with Cancel; Cancel stops it part way and leaves no file. Close shuts the
+box. The box keeps what it was last given for the next time. The three
+recipes, the sizes and the formats, with a GIF of each, are in
+[Animations](animate.md).
 
 ### The Bill of Materials box
 
@@ -622,7 +719,12 @@ typed, and OK is enabled only when the part can be made.
 
 Model > Check Interference...: the pairs of parts that overlap, each with
 the volume they share. The overlaps show in red in the view until the box
-is closed.
+is closed. "Also list pairs closer than [ ] mm", empty to begin with: type a
+gap and press Enter or List, and every pair that does not overlap and is
+nearer than that is listed after the overlaps, with its gap to three places
+and its two nearest points, and a red line is drawn between those points
+until the box is closed. Touching faces read 0.000. Empty, the box lists
+what it always did.
 
 ### The Licences box
 
@@ -698,6 +800,16 @@ with a tick box, none ticked. Tick the ones that are to have a sheet of
 their own and press Make Sheets; Cancel adds nothing. The sheets are
 made five at a time, with a question after each five.
 
+The search field above the list narrows it as you type: any part of the
+name, upper or lower case alike. A part the search hides keeps its tick,
+and gets its sheet. Tick all shown and Untick all shown tick or untick
+the parts listed and no other; "N ticked" beside Make Sheets counts every
+tick, shown or not. Enter in the search field does not make the sheets.
+
+"Show the flat pattern on sheet metal parts' sheets", ticked at first,
+gives the sheet of each sheet metal part a fifth view, its flat pattern;
+with it off the sheets are made with their four views alone.
+
 ### The recovery box
 
 Shown at the start when DX-CAD did not close cleanly: the tabs that had
@@ -709,8 +821,11 @@ leaves them for the next start.
 
 File > Settings...: the settings in groups. Mode is 2D drafting or 3D
 modelling; View holds Show Planes; Runs, the seconds a run of the model is
-given; Recovery, the minutes between keeps of
-the unsaved tabs; Parts, the default material; Updates, whether to check at
+given, and whether Claude may run models from Claude Desktop (trusted
+projects only), the question Connect Claude Desktop asks once; Recovery, the minutes between keeps of
+the unsaved tabs; Parts, the default material; Drawings, the number of parts
+above which a new drawing asks to be laid out for speed and the dimension
+style a new drawing starts with; Updates, whether to check at
 the start; Controls, DX-CAD's own mouse and keys or the classic CAD
 controls; and Assistant, its provider, model and address. OK keeps the
 changes and Cancel leaves everything as it was. View's Toolbars... button
@@ -728,6 +843,35 @@ Model > Suggest Mates...: the mates the picked part's features allow
 against the parts near it, best first. Picking a row shows where the part
 would go. Tick the ones to add and press Accept Checked, or Accept All;
 Cancel adds none.
+
+### The Import wizard
+
+File > Import..., or Sketch > Import DXF...: a STEP file or a DXF drawing brought in in four
+steps, Back and Cancel on each. 1. The file: typed, or found with Browse...; its format
+is read from what it holds, not its name, so a DXF named .step is read as DXF. A DWG is
+refused, and Next stays off: DX-CAD does not read DWG yet, so save it as DXF from the
+program that made it. 2. Check, adding nothing: for STEP the units the file declares,
+its solids, shells and faces, the names and colours it carries, how many solids are
+valid, its open shells and its size, with a warning when it is under 1 mm or over
+100 m across, which looks like a units mistake; for DXF its units, its layers with
+the lines, arcs and circles on each, the closed loops, what will be left out and its
+extents. 3. Place: STEP as one part or a part per solid, named from the file, its
+scale and the units to read it in where the file says the wrong ones; DXF on which
+plane, its scale and which layers. 4. Summary of what Finish adds. Finish writes it
+into the model (`import_step`, or the DXF's sketch as its own lines) and runs it, one
+step for Undo; Cancel adds nothing. After a DXF the window works in 2D drafting, and
+a STEP brought in while in 2D drafting turns it to 3D modelling; the status bar says
+so. Nothing is previewed: the parts appear after Finish.
+
+### The Edit Mate box
+
+Model > Edit Mate..., or a mate's row in the Feature tree right-clicked or
+double-clicked: the two parts and the face, hole or plane each names, shown
+and not changed here; the kind; and the value, in mm for a distance and
+degrees for an angle, greyed for coincident and concentric. OK writes the new
+mate on the same line of the model and runs it, one step for Undo; Cancel
+changes nothing. There is no preview: the parts move after OK. To mate other
+faces, use Delete Mate, then Mate... or Suggest Mates....
 
 ### The Title Block dialog
 
@@ -747,6 +891,14 @@ Block... button in Drawing properties lists the texts of the drawing in
 front's own sheet, kept in its .dxcdrg, and OK there is one undo step. The
 lines scroll; the font, the text height, OK and Cancel stay in view.
 
+A value in the title block can be changed where it stands: double-click it
+on the sheet and a box opens over it, holding what it shows. Enter keeps
+what is typed, one undo step; Escape, or a click elsewhere, leaves it. A
+value the sheet fills itself says so in the box, "Automatic: ...", and may
+be typed over; clearing the box gives the automatic value back. The title
+block's right-click menu has Edit Title Block... for every field at once,
+beside Reset Text Positions.
+
 ### The Toolbars box
 
 View > Toolbars..., or the Toolbars... button in File > Settings: every
@@ -754,6 +906,16 @@ toolbar the window has, the add-ons' too, in the order they stand, ticked
 if it is shown. Show All ticks every one and Hide All unticks them; OK shows
 and hides them together and keeps the choice for the next start, and Cancel
 leaves them as they were.
+
+### The Version History box
+
+File > Version History...: the model's versions, newest first, each with
+its time, who made it and what changed. Choosing one shows, as text, the
+lines taken out (-) and put in (+) from it to the script in the pane; there
+is no 3D preview. Restore puts it in the pane and builds it, as one undo
+step, and keeps it as a new version; Save as .py... writes its text to a
+file; Close changes nothing. An agent lists them with list_versions and
+restores one with restore_version.
 
 ### The What's New box
 

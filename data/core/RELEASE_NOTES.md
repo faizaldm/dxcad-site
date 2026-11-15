@@ -3,6 +3,69 @@
 What each release of DX-CAD brings, in plain words, newest first. The full
 record of every change is in [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.6
+
+An update to 0.1.5, 13 November 2026. It installs over 0.1.5, and your
+files, settings and add-ons are kept. Drawings get clearer dimensions you
+can style, make your own and edit, and title-block values you change where
+they stand. Long work shows how far it has got and can be cancelled.
+STEP and DXF files come in through a wizard, mates are edited from the
+Feature tree, and a model can hold levels, types, hosted elements and
+schedules. Claude Desktop can be allowed to build models, and changes many
+lines at once. Add-ons get plugin API 7.
+
+### Modelling
+
+- Connect Claude Desktop now asks once whether Claude may run models. In
+  0.1.5 it could change a model's lines but never build it; Allow lets it
+  run a trusted project's model, and Settings > Runs changes your answer.
+- Claude Desktop changes several places in a model in one step, one undo
+  for the lot, so a change to a big model takes far less time.
+- File > Import... brings in a STEP file or a DXF drawing step by step,
+  checking what it holds, and its units, before anything is added.
+- Right-click or double-click a mate in the Feature tree to change its kind
+  and value, or delete it, one undo step.
+- A model can name levels and grid lines and stand parts on a level, give
+  elements a type whose values they override one by one, host an element in
+  another so it cuts it and moves with it, and list element values in a
+  read-only schedule you can save as CSV. View > Project Browser lists the
+  levels, drawings and schedules.
+
+### Drawings
+
+- Dimensions keep clear of the views and of their own text. Drawing
+  properties > Dimensions sets the arrow size, text height, gaps and
+  spacing; Settings > Drawings sets them for new drawings.
+- Make Dimensions Editable turns a view's automatic sizes and hole callouts
+  into dimensions of your own, to move, edit, type over and delete.
+- Double-click a title-block value on the sheet to change it there.
+- "Please wait" shows a bar, the percent done and the time left, and Cancel
+  stops an export with nothing written.
+- The sheet on screen draws what the PDF draws, its texts centred where
+  they belong; a long status message can be read in full by clicking it.
+- Hidden lines on big assemblies are worked out faster, every line as
+  before.
+
+### Measure
+
+- Check Interference... can also list the pairs of parts closer than a gap
+  you type, each with its gap and a red line between the nearest points.
+
+### Add-ons
+
+- Plugin API 7: an add-on's commands can show their progress and be
+  cancelled, be greyed with their own reason and carry tooltips; its
+  drawing views follow the drawing's units and turn by 90 degrees; its sheet
+  tools can take clicks until Enter; and its flat patterns can carry
+  marking on layers of their own and go several to one DXF. Add-ons for
+  buildings can read a model's levels, types, hosts and schedules.
+
+### Known limitations
+
+- Hidden lines on a very big assembly still take minutes for each view;
+  the quick outline shows meanwhile, with a notice on the sheet.
+- Those of 0.1.0, below, still hold.
+
 ## 0.1.5
 
 An update to 0.1.4, 3 November 2026. It installs over 0.1.4, and your

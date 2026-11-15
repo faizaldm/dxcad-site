@@ -962,7 +962,7 @@ def tutorial_page(root, shell):
     size80 = need(r"size ([\d.]+ x [\d.]+ x [\d.]+);", flat, "first size").group(1)
     run_key = need(r"\| `Run Script` \| `(F5)` \|", gui, "Run Script key").group(1)
     export = need(r"\| `(Export Parts\.\.\.)` \| \| Write the picked parts, or every part when "
-                  r"none is picked, to one (STEP), STL, 3MF or BREP file", gui, "Export Parts")
+                  r"none is picked, to one (STEP), STL, 3MF[^|]*? file", gui, "Export Parts")
     need(r"as `dxcad export` writes them", gui, "dxcad export")
 
     def block(*lines):
