@@ -113,7 +113,11 @@ nav ul{list-style:none;display:flex;gap:24px;margin:0;padding:0;font-size:15px}n
 h1,h2,h3{font-family:var(--cond);text-wrap:balance}
 .small{font-size:14px;color:var(--ink-2)}
 .btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:600;padding:12px 18px;border:0}
-.btn:hover{background:var(--blue-dark)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}.btn.ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn:hover{background:var(--blue-dark)}
+.updates{margin:18px 0 0;max-width:460px}.updates label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}.updates label span{font-weight:400;color:var(--ink-2)}
+.updates .row{display:flex;gap:8px}.updates input[type=email]{flex:1;min-width:0;font:inherit;padding:10px 12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+.updates input[type=email]:focus{outline:2px solid var(--blue);outline-offset:1px}.updates .small{margin-top:6px}
+.updates .trap{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}.btn.ghost:hover{border-color:var(--blue);color:var(--blue)}
 section{padding:88px 0 0}
 h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;font-weight:700;margin:0 0 12px}
 .intro{color:var(--ink-2);max-width:62ch;margin:0 0 36px}
@@ -221,6 +225,12 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
           <a class="btn" href="#download">Download for Windows</a>
           <a class="btn ghost" href="#download">macOS, Linux and Python</a>
         </div>
+        <form class="updates" method="post" action="https://licence.designmatix.co.uk/v1/updates/subscribe">
+          <label for="updates-email">Email me updates <span>(optional)</span></label>
+          <div class="row"><input id="updates-email" type="email" name="email" maxlength="254" required autocomplete="email" placeholder="you@company.com"><button class="btn ghost" type="submit">Send</button></div>
+          <div class="trap" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+          <p class="small">New releases and add-ons, a few times a year. We email a link to confirm first; every email has a one-click unsubscribe. See the <a href="/privacy.html#updates">privacy notice</a>.</p>
+        </form>
         <p class="small">Version 0.1.6, 13 November 2026. Windows 10 and 11 (64-bit), signed by Designmatix; builds for macOS 13 or later on Apple silicon Macs (M1 or later) and for Linux too. <a href="#requirements">System requirements</a>. Fabrication and Drafting Pro add-ons free during your trial.</p>
       </div>
       <div class="dim" style="padding:0">

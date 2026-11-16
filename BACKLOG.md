@@ -155,7 +155,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   Accept: tests/test_download_stats.py: a day is a file's total less the day before; a new file counts its whole
   total on its first day; a lower total counts as none; a second run on one day replaces that day; drafts are left
   out and every page of releases is read; the report is ASCII and names the totals.
-- [ ] 4022. An optional "email me updates" form beside the download buttons (S)
+- [x] 4022. An optional "email me updates" form beside the download buttons (S)
   A plain HTML form (no script needed) posting one address to the licence service's subscribe address, which sends
   a confirmation email and keeps the address only once it is confirmed; a line under it says what the address is
   used for and links the privacy page. Waits on the licence service's subscribe endpoint (dx-licence item, queued
