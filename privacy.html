@@ -118,8 +118,8 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
   <div class="sheet">
   <article class="doc">
     <h1>Privacy notice</h1>
-    <p class="meta">DX-CAD by Designmatix Ltd. Last updated 23 October 2026.</p>
-    <div class="box"><strong>In short:</strong> DX-CAD collects nothing about you or your work. It makes a request only when you check for updates, use the Assistant, or activate a licence, and each sends only what is listed below. When you buy, Paddle handles the payment; we keep only what we need to issue and check your licence.</div>
+    <p class="meta">DX-CAD by Designmatix Ltd. Last updated 16 November 2026.</p>
+    <div class="box"><strong>In short:</strong> DX-CAD collects nothing about you or your work. It makes a request only when you check for updates, use the Assistant, or activate a licence, and each sends only what is listed below. When you buy, Stripe handles the payment; we keep only what we need to issue and check your licence.</div>
 
     <nav class="toc" aria-label="Contents"><strong>Contents</strong>
       <ol>
@@ -153,7 +153,7 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
     <p>A hosted option, using a DX-CAD account instead of your own key, is planned. When it is available, this notice will say what it sends to us and to whom we pass it.</p>
 
     <h2 id="licence">Buying and activating a licence</h2>
-    <p><strong>Buying.</strong> Our order process is conducted by our online reseller Paddle.com, the Merchant of Record for all our orders. Paddle collects your payment details, billing address and tax information and is responsible for them under <a href="https://www.paddle.com/legal/privacy">its own privacy notice</a>. Paddle tells our licence service your email address, Paddle's customer, subscription and transaction numbers, the products and number of seats you bought, and the dates of your paid period. We never see your card details.</p>
+    <p><strong>Buying.</strong> You buy from Designmatix Ltd. Payments are processed by Stripe, which collects your card details, billing address and the details needed to work out VAT or sales tax, and is responsible for them under <a href="https://stripe.com/privacy">its own privacy policy</a>. When a payment completes, Stripe tells our licence service your email address, Stripe's numbers for the checkout, the payment and you, which payment link you used (so which products and seats you bought), and the date. We never see your card details.</p>
     <p><strong>Your licence key</strong> is emailed to you by our licence service. If you sign in with an emailed code instead of a key, we use your email address to send the code and find your licences.</p>
     <p><strong>Activating.</strong> When you activate (Help &gt; Licence), DX-CAD sends our licence service at licence.designmatix.co.uk the key you typed (or your sign-in), a random install number it made for this installation (never a fingerprint of your computer), an optional computer name you choose so you can tell your seats apart, and its version. While a licence is active, DX-CAD sends the signed token the service gave it about once a week to renew it, and when you give a seat back. Nothing else is sent: no name, file or setting. The token is checked on your computer and works offline for up to 14 days.</p>
     <p><strong>Launch offer check (version 0.1.0 only).</strong> DX-CAD 0.1.0, from 30 days before its launch offer ends, asks for the same public file as the update check at start, to know whether the offer has been extended. Nothing is sent but the request. Version 0.1.1 and later make no such request.</p>
@@ -163,12 +163,12 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
     <table>
       <thead><tr><th scope="col">Data</th><th scope="col">Why</th><th scope="col">How long</th></tr></thead>
       <tbody>
-        <tr><td>Your email address, Paddle's numbers for you and your purchases, your products, seats, status and paid period</td><td>To send your key, recognise your licence and support you</td><td>While your licence lasts. After it ends, your email address, activations and add-ons are deleted after 2 years; Paddle's numbers stay for our accounts. If a licence was ended by a refund or chargeback, the email address is kept for 7 years for accounting and disputes.</td></tr>
+        <tr><td>Your email address, Stripe's numbers for you and your payments, your products, seats, status and paid period</td><td>To send your key, recognise your licence and support you</td><td>While your licence lasts. After it ends, your email address, activations and add-ons are deleted after 2 years; Stripe's numbers stay for our accounts. If a licence was ended by a refund or chargeback, the email address is kept for 7 years for accounting and disputes.</td></tr>
         <tr><td>Your licence key</td><td>To recognise it when you activate</td><td>Never stored as such: only a one-way keyed hash and its last four characters.</td></tr>
         <tr><td>Install numbers, optional computer names, DX-CAD version, first and last check-in</td><td>To count seats and show you which computers hold them</td><td>While the seat is in use; deleted 90 days after the seat is given back.</td></tr>
         <tr><td>The key email in our sending queue (encrypted)</td><td>To send it again if it was lost</td><td>Wiped 30 days after it is sent.</td></tr>
-        <tr><td>Email address of someone who started a checkout but did not pay</td><td>To send the key if the payment completes</td><td>Deleted 30 days after the last notice from Paddle.</td></tr>
-        <tr><td>Records of Paddle's notifications (no personal data)</td><td>To apply each one once and in order</td><td>400 days.</td></tr>
+        <tr><td>Email address of a checkout whose payment has not completed yet</td><td>To send the key when the payment completes</td><td>Deleted 30 days after the last notice from Stripe.</td></tr>
+        <tr><td>Records of Stripe's notifications (no personal data)</td><td>To apply each one once and in order</td><td>400 days.</td></tr>
         <tr><td>A record of changes we make by hand, with a licence number but no email address</td><td>To keep an account of support actions</td><td>Kept; computer names in it are blanked when the licence data is deleted.</td></tr>
       </tbody>
     </table>
@@ -176,15 +176,15 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
 
     <h2 id="others">Who else receives data</h2>
     <ul>
-      <li><strong>Paddle</strong> (Paddle.com Market Ltd, London), our reseller and Merchant of Record, as an independent controller of your purchase.</li>
-      <li><strong>Postmark</strong> (ActiveCampaign, LLC, United States) sends our licence emails and sign-in codes on our behalf, as our processor. It receives your email address and the message.</li>
+      <li><strong>Stripe</strong> (Stripe Payments UK Ltd, London, and its group), our payment processor. It processes your payment on our behalf, and for its own legal duties, such as preventing fraud, it acts as an independent controller.</li>
+      <li><strong>Google</strong> (Google Workspace, from Google Ireland Ltd and Google LLC) sends our licence emails and sign-in codes from our own mailbox on our behalf, as our processor. It receives your email address and the message.</li>
       <li><strong>Our server host</strong>, as our processor, stores the licence service's data on our behalf in the United Kingdom.</li>
       <li><strong>GitHub</strong> serves DX-CAD's public update file, documentation and downloads, and the <strong>Python Package Index</strong> serves <code>pip install dxcad</code>, under their own privacy policies.</li>
     </ul>
-    <p>Where data goes outside the United Kingdom, as with Postmark in the United States, we rely on the UK's adequacy regulations for the UK Extension to the EU-US Data Privacy Framework, or on the UK's International Data Transfer Agreement or Addendum. We do not sell your data and we do not use it for advertising.</p>
+    <p>Where data goes outside the United Kingdom, as with Google's mail servers, which may be in the United States, we rely on the UK's adequacy regulations for the UK Extension to the EU-US Data Privacy Framework, or on the UK's International Data Transfer Agreement or Addendum. We do not sell your data and we do not use it for advertising.</p>
 
     <h2 id="website">This website</h2>
-    <p>This site sets no cookies, runs no analytics or tracking, and loads nothing from other sites. The web server keeps a standard access log, including internet addresses, for no more than 30 days, for security. When you buy, Paddle's checkout opens; it may set its own cookies, under Paddle's privacy notice.</p>
+    <p>This site sets no cookies, runs no analytics or tracking, and loads nothing from other sites. The web server keeps a standard access log, including internet addresses, for no more than 30 days, for security. When you buy, Stripe's checkout page opens on Stripe's site; it may set its own cookies, under Stripe's privacy policy.</p>
 
     <h2 id="bases">Why we may use your data</h2>
     <ul>
@@ -215,7 +215,7 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
     <div><span>Learn</span><strong><a href="/docs/">Documentation</a> &middot; <a href="/gallery.html">Examples</a> &middot; <a href="/tutorial.html">Tutorial</a> &middot; <a href="/faq.html">Questions</a> &middot; <a href="/shortcuts.html">Shortcuts</a></strong></div>
     <div><span>Find</span><strong><a href="/search.html">Search</a> &middot; <a href="/download.html">All downloads</a></strong></div>
     <div class="wide"><span>Also from Designmatix</span><strong><a href="https://ai.designmatix.co.uk/texttocad/">Text-to-CAD</a> &middot; <a href="https://dxems.designmatix.co.uk/">DX-EMS</a></strong></div>
-    <div class="full">Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</div>
+    <div class="full">You buy from Designmatix Ltd. Payments are processed securely by Stripe; we never see your card details.</div>
   </footer>
 </main>
 </body>

@@ -1079,7 +1079,7 @@ def test_every_pages_footer_is_the_same_and_has_the_main_links():
 
 def test_the_footer_has_one_place_and_keeps_the_companys_words():
     assert bp.FOOTER.startswith('<footer class="tb"') and bp.FOOTER.endswith("</footer>")
-    for words in ("Designmatix Ltd", "12697280", "England and Wales", "Paddle.com",
+    for words in ("Designmatix Ltd", "12697280", "England and Wales", "processed securely by Stripe",
                   "support@designmatix.co.uk"):
         assert words in bp.FOOTER
     shell = bp.read_shell(str(ROOT))
