@@ -31,6 +31,7 @@ These are the pages.
 | [animate.md](animate.md) | Animations: a short video of an assembly from one of three recipes, explode, turntable or build, its sizes and its formats, MP4 and GIF, with a GIF of each. |
 | [3d-web-page.md](3d-web-page.md) | 3D web pages: the model as one .html file that turns, pans, zooms and measures in any browser or phone, offline. |
 | [3d-pdf.md](3d-pdf.md) | 3D PDF: the model on one PDF page that turns, pans, zooms and measures in Acrobat Reader, a picture of it in browsers. |
+| [render.md](render.md) | Photo-real renders: a still path traced with soft light, shadows and a sky, by quality, from View > Render..., `dxcad render --quality` or an assistant. |
 | [examples/README.md](examples/README.md) | The example parts, a model.py each, with what every one of them shows and how to run it. |
 | [examples/bracket.md](examples/bracket.md) | The worked example: a bracket with four holes, made by an agent from one sentence. |
 | [examples/dimensions.md](examples/dimensions.md) | Where each fastener figure in the examples comes from. |

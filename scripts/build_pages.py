@@ -849,7 +849,7 @@ def trial_words(gui, name):
     if not m:
         raise ValueError("gui.md: no licence words in the '%s' section" % name)
     first = re.sub(r" \(item \d+\)", "", paragraph.split(". ")[0]) + "."
-    third = re.search(r"The paid add-ons, Fabrication and Drafting Pro, [^.]*\.", gui)
+    third = re.search(r"The paid add-ons, Fabrication(?:,| and) [^.]*\.", gui)
     if not third:
         raise ValueError("gui.md: no licence words about the paid add-ons")
     return first, m.group(0), third.group(0)

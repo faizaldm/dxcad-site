@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What is new in each DX-CAD release | DX-CAD by Designmatix</title>
-<meta name="description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.6, 13 November 2026.">
+<meta name="description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.7, 20 November 2026.">
 <link rel="canonical" href="https://dxcad.designmatix.co.uk/releases.html">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1E2FE0">
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DX-CAD by Designmatix">
 <meta property="og:title" content="What is new in each DX-CAD release | DX-CAD by Designmatix">
-<meta property="og:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.6, 13 November 2026.">
+<meta property="og:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.7, 20 November 2026.">
 <meta property="og:url" content="https://dxcad.designmatix.co.uk/releases.html">
 <meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
 <meta property="og:image:width" content="1200">
@@ -24,7 +24,7 @@
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What is new in each DX-CAD release | DX-CAD by Designmatix">
-<meta name="twitter:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.6, 13 November 2026.">
+<meta name="twitter:description" content="What each DX-CAD release brought, in plain words, newest first. The latest is 0.1.7, 20 November 2026.">
 <meta name="twitter:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
 <link rel="alternate" type="application/atom+xml" title="DX-CAD releases" href="/releases.xml">
 <script type="application/ld+json">
@@ -35,14 +35,14 @@
  "url": "https://dxcad.designmatix.co.uk/",
  "applicationCategory": "DesignApplication",
  "operatingSystem": "Windows 10, Windows 11, macOS 13 or later (Apple silicon), Linux (x86_64)",
- "softwareVersion": "0.1.6",
+ "softwareVersion": "0.1.7",
  "releaseNotes": "https://dxcad.designmatix.co.uk/releases.html",
  "publisher": {
   "@type": "Organization",
   "name": "Designmatix Ltd",
   "url": "https://designmatix.co.uk/"
  },
- "downloadUrl": "https://pypi.org/project/dxcad/0.1.6/"
+ "downloadUrl": "https://pypi.org/project/dxcad/0.1.7/"
 }
 </script>
 <style>
@@ -124,10 +124,11 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
   <div class="sheet">
   <article class="doc">
     <h1>What is new in each release</h1>
-    <p class="meta">DX-CAD by Designmatix Ltd. Newest first. The latest is 0.1.6, 13 November 2026.</p>
+    <p class="meta">DX-CAD by Designmatix Ltd. Newest first. The latest is 0.1.7, 20 November 2026.</p>
     <p>What each release of DX-CAD brings, in plain words. Each one installs over the one before, and your files, settings and add-ons are kept.</p>
     <nav class="toc" aria-label="Releases"><strong>Releases</strong>
       <ol>
+        <li><a href="#v0-1-7">DX-CAD 0.1.7</a>, 20 November 2026</li>
         <li><a href="#v0-1-6">DX-CAD 0.1.6</a>, 13 November 2026</li>
         <li><a href="#v0-1-5">DX-CAD 0.1.5</a>, 3 November 2026</li>
         <li><a href="#v0-1-4">DX-CAD 0.1.4</a>, 1 November 2026</li>
@@ -137,6 +138,71 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
         <li><a href="#v0-1-0">DX-CAD 0.1.0</a>, 16 October 2026</li>
       </ol>
     </nav>
+
+    <div class="release" id="v0-1-7">
+    <h2>DX-CAD 0.1.7</h2>
+    <p class="meta"><time datetime="2026-11-20">20 November 2026</time></p>
+    <p>An update to 0.1.6, 20 November 2026. It installs over 0.1.6, and your files, settings and add-ons are kept. DX-CAD now makes photo-real pictures: finishes, daylight, lamps and an architect's camera, with its own renderer for a quick preview and Blender for finished pictures, a whole set of cameras in one unattended run, and render packs that sweep cameras, light and looks into drafts to pick from. Drawings of big assemblies show an outline at once and let you pick how much detail each view shows. Parts can be turned with Edit &gt; Rotate.... Add-ons get plugin API 9, and assistants such as Claude Desktop can use add-ons' commands and render in the background.</p>
+    <h3>Rendering</h3>
+    <ul>
+      <li>View &gt; Render... makes a photo-real still, Draft, Good or Final, with a bar and Cancel; the grain is smoothed away. It is the quick preview. &lt;!-- 1183, 1184, 1193, 1206 --&gt;</li>
+      <li>Finishes such as oak, brick, glass, water, grass and lawn, each with its texture, given to a part or a face in the Render box's Materials... or in the model with <code>finish=</code>; their colour, roughness and tile can be changed. &lt;!-- 1185, 1190, 1191, 1192, 1203, 1212 --&gt;</li>
+      <li>Daylight from a clear sky, with the sun where it is at your site at the time and date you give, or your own HDR picture; a daylight render sets its own exposure, and the project keeps its site and its parts' looks. &lt;!-- 1186, 1221, 1222 --&gt;</li>
+      <li>Lamps in lumens and kelvin, points, spots, areas and glowing parts, kept in the project. &lt;!-- 1187, 1194, 1195 --&gt;</li>
+      <li>An architect's camera, with eye height, a lens in mm, upright verticals and depth of field; named cameras are kept in the project and the picture is named after its camera. &lt;!-- 1188, 1196, 1197, 1209 --&gt;</li>
+      <li>Parts render in their own colours, leaves from both sides, glass and water see-through, and grass and lawn look like turf. &lt;!-- 1207, 1208, 1219 --&gt;</li>
+      <li>Finished pictures come from Blender: File &gt; Export for Render... hands it the scene, the Render box can render in Blender, and DX-CAD finds Blender itself. &lt;!-- 1189, 1205 --&gt;</li>
+      <li>File &gt; Render Set in Blender... and <code>dxcad render-set</code> render every camera of a set in one unattended run, skip what is done already, carry on past a failed picture and make a contact sheet. &lt;!-- 1227 --&gt;</li>
+      <li>File &gt; Render Pack... and <code>dxcad render-pack</code> sweep one recipe of cameras, lenses, heights, times of day, dates, skies, HDR pictures, exposures, depth of field and lamps into quick drafts on a contact sheet, then render only the ones you tick at final quality. &lt;!-- 1229 --&gt;</li>
+    </ul>
+    <h3>Modelling</h3>
+    <ul>
+      <li>Edit &gt; Rotate... turns the picked parts, or a sub-assembly as one, about an axis you pick or type, by an angle you type, in one undo step. &lt;!-- 1162 --&gt;</li>
+      <li>Big models build faster: their booleans now use every core of the machine, and every shape comes out the same. &lt;!-- 1180, 1215 --&gt;</li>
+      <li>Animate's build video is framed once and turns at a steady speed, and can carry captions from a CSV file. &lt;!-- 1158 --&gt;</li>
+      <li>Colours given to parts made in a function or a loop are kept in the view, in renders and in saved assemblies. &lt;!-- 1156 --&gt;</li>
+    </ul>
+    <h3>Drawings</h3>
+    <ul>
+      <li>On a big assembly each view first shows the model's outline, then a bar on the view lets you pick the detail: the outline, the sub-assemblies, the parts, or the parts and their fasteners. Quick draft lines show while the exact ones are worked out; Cancel keeps what is drawn, and a saved drawing opens at its levels. &lt;!-- 1163, 1166, 1167, 1168, 1169, 1170, 1173, 1174, 1214 --&gt;</li>
+      <li>PDF, DXF and Print always get the exact lines, at each view's level. &lt;!-- 1171 --&gt;</li>
+      <li>Moving a view, or changing a note or a dimension, takes under a second on a big model, and a balloon finds its place at once. &lt;!-- 1164, 1165, 1175, 1226 --&gt;</li>
+      <li>The time each level takes is measured on the three biggest models. &lt;!-- 1172 --&gt;</li>
+      <li><code>dxcad drawing --table FILE.csv</code> puts a table from a CSV file on the drawing's sheets. &lt;!-- 1160 --&gt;</li>
+    </ul>
+    <h3>Add-ons and the plugin API</h3>
+    <ul>
+      <li>Plugin API 8: an add-on can read each drawing view's level of detail and its lines, name its undo steps, show words and progress from its sheet tools, give its fields a tip and a unit, style the lines of its own views and tell which of its views was clicked. &lt;!-- 1176, 1177, 1201 --&gt;</li>
+      <li>Add-ons for buildings can rewrite a part's line whatever it carries, list levels and types in their dialogs, host elements that move with their host and cut every layer of a wall, count and total their schedules, and offer starter projects. &lt;!-- 1178, 1198, 1199, 1200, 1202, 1210, 1211, 1213 --&gt;</li>
+      <li>Plugin API 9: add-ons can give finishes, lamps and cameras and render, hand back shapes in their own colours, keep their data in the project with Undo, be called after each run and as a project opens, and add rows to a render set. Add-ons written for earlier APIs load as before. &lt;!-- 1204, 1216, 1224, 1225 --&gt;</li>
+    </ul>
+    <h3>Agents and Claude Desktop</h3>
+    <ul>
+      <li>An assistant such as Claude Desktop can capture the view at the size it asks with only the parts it names, use your add-ons' own commands, and start a long render, or a render pack's stage, that goes on after its reply, asking how it stands or stopping it. &lt;!-- 1159, 1217, 1223 --&gt;</li>
+    </ul>
+    <h3>Licensing</h3>
+    <ul>
+      <li>Architecture is on sale beside Drafting Pro and Fabrication, so the 30-day trial unlocks all three. &lt;!-- 1153 --&gt;</li>
+      <li>The add-ons show their price, GBP 129 for Drafting Pro, GBP 189 for Fabrication and GBP 169 for Architecture, and Buy opens the pricing on dxcad.designmatix.co.uk. &lt;!-- 1182, 1228 --&gt;</li>
+      <li>Help &gt; Licence and <code>dxcad licence status</code> say the day your licence ends, then the day it works offline until, and "1 seat" for one. &lt;!-- 1181 --&gt;</li>
+    </ul>
+    <h3>Install</h3>
+    <ul>
+      <li>The release is checked by installing it on a second Windows laptop, and the test suite and its macOS and Linux runs were put right after 0.1.6's. &lt;!-- 1154, 1155, 1157, 1179 --&gt;</li>
+    </ul>
+    <h3>Fixes</h3>
+    <ul>
+      <li>Big renders come out whole, never black or striped, and the shade under eaves is smooth. &lt;!-- 1218, 1220 --&gt;</li>
+      <li>Export 3D PDF and Export 3D Web Page show one progress bar while they work, and no DX-CAD dialog pops up over another program. &lt;!-- 1161 --&gt;</li>
+    </ul>
+    <h3>Known limitations</h3>
+    <ul>
+      <li>Blender's pictures, and its day sky on Blender 5, have not been checked by eye for this release: the tests use a stand-in for Blender. DX-CAD's own renderer needs the graphics card's OpenGL, and on macOS it does not render from the command line or for an assistant.</li>
+      <li>A drawing view saved at Outline or Sub-assemblies takes a few seconds the first time Balloon View asks for its regions on a big model.</li>
+      <li>The window bench, which allows a big showcase model 10 seconds to open, can still be missed on a slow laptop by race_car_frame's rebuild and steel_structure's opening, though both are faster than in 0.1.6; the models open and work.</li>
+      <li>Those of 0.1.6 and 0.1.0, below, still hold, but for hidden lines on a very big assembly, which now show an outline and draft lines first.</li>
+    </ul>
+    </div>
 
     <div class="release" id="v0-1-6">
     <h2>DX-CAD 0.1.6</h2>

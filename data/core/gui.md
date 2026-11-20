@@ -39,7 +39,13 @@ drawn, a model being built, an add-on's command, a small "Please wait" window
 appears over it with what is being done, and stays a second after the work
 ends so it never blinks away; a command that takes under a second never shows
 it. While a model builds it has a Cancel button, which ends the run with
-the document as it was, as Stop on the status bar and Esc do.
+the document as it was, as Stop on the status bar and Esc do. A command with
+a bar of its own (Export 3D PDF..., Export 3D Web Page..., Animate...) shows
+that bar alone, so one dialog is on screen at a time. "Please wait" stands
+over DX-CAD's window only: on Windows, when another application comes to the
+front it goes too, and comes back without taking the focus when DX-CAD does;
+on Linux it is DX-CAD's window's own; on macOS, where another program's window
+cannot be, it stays over every window while it is up.
 
 A message too long for the status bar is cut with "...", and its whole text
 is kept: it is the bar's tooltip, and a click on the bar opens it in full in
@@ -111,6 +117,9 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Drawing...` | | Make a drawing of the saved project in a tab of its own, on a sheet asked for, A4 to A1 or one of the ten ISO and ANSI sheets, as `dxcad drawing` draws one: the front, top, right and isometric views with hidden edges dashed, at one scale that fits, in the title block with the project, file, date, scale and sheet size filled in, and the bill of materials as a parts list. Each hole a view sees round may have its centre lines: Centre marks in Drawing properties, off on a new drawing unless the model calls `centre_marks(True)`. The drawing is a document of its own: drag a view to move it, the view and its sizes and label following the pointer while it moves, one undo entry when it is let go and Esc putting it back mid-drag; the top and right views stay in line with the front, moving with it, the top only up and down and the right only sideways, unless Unlock Alignment (on the view's right-click menu, or In line with the front view in Drawing properties) lets one move freely, Lock Alignment putting it back in line; right-click a view to show or hide its dashed hidden lines, and right-click the sheet for its scale, its title block fields and whether the dimensions and the parts list are shown, each one undo entry. While a drawing's tab is in front, the left dock shows Drawing properties: the sheet's size, its Title Block... and the parts list's columns, ticked and dragged into order (Item, Part number, Description, Material, Qty and Rev by default, Size and Mass to be had; the description and material are a part's own description and material properties when it has them), remembered for new drawings and for the bill's Save CSV..., and for the view clicked on the sheet its label and hidden lines. The scale is two number fields, 1 : N or N : 1 with any positive numbers (1 : 25, 1 : 7.5, 2 : 1), the standard ratios offered beside them and To fit as a button; it is applied as it is typed, after a short pause and without Enter, the title block following, and a field that is not a number above 0 is marked red and changes nothing. With a view clicked, the scale typed is that view's own: it alone is drawn at it, with its centre lines and hole callouts, its label says it ("TOP SCALE 1 : 10"), and the title block keeps the sheet's; To fit gives it the sheet's scale again. Save writes it as a .dxcdrg, which holds the project's path and no geometry, so the sheet is drawn again from the project whenever the drawing is opened or its tab comes forward, and the status bar says so; a project that is gone is named by its path. Export Drawing writes it as a PDF or DXF. A project not yet saved is asked to be saved first. Greyed with no part, hidden in 2D drafting. |
 | `Export 3D Web Page...` | | The parts as one .html file that anyone can open in a browser or on a phone, with no CAD, no plugin and no internet: they turn, pan and zoom the model, pick a named view (the view on screen when you exported it first, then Front, Top, Right and Isometric), show or hide each part in its list, and measure between two corners in mm ([3D web pages](3d-web-page.md)). The page is made at each fineness first under a bar with Cancel, so the question that follows, Normal (as the 3D view), Coarse or Fine, gives the size of the file each makes; then name the file. It is written beside its name and renamed when complete; Cancel at any step leaves no file. Nothing in the model changes. `dxcad export-web` writes the same page from the command line. Greyed with no part, hidden in 2D drafting. |
 | `Export 3D PDF...` | | The parts as a PDF with one landscape page, A4, A3 or Letter, whose model turns, pans, zooms and measures in Adobe Acrobat Reader once the reader clicks Trust this document, each part named in its model tree, with named views: the view on screen when you exported it, the default, then Front, Top, Right and Isometric ([3D PDF](3d-pdf.md)). Readers with no 3D, browsers among them, show a picture of the default view instead; a line under the model names the project, DX-CAD's version and the date, and says lengths are in mm. Pick the paper, name the file, and the PDF is made under a bar with Cancel; it is written beside its name and renamed when complete, and Cancel at any step leaves no file. Nothing in the model changes. `dxcad export-3dpdf` writes the same kind of file from the command line. Greyed with no part, hidden in 2D drafting. |
+| `Export for Render...` | | The model handed to Blender for rendering: name a .glb, and beside it are written the .glb, holding every part in its place in its finish or colour (each finish with its texture and normal map), the lamps and a glowing part's light, the sun and the camera, and NAME_blender.py, a script that sets Blender's Cycles with the samples, denoiser, sky or .hdr, exposure and size the Render box was last given and renders NAME.png ([Rendering in Blender](render.md#rendering-in-blender)). Run it with `blender --background --python NAME_blender.py`. Nothing in the model changes. On the File menu, not on its toolbar. Greyed with no part, hidden in 2D drafting. |
+| `Render Set in Blender...` | | The project's render set in a table, a row a picture: its camera (a named camera or a standard view), sky (studio, a time of day, or the sun at a time and date at the project's site), exposure, quality, size, lamps on or off and name, with Add Row and Remove Row, the folder, Blender's program and Render every row again. Render keeps the rows in the project file as one undo step and renders every row in Blender in one go, a program apart, while the window stays free: a bar per row, and Cancel stops Blender. Each picture is CAMERA-PRESET.png, a row rendered before from the same model and settings is skipped, a row that fails is said and the rest go on, and index.html in the folder is a contact sheet ([Render sets](render.md#render-sets)). On the File menu, not on its toolbar. Greyed with no part, hidden in 2D drafting. |
+| `Render Pack...` | | The project's render pack: one recipe crossed into pictures. Tick the cameras (none: every named camera), lenses, heights (eye, raised, drone), times of day, dates, clear or hazy skies, .hdr pictures, exposures, depth of field and lamps; the limit the crossing is thinned to evenly and the pictures struck out; each stage's size, the folder and Blender's program. Render drafts renders every picture at draft quality in Blender in one go, a program apart, while the window stays free, with a contact sheet in FOLDER/draft grouped by camera and by light, each picture with a tick box; Render ticked at final renders only the drafts ticked in the box's list at final quality and size into FOLDER/final. The recipe is kept in the project file as one undo step ([Render packs](render.md#render-packs)). On the File menu, not on its toolbar. Greyed with no part, hidden in 2D drafting. |
 | `Send to Slicer` | | Write the picked entry, or every entry when none is picked, to a 3MF and open it in the slicer, which is asked for once and remembered. |
 | `Where Used...` | | On a saved file: the assemblies and drawings in a folder chosen, and every folder below it, that use this file, each with how many copies it holds, as `dxcad where-used` lists them. Every part keeps a stable id through renames, so an assembly that uses a part by its old name still finds it, saying the new name in the model's output. |
 | `Title Block...` | | The fields a person fills in once for every drawing: company, drawn by, checked by, material, finish, general tolerance, drawing number and revision, and since item 974 every other text a title block shows, the title, scale, date and the others the sheet fills itself among them, each left blank to stay automatic; and the font the drawing is lettered in, the bundled DejaVuSans (the default) or any TrueType font the system has, with the height of its dimensions, labels and fields, 2.5, 3.5, 5 or 7 mm. Kept from one session to the next and used by every sheet File > Drawing makes. |
@@ -128,6 +137,7 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Rename...` | | Give the picked entry another name, which the model is rewritten to match. A part made in a loop or a helper is renamed by a `rename()` statement after the parts. |
 | `Duplicate` | | A copy of the picked entry, under a name of its own, set its own width along x and left picked. |
 | `Move...` | | Move the picked part by dragging it in the view: after Move, press and drag, and the part follows the pointer in the plane of the screen, drawn where it would go with how far beside the pointer; let go and it is put there, one undo step, its line in the model wrapped in `translate`. Hold `X`, `Y` or `Z` to keep the drag to that axis of the model. Type a number for the distance instead, along the axis held or the way the drag is going, and `Enter` puts the part there. `Esc` leaves it where it was. A part held by mates moves only along what they leave it free to do, on its face or along its axis; where they leave nothing it does not move, and the status bar names the mate that holds it. |
+| `Rotate...` | | Turn the picked parts, or a picked sub-assembly as one, about an axis by an angle typed, in [the Rotate box](#the-rotate-box): X, Y or Z of the model, a picked straight edge or cylinder's axis, or a picked planar face's normal, through the picked parts' centre, the origin or a point typed. OK turns them together, one undo step: each part's line in the model wrapped in `rotate`, a placed part's or sub-assembly's `place` given its new `at=` and `rotate=`, so a part used from its own file turns where it is placed. A part held by mates turns only about what they leave free; otherwise it is refused and the status bar names the mate. A sheet part is not turned. |
 | `Mirror...` | | Add the picked entry mirrored in the XY, XZ or YZ plane, or in the picked face when one planar face is picked, as a part of its own after the original, writing `mirror` into the model. |
 | `Delete` | `Del` | Take the picked entries out of the document. |
 | `Select Category...` | | Pick every element whose type is in one category, chosen from the categories the model's elements are in (`element_type` and `values_of`, item 1145). Greyed when no element has a type. |
@@ -170,6 +180,7 @@ add-on's command is greyed the same way where it says it does not apply.
 | `Turntable...` | | Spin the view steadily about the vertical axis, slow, medium or fast, for a presentation or a recording; untick, click, Esc or a view command stops it. Settings > View > Stop spinning when DX-CAD loses focus, on at first, stops either when another window takes the focus. |
 | `Turn the Model After a Run` | | Ticked at first. When Run Script (F5), an Assistant turn or a run of calls from Claude Desktop has built parts and ended without error, the view is fitted to everything, at the angle it is at, and then turned at the turntable's slow speed to show the model off; a press, the wheel or any key in the view stops it and leaves the view where it is, and does nothing else. Unticked, the view is only fitted. A run on change, made while you are at something else, fits and never turns; a run that fails, or that changes no part, leaves the view alone. |
 | `Animate...` | | A short video of the model, for a presentation or a web page, from the view on screen: the Animate box ([The Animate box](#the-animate-box)) offers three choices, Explode and back (the parts come apart as an exploded view, hold, and come back together), Turn around (the camera goes once round the model) and Build it up (the parts arrive one at a time in the model's order); a tick, and turn while it moves, adds a turn to the first and the last; the Length, 3 to 30 seconds, 8 at first; the Size, Video 720p, Video 1080p, Square or Small GIF; and the Format, MP4 (H.264) or GIF. Preview plays it small in the box, looping, as it will be saved. Save... asks for the file and writes it under a bar with Cancel, which stops it and leaves no file. The parts move only as an exploded view or a camera moves them: no joints, no mates, never a feature before and after a change. Also on the Display toolbar; `dxcad animate` makes the same videos from the command line ([dxcad animate](cli.md#animate)). The recipes, sizes and formats, with a GIF of each recipe: [Animations](animate.md). |
+| `Render...` | | A photo-real still of the model as a PNG, path traced with soft light, shadows and a quiet sky: the Render box ([The Render box](#the-render-box)) offers the Quality, Draft, Good or Final, the View, the Size and the Exposure in stops. Render... asks for the file and makes it under a bar that counts the samples, with Cancel, which stops it and leaves no file. Greyed while the model has no parts. `dxcad render --quality` makes the same stills from the command line ([dxcad render](cli.md#render)), and an assistant's render_view takes a quality. The presets and what each does: [Photo-real renders](render.md). |
 | `Shaded with Edges` | | Draw every part shaded with its face boundaries outlined. The mode at the start. |
 | `Shaded` | | Draw every part shaded, without its edges. |
 | `Wireframe` | | Draw every part as its edges alone. |
@@ -350,7 +361,7 @@ Fabrication is a paid add-on (item 742). Until it is installed, its commands are
 | --- | --- | --- |
 | `User Guide` | | Open this guide inside DX-CAD, in a help window of its own, at its first page. The pages are the ones DX-CAD was installed with, so it opens with no network. |
 | `Help on This` | `F1` | Open the guide at the topic of what you are at: the dialog that is open, the command a menu has highlighted or the toolbar button under the pointer, the command being carried out, or the panel the focus is in; see [The help window](#the-help-window). With none of those it opens the first page. |
-| `Licence...` | | Where this install's licence stands: free for 30 days from this install's first start, then a licence; editing locks at 23:59 UK time on the trial's last day (from 30 days before, the notice "Your 30-day trial ends on DATE", also shown at start 30, 14 and 7 days before). An install first started under 0.1.0 keeps until 23:59 UK time on 15 November 2026, if that is later than its 30 days. The paid add-ons, Fabrication and Drafting Pro, are free through the trial while no licence key is held, and lock with editing on the lock day; the line under the status names them and the day, as the notices do. Type a key (DXC-XXXXX-XXXXX-XXXXX-XXXXX) and press Activate, or sign in with your email: type the address the licence was bought with, press Send code, type the six digits from the email and press Sign in (one licence activates at once; several are listed to choose from); Deactivate gives the seat back for another computer. An activated licence works offline for up to 14 days. With no trial or licence, every file still opens, shows and exports, and only editing and saving are locked. The box shows the install id the licence service counts a seat by. |
+| `Licence...` | | Where this install's licence stands: free for 30 days from this install's first start, then a licence; editing locks at 23:59 UK time on the trial's last day (from 30 days before, the notice "Your 30-day trial ends on DATE", also shown at start 30, 14 and 7 days before). An install first started under 0.1.0 keeps until 23:59 UK time on 15 November 2026, if that is later than its 30 days. The paid add-ons, Fabrication, Drafting Pro and Architecture, are free through the trial while no licence key is held, and lock with editing on the lock day; the line under the status names them and the day, as the notices do. Type a key (DXC-XXXXX-XXXXX-XXXXX-XXXXX) and press Activate, or sign in with your email: type the address the licence was bought with, press Send code, type the six digits from the email and press Sign in (one licence activates at once; several are listed to choose from); Deactivate gives the seat back for another computer. An activated licence works offline for up to 14 days. With no trial or licence, every file still opens, shows and exports, and only editing and saving are locked. The box shows the install id the licence service counts a seat by. |
 | `Add-ons...` | | List every installed plugin with its version, publisher, licence state and whether it is enabled. Install from File... takes a plugin wheel (.whl), checks it is a DX-CAD plugin for this platform and plugin API, refusing it with the reason if not, and installs it into DX-CAD's own add-ons folder; Disable keeps the plugin picked installed but not loaded, Enable loads it again, and Remove uninstalls it. Each change takes effect when DX-CAD is restarted. `dxcad addons` does the same from the command line. While your trial makes Fabrication or Drafting Pro free and it is not installed, a line over the list says so, "Free during your trial: download Fabrication and install it with Help > Add-ons > Install from File.", with a Download button for each. |
 | `Licences...` | | Show THIRD-PARTY-NOTICES.md as this copy of DX-CAD ships it: every library it runs on with its version and licence, and the LGPL texts in full. |
 | `Keyboard Shortcuts` | | A table of every action that has a shortcut, by menu, action and keys, read from the window's own actions, with a box to search it. The same table is under [Keyboard shortcuts](#keyboard-shortcuts) below. |
@@ -584,11 +595,40 @@ and its lines, with what is hidden taken out, come in behind while the
 window stays free; the status bar says how many views are still being worked
 out.
 
+Each view of a large assembly has a level of detail, picked on the bar
+across the top of its sheet: Show: Outline, Sub-assemblies, Parts or Parts
+and fasteners, the view's own marked. The bar is for the view selected, or
+the front view when none is. Picking a level is one undo step and is kept in
+the drawing's file; a new view starts at the level set in File > Settings,
+under Drawings, and so does a view of a large assembly in a drawing file that
+stores no level for it, as one saved before levels were. Outline draws the outermost edges of the whole model as the
+view sees it; Sub-assemblies each top-level sub-assembly's own outline, one
+behind another hidden where it is covered; Parts every part's lines but the
+fasteners'; Parts and fasteners every part's. A part is a fastener by its
+element type's category, else by a word of its name: bolt, screw, nut,
+washer, stud, rivet and pin as shipped, edited in Settings under Drawings.
+
+While a view of a large assembly is worked out, it shows the best that has
+come in: every edge seen through at first, then the view's outline, then its
+draft lines, worked out from the parts' meshes in seconds and marked in light
+grey "Draft lines - exact lines on the way", and last its exact lines. The
+bar says how far the work has come and which view it is on; Cancel stops it
+and keeps what is drawn, and picking a level starts it again. An Outline or
+Sub-assemblies view is worked out from the view's exact lines once they are
+in, which can hold the window a few seconds on a very large model.
+
+Draft lines are only ever on screen. File > Export Drawing... and the
+API's drawing exports write exact lines, each view at its level: the outline
+levels as the exact lines that bound the model or a sub-assembly. An export
+started while a view is still a draft works its exact lines out first, with
+its progress shown and Cancel, and Cancel writes nothing.
+
 ### The start page
 
 Shown when nothing is open: New, Open, the recent files, the examples as
-pictures (one click opens an example as a new unsaved tab), a link to these
-docs and Connect Claude Desktop. View > Start Page brings it back.
+pictures (one click opens an example as a new unsaved tab) with any starter
+projects your add-ons offer after them, a link to these docs and Connect
+Claude Desktop. View > Start Page brings it back.
 
 ## The dialogs
 
@@ -637,6 +677,83 @@ with Cancel; Cancel stops it part way and leaves no file. Close shuts the
 box. The box keeps what it was last given for the next time. The three
 recipes, the sizes and the formats, with a GIF of each, are in
 [Animations](animate.md).
+
+### The Render box
+
+View > Render...: a photo-real still of the model, path traced, with soft
+light, shadows and a quiet sky. Pick the Quality, Draft (quickest, grainy),
+Good (a clean picture for most stills) or Final (the cleanest, about four
+times as long as Good), with a line under it saying so; the View it is seen
+from, one of the seven standard views; the Size, 800 x 600, 1280 x 720,
+1920 x 1080 or Square 1080 x 1080; and the Exposure in stops, -4 to 4, each
+stop twice as bright or half; and Remove the grain (denoise), ticked at
+first, which smooths the grain a quick render leaves while keeping edges,
+colours and shadows sharp; the Sky, Studio light at first, or Morning, Noon,
+Afternoon or Evening sun, Dusk or Night, a clear sky that lights the model
+and is drawn behind it; and an HDR picture, the path of a Radiance .hdr file
+that does so in place of the sky, or empty for none. Every setting is a value, never a formula.
+Render... closes the box, asks for the PNG and makes it under a bar that
+counts the samples, with Cancel, which stops it and leaves no file. Close
+shuts the box. The box keeps what it was last given for the next time. The
+presets and what each does are in [Photo-real renders](render.md).
+Materials... opens the Render Materials box. Blender program is where
+blender.exe is, if Blender is installed (DX-CAD neither ships nor downloads
+it), empty for none; once it is set, Render in Blender (Cycles) renders the
+same still in Blender, a program apart, under the same bar with Cancel
+([Rendering in Blender](render.md#rendering-in-blender)).
+
+### The Render Materials box
+
+The Render box's Materials...: the finishes a part, or one of its faces,
+can take in a render, one row each: Plaster, Limestone, the two marbles,
+Brick, Oak, Walnut, Brushed steel, Glass, Roof tile, Grass, Gravel, Asphalt,
+Paving, Water, Bark, Foliage, Soil, Lawn and Part's colour. Each row's Colour
+("#RRGGBB"), Roughness (0 a mirror, 1 chalk) and Tile (mm), the side of one
+tile of its texture on the part, is a value to change, kept the moment it is
+changed and used by every render from then on; Part's colour takes its colour
+from the part and has no tiles, so only its Roughness can change. A value out
+of its range is not kept, and the line under the table says why. Grass and
+Lawn also have Stripe (mm), one mown stripe's width or None, Stripe angle, and
+Edge blades, short blades along the lawn's edges near a render's camera. Reset Row puts the row picked back as DX-CAD has it. Close
+shuts the box. The library: [Photo-real renders](render.md#finishes).
+
+### The Render Set box
+
+File > Render Set in Blender...: the project's render set, a row a picture,
+in a table of Camera, Sky, Time, Date, Exposure, Quality, Size, Lamps and
+Name. Add Row and Remove Row change the rows, which are kept in the project
+file as one undo step. Folder is where the pictures and the contact sheet
+go, with Browse...; Blender program is where blender.exe is. Tick Render
+every row again to render even a row done before from the same model and
+settings. Render starts Blender for every row in one go; Cancel shuts the
+box and changes nothing. What each column takes is in
+[Photo-real renders](render.md#render-sets).
+
+### The Render Set bars
+
+What Render in the Render Set box opens: a bar per row while Blender
+renders, each saying waiting, its progress, done, skipped or failed. The
+window stays free while it runs. Cancel stops Blender; once every row has
+ended it becomes Close, and the line above it says how the set went and
+where the contact sheet is.
+
+### The Render Pack box
+
+File > Render Pack...: the project's render pack. Cameras lists the named
+cameras and the standard views to tick; none ticked is every named camera.
+Lenses, mm, takes lens variants such as 18, 24, 35; Heights, Times of day,
+Dates and Skies are ticked; .hdr pictures takes files or folders separated by
+semicolons; Exposures, stops, takes brackets such as -1, 0, 1; Depth of field
+and Lamps are ticked on, off or both. At most is the limit the crossing is
+thinned to, evenly, and Struck out names pictures left out. Draft size and
+Final size are each stage's. Folder is where the stages go, with Browse...;
+Blender program is where blender.exe is. Stage is Render drafts or Render
+ticked at final; Drafts to render at final quality lists the drafts in the
+folder, ticked as their contact sheet says. Tick Render every picture again to
+render even a picture done before. Render keeps the recipe and starts Blender;
+Cancel shuts the box and changes nothing. While Blender renders, the
+Render Set bars show each picture. More in
+[Photo-real renders](render.md#render-packs).
 
 ### The Bill of Materials box
 
@@ -872,6 +989,19 @@ degrees for an angle, greyed for coincident and concentric. OK writes the new
 mate on the same line of the model and runs it, one step for Undo; Cancel
 changes nothing. There is no preview: the parts move after OK. To mate other
 faces, use Delete Mate, then Mate... or Suggest Mates....
+
+### The Rotate box
+
+Edit > Rotate..., with one part or more picked: the parts turned, named; the
+axis, X, Y or Z of the model, the picked straight edge, the picked cylinder's
+axis, or the picked planar face's normal, so a part turns in that face's plane;
+where the axis passes, the picked parts' common centre (the default), the
+origin, or a point typed in mm (a picked edge or cylinder passes through its
+own line); and the angle in degrees, typed, negative the other way round, or
+set by +90, -90 or 180. While it is up the view shows the axis as a thin line
+and one preview, of the parts where OK would put them. A value that is not a
+number, or an angle of 0, is named under the fields and OK waits. OK turns
+them, one step for Undo; Cancel leaves everything as it was.
 
 ### The Title Block dialog
 

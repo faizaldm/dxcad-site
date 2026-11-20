@@ -3,6 +3,140 @@
 What each release of DX-CAD brings, in plain words, newest first. The full
 record of every change is in [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.7
+
+An update to 0.1.6, 20 November 2026. It installs over 0.1.6, and your
+files, settings and add-ons are kept. DX-CAD now makes photo-real pictures:
+finishes, daylight, lamps and an architect's camera, with its own renderer
+for a quick preview and Blender for finished pictures, a whole set of
+cameras in one unattended run, and render packs that sweep cameras, light
+and looks into drafts to pick from. Drawings of big assemblies show an outline
+at once and let you pick how much detail each view shows. Parts can be
+turned with Edit > Rotate.... Add-ons get plugin API 9, and assistants such
+as Claude Desktop can use add-ons' commands and render in the background.
+
+### Rendering
+
+- View > Render... makes a photo-real still, Draft, Good or Final, with a
+  bar and Cancel; the grain is smoothed away. It is the quick preview.
+  <!-- 1183, 1184, 1193, 1206 -->
+- Finishes such as oak, brick, glass, water, grass and lawn, each with its
+  texture, given to a part or a face in the Render box's Materials... or in
+  the model with `finish=`; their colour, roughness and tile can be changed.
+  <!-- 1185, 1190, 1191, 1192, 1203, 1212 -->
+- Daylight from a clear sky, with the sun where it is at your site at the
+  time and date you give, or your own HDR picture; a daylight render sets
+  its own exposure, and the project keeps its site and its parts' looks.
+  <!-- 1186, 1221, 1222 -->
+- Lamps in lumens and kelvin, points, spots, areas and glowing parts, kept
+  in the project. <!-- 1187, 1194, 1195 -->
+- An architect's camera, with eye height, a lens in mm, upright verticals
+  and depth of field; named cameras are kept in the project and the picture
+  is named after its camera. <!-- 1188, 1196, 1197, 1209 -->
+- Parts render in their own colours, leaves from both sides, glass and water
+  see-through, and grass and lawn look like turf. <!-- 1207, 1208, 1219 -->
+- Finished pictures come from Blender: File > Export for Render... hands it
+  the scene, the Render box can render in Blender, and DX-CAD finds Blender
+  itself. <!-- 1189, 1205 -->
+- File > Render Set in Blender... and `dxcad render-set` render every
+  camera of a set in one unattended run, skip what is done already, carry
+  on past a failed picture and make a contact sheet. <!-- 1227 -->
+- File > Render Pack... and `dxcad render-pack` sweep one recipe of cameras,
+  lenses, heights, times of day, dates, skies, HDR pictures, exposures,
+  depth of field and lamps into quick drafts on a contact sheet, then render
+  only the ones you tick at final quality. <!-- 1229 -->
+
+### Modelling
+
+- Edit > Rotate... turns the picked parts, or a sub-assembly as one, about
+  an axis you pick or type, by an angle you type, in one undo step.
+  <!-- 1162 -->
+- Big models build faster: their booleans now use every core of the
+  machine, and every shape comes out the same. <!-- 1180, 1215 -->
+- Animate's build video is framed once and turns at a steady speed, and can
+  carry captions from a CSV file. <!-- 1158 -->
+- Colours given to parts made in a function or a loop are kept in the view,
+  in renders and in saved assemblies. <!-- 1156 -->
+
+### Drawings
+
+- On a big assembly each view first shows the model's outline, then a bar
+  on the view lets you pick the detail: the outline, the sub-assemblies,
+  the parts, or the parts and their fasteners. Quick draft lines show while
+  the exact ones are worked out; Cancel keeps what is drawn, and a saved
+  drawing opens at its levels.
+  <!-- 1163, 1166, 1167, 1168, 1169, 1170, 1173, 1174, 1214 -->
+- PDF, DXF and Print always get the exact lines, at each view's level.
+  <!-- 1171 -->
+- Moving a view, or changing a note or a dimension, takes under a second on
+  a big model, and a balloon finds its place at once.
+  <!-- 1164, 1165, 1175, 1226 -->
+- The time each level takes is measured on the three biggest models.
+  <!-- 1172 -->
+- `dxcad drawing --table FILE.csv` puts a table from a CSV file on the
+  drawing's sheets. <!-- 1160 -->
+
+### Add-ons and the plugin API
+
+- Plugin API 8: an add-on can read each drawing view's level of detail and
+  its lines, name its undo steps, show words and progress from its sheet
+  tools, give its fields a tip and a unit, style the lines of its own views
+  and tell which of its views was clicked. <!-- 1176, 1177, 1201 -->
+- Add-ons for buildings can rewrite a part's line whatever it carries, list
+  levels and types in their dialogs, host elements that move with their
+  host and cut every layer of a wall, count and total their schedules, and
+  offer starter projects. <!-- 1178, 1198, 1199, 1200, 1202, 1210, 1211, 1213 -->
+- Plugin API 9: add-ons can give finishes, lamps and cameras and render,
+  hand back shapes in their own colours, keep their data in the project
+  with Undo, be called after each run and as a project opens, and add rows
+  to a render set. Add-ons written for earlier APIs load as before.
+  <!-- 1204, 1216, 1224, 1225 -->
+
+### Agents and Claude Desktop
+
+- An assistant such as Claude Desktop can capture the view at the size it
+  asks with only the parts it names, use your add-ons' own commands, and
+  start a long render, or a render pack's stage, that goes on after its
+  reply, asking how it stands or stopping it. <!-- 1159, 1217, 1223 -->
+
+### Licensing
+
+- Architecture is on sale beside Drafting Pro and Fabrication, so the
+  30-day trial unlocks all three. <!-- 1153 -->
+- The add-ons show their price, GBP 129 for Drafting Pro, GBP 189 for
+  Fabrication and GBP 169 for Architecture, and Buy opens the pricing on
+  dxcad.designmatix.co.uk. <!-- 1182, 1228 -->
+- Help > Licence and `dxcad licence status` say the day your licence ends,
+  then the day it works offline until, and "1 seat" for one. <!-- 1181 -->
+
+### Install
+
+- The release is checked by installing it on a second Windows laptop, and
+  the test suite and its macOS and Linux runs were put right after 0.1.6's.
+  <!-- 1154, 1155, 1157, 1179 -->
+
+### Fixes
+
+- Big renders come out whole, never black or striped, and the shade under
+  eaves is smooth. <!-- 1218, 1220 -->
+- Export 3D PDF and Export 3D Web Page show one progress bar while they
+  work, and no DX-CAD dialog pops up over another program. <!-- 1161 -->
+
+### Known limitations
+
+- Blender's pictures, and its day sky on Blender 5, have not been checked
+  by eye for this release: the tests use a stand-in for Blender. DX-CAD's
+  own renderer needs the graphics card's OpenGL, and on macOS it does not
+  render from the command line or for an assistant.
+- A drawing view saved at Outline or Sub-assemblies takes a few seconds the
+  first time Balloon View asks for its regions on a big model.
+- The window bench, which allows a big showcase model 10 seconds to open,
+  can still be missed on a slow laptop by race_car_frame's rebuild and
+  steel_structure's opening, though both are faster than in 0.1.6; the
+  models open and work.
+- Those of 0.1.6 and 0.1.0, below, still hold, but for hidden lines on a
+  very big assembly, which now show an outline and draft lines first.
+
 ## 0.1.6
 
 An update to 0.1.5, 13 November 2026. It installs over 0.1.5, and your
