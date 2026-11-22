@@ -2,7 +2,7 @@
 
 Made each day by scripts/download_stats.py from GitHub's running totals (stats/totals.csv). A day is a UTC day; its downloads are each file's total that day less its total the day before. pip installs from PyPI are not counted here.
 
-## Total so far (2026-11-21)
+## Total so far (2026-11-22)
 
 | Kind | Downloads |
 |---|---:|
@@ -18,6 +18,7 @@ Made each day by scripts/download_stats.py from GitHub's running totals (stats/t
 
 | Day | Windows installer | Windows zip | macOS | Linux | Fabrication | Drafting Pro | All |
 |---|---:|---:|---:|---:|---:|---:|---:|
+| 2026-11-22 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2026-11-21 | 1 | 0 | 0 | 1 | 0 | 0 | 2 |
 | 2026-11-20 | 2 | 2 | 2 | 2 | 0 | 0 | 8 |
 | 2026-11-19 | 1 | 0 | 0 | 0 | 1 | 0 | 2 |
