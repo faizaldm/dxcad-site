@@ -18,6 +18,16 @@ pytest, is for its tests and its page script only.
 - Every page keeps a title, a meta description, a canonical link and its place in sitemap.xml; every internal link
   and image resolves; every image has alt text. Never edit CNAME.
 
+## Flat-pattern pages (owner, 24 November 2026)
+
+The owner allows free pages about DX-CAD Fabrication's shapes, one per shape family, made by scripts/build_pages.py
+from data/fabrication/, which holds only the public pack the owner (or Claude, with the owner's approval) copies from
+DX-CAD Fabrication's docs/site-pack/: names, uses, sizes, developed dimensions, flat-pattern SVGs, sample DXF files
+and single-file 3D views. These pages may say what the shape is, show its flat pattern and offer the sample files,
+and link to the trial; never prices beyond the site's own pages, never how a shape is developed, never another CAD
+product's name. Every page keeps the site's rules above (title, meta description, canonical link, sitemap, alt
+text, readable without JavaScript; the 3D view is an extra).
+
 ## Working rules
 
 - Build items in BACKLOG.md order, one at a time; tick an item only when its Accept lines are met. If an item is too
