@@ -866,11 +866,15 @@ def addon_page(root, shell, spec, gui):
         data = read_bytes(os.path.join(root, "img", pic))
         out.append('    <figure class="shot">%s</figure>'
                    % img_tag("/img/" + pic, alt, data, lazy=True))
+    flats = ('<a class="btn ghost" href="/%s/">Free sample flat patterns</a>' % FLATS
+             if spec.get("flats") and flat_pack(root) else "")
     out.append('    <p><a class="btn" href="/#download">Download the 30-day free trial</a> '
-               '<a class="btn ghost" href="/#pricing">See pricing</a></p>')
-    if spec.get("flats") and flat_pack(root):
-        out.append('    <p>See the shapes for yourself: <a href="/%s/">free sample flat patterns</a>, '
-                   'each with its DXF and SVG cut files and a 3D view.</p>' % FLATS)
+               '<a class="btn ghost" href="/#pricing">See pricing</a>%s</p>'
+               % ((" " + flats) if flats else ""))
+    if flats:
+        out.append('    <p>See the shapes for yourself: <a href="/%s/">%d flat patterns</a>, each with '
+                   'its DXF and SVG cut files and a 3D view, free to download.</p>'
+                   % (FLATS, len(flat_pack(root)["entries"])))
     for title, items in spec["sections"]:
         out.append('    <h2>%s</h2>' % esc(title))
         out.append('    <ul>')

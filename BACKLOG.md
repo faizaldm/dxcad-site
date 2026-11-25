@@ -169,3 +169,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   3D view; a link to the trial and to the Fabrication page; no price, no method, no other product's name.
   Accept: tests/test_flat_patterns.py; every page passes pagecheck; the 3D views carry noindex and a canonical link
   to their family page and stay out of the sitemap and the search; the whole suite passes.
+- [x] 4024. The Fabrication page's link to the flat patterns as a button beside the trial's (owner, 25 Nov 18:45) (S)
+  The owner could not find the sentence's link; a "Free sample flat patterns" button now sits in the page's button
+  row, and the sentence under it gives the number of shapes from the pack.
+  Accept: fabrication.html has the button and the sentence; the whole suite passes.
