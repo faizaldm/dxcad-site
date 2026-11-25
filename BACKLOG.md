@@ -178,3 +178,7 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   card, the comparison table's Building rows, DX-CAD Pro); no price, no commands until data/core/gui.md has an
   Architecture section, when it joins the other add-on pages.
   Accept: tests/test_architecture_page.py; pagecheck passes; the whole suite passes.
+- [x] 4026. The Fabrication layout page links to the flat patterns too (owner, 25 Nov 18:53) (S)
+  fabrication-layout-software.html, the page the owner reaches from search, gets the "Free sample flat patterns"
+  button beside See pricing, and the link in its Read more line.
+  Accept: both links resolve; the whole suite passes.
