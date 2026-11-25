@@ -83,7 +83,7 @@ def test_each_page_is_readable_without_javascript_and_has_no_price(entry):
     page.encode("ascii")
     assert "<script" not in page
     body = article(page)
-    assert "&pound;" not in body and "£" not in body and "$" not in body
+    assert "&pound;" not in body and "\u00a3" not in body and "$" not in body
     assert "price" not in body.lower()
     assert 'href="/#download"' in body
 
