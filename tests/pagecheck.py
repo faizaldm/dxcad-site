@@ -29,6 +29,13 @@ VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
 OPTIONAL_END = {"p", "li", "dt", "dd", "tr", "td", "th", "thead", "tbody",
                 "tfoot", "option", "optgroup", "colgroup", "caption", "html",
                 "head", "body"}
+# A flat-pattern family's 3D views: single-file pages DX-CAD wrote, offered as
+# files from the family page.  They are not pages of the site (no header,
+# footer or social tags), so page_files leaves them out and check_view holds
+# them to their own rules: noindex, a canonical link to their family page, a
+# title and a description, DX-CAD as generator, and out of the sitemap.
+VIEW_RE = re.compile(r"^flat-patterns/([a-z0-9-]+)/[^/]+\.html$")
+
 EXTERNAL = ("http:", "https:", "mailto:", "tel:", "data:", "javascript:", "//")
 
 
@@ -40,9 +47,55 @@ def page_files(root):
                          if not d.startswith(".") and d not in SKIP_DIRS)
         for name in sorted(files):
             if name.endswith(".html"):
-                rel = os.path.relpath(os.path.join(folder, name), root)
-                found.append(rel.replace(os.sep, "/"))
+                rel = os.path.relpath(os.path.join(folder, name), root).replace(os.sep, "/")
+                if not VIEW_RE.match(rel):
+                    found.append(rel)
     return found
+
+
+def view_files(root):
+    """Every flat-pattern 3D view, as paths relative to root with '/'."""
+    found = []
+    base = os.path.join(root, "flat-patterns")
+    for folder, dirs, files in os.walk(base):
+        dirs.sort()
+        for name in sorted(files):
+            rel = os.path.relpath(os.path.join(folder, name), root).replace(os.sep, "/")
+            if VIEW_RE.match(rel):
+                found.append(rel)
+    return found
+
+
+def check_view(root, rel):
+    """Problems with one 3D view, as a list of plain sentences."""
+    out = []
+    m = VIEW_RE.match(rel)
+    if not m:
+        return ["is not in a flat-pattern family's folder"]
+    family = "flat-patterns/%s.html" % m.group(1)
+    if not os.path.isfile(os.path.join(root, family)):
+        out.append("has no family page %s" % family)
+    p = parse(root, rel)
+    if len(p.titles) != 1 or not p.titles[0].strip():
+        out.append("has no single, filled <title>")
+    metas = {m_.get("name", "").lower(): m_.get("content", "") for m_ in p.metas}
+    if not metas.get("description", "").strip():
+        out.append("has no meta description")
+    if "noindex" not in metas.get("robots", ""):
+        out.append("is not marked noindex")
+    if not metas.get("generator", "").startswith("DX-CAD"):
+        out.append("was not written by DX-CAD")
+    canon = [l for l in p.links if l.get("rel", "").lower() == "canonical"]
+    if len(canon) != 1 or canon[0].get("href") != canonical_for(family):
+        out.append("canonical link should be %r" % canonical_for(family))
+    for tag, attr, value in p.refs:
+        if attr == "src" and value.startswith(("http:", "https:", "//")):
+            out.append("loads %r from outside the file" % value[:80])
+    size = os.path.getsize(os.path.join(root, rel))
+    if size > MAX_PAGE_BYTES:
+        out.append("is %d KB, over the %d KB a page may be"
+                   % (size // 1024, MAX_PAGE_BYTES // 1024))
+    return out
 
 
 def canonical_for(rel):
@@ -276,7 +329,8 @@ def social_problems(root, rel, p, canon):
 
 
 def picture_dimensions(path):
-    """(width, height) of a PNG, GIF or JPEG file, or None if it is none of these."""
+    """(width, height) of a PNG, GIF or JPEG file, or of a flat pattern's SVG as the
+    site shows it; None if it is none of these."""
     with open(path, "rb") as f:
         data = f.read()
     try:
@@ -300,6 +354,16 @@ def picture_dimensions(path):
                 i += 2 + struct.unpack(">H", data[i + 2:i + 4])[0]
     except struct.error:
         pass
+    m = re.search(rb'<svg[^>]*viewBox="\s*([-\d.e]+)[ ,]+([-\d.e]+)[ ,]+([-\d.e]+)[ ,]+([-\d.e]+)"',
+                  data[:4096])
+    if m:
+        # A flat pattern's SVG is sized in mm, far larger than a page; the site
+        # shows it 720 pixels wide, or 480 high when it is taller than wide,
+        # and that is the size its <img> must give (build_pages.svg_box).
+        w, h = float(m.group(3)), float(m.group(4))
+        if w >= h:
+            return (720, max(1, round(720 * h / w)))
+        return (max(1, round(480 * w / h)), 480)
     return None
 
 
@@ -403,6 +467,10 @@ def check_site(root):
             if addr not in locs:
                 problems.append((rel, "is missing from sitemap.xml"))
         hidden = {canonical_for(rel) for rel in pages if rel in NOT_LISTED}
+        hidden |= {canonical_for(rel) for rel in view_files(root)}
+        for rel in view_files(root):
+            for reason in check_view(root, rel):
+                problems.append((rel, reason))
         for loc in locs:
             if loc in hidden:
                 problems.append(("sitemap.xml", "lists %s, which must stay out of it" % loc))

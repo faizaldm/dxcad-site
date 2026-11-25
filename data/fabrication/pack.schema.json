@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DX-CAD Fabrication site pack",
+  "type": "object",
+  "required": [
+    "title",
+    "made_with",
+    "units",
+    "inches_per_mm",
+    "entries"
+  ],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "made_with": {
+      "type": "string"
+    },
+    "units": {
+      "type": "string",
+      "enum": [
+        "mm"
+      ]
+    },
+    "inches_per_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "family",
+          "name",
+          "search_names",
+          "description",
+          "sizes"
+        ],
+        "properties": {
+          "family": {
+            "type": "string",
+            "pattern": "^[a-z_]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "search_names": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "sizes": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": [
+                "slug",
+                "label",
+                "material",
+                "thickness_mm",
+                "thickness_in",
+                "inputs",
+                "pieces",
+                "web_page",
+                "refold_worst_mm",
+                "refold_limit_mm"
+              ],
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9.-]+$"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "material": {
+                  "type": "string"
+                },
+                "thickness_mm": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "thickness_in": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "inputs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "label",
+                      "value",
+                      "unit"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "unit": {
+                        "type": "string"
+                      },
+                      "inches": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                "pieces": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "flat_width_mm",
+                      "flat_height_mm",
+                      "flat_width_in",
+                      "flat_height_in",
+                      "fold_lines",
+                      "arcs",
+                      "dxf",
+                      "dxf_r12",
+                      "svg"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "flat_width_mm": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "flat_height_mm": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "flat_width_in": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "flat_height_in": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "fold_lines": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "arcs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "radius_mm",
+                            "radius_in",
+                            "angle_degrees"
+                          ],
+                          "properties": {
+                            "radius_mm": {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            "radius_in": {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            "angle_degrees": {
+                              "type": "number",
+                              "minimum": 0
+                            }
+                          }
+                        }
+                      },
+                      "dxf": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9-]+/[A-Za-z0-9.-]+$"
+                      },
+                      "dxf_r12": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9-]+/[A-Za-z0-9.-]+$"
+                      },
+                      "svg": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9-]+/[A-Za-z0-9.-]+$"
+                      }
+                    }
+                  }
+                },
+                "web_page": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "refold_worst_mm": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "refold_limit_mm": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
