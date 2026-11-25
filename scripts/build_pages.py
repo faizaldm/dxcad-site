@@ -910,7 +910,7 @@ def build_addons(root, shell, date):
     gui = read_text(os.path.join(root, "data", "core", "gui.md"))
     made = {spec["file"]: (addon_page(root, shell, spec, gui), date)
             for spec in (FABRICATION, DRAFTING_PRO)}
-    made[ARCHITECTURE_SOON["file"]] = (architecture_page(shell), date)
+    made[ARCHITECTURE_SOON["file"]] = (architecture_page(shell, root), date)
     return made
 
 
@@ -940,7 +940,13 @@ ARCHITECTURE_SOON = {
 }
 
 
-def architecture_page(shell):
+def architecture_page(shell, root=None):
+    """The Architecture page: from data/architecture/ once the add-on is launched
+    (its own product text and command list, copied with the owner's approval on
+    25 November 2026), else the coming-soon page made from the home page's words."""
+    launched = root is not None and os.path.exists(os.path.join(root, *ARCH_DATA, "website.md"))
+    if launched:
+        return architecture_launch_page(shell, root)
     spec = ARCHITECTURE_SOON
     out = ['    <h1>The Architecture add-on</h1>',
            '    <p class="lead">%s</p>' % esc(spec["lead"]),
@@ -963,6 +969,86 @@ def architecture_page(shell):
                'drawings. Both are unlocked during your 30-day trial.</p>')
     return make_page(shell, spec["file"], spec["title"], spec["description"], "\n".join(out), "")
 
+
+ARCH_DATA = ("data", "architecture")
+# The launch pictures, rendered with the add-on in DX-CAD; each is shown once its
+# file is in img/.
+ARCH_PICTURES = [
+    ("architecture-uk-detached.png",
+     "A red-brick detached house with a slate hipped roof, chimneys, a box hedge and a gravel "
+     "drive, modelled and rendered with DX-CAD Architecture"),
+    ("architecture-uk-new-build.png",
+     "A contemporary rendered house with a slate gable roof and its garage at dusk, the rooms "
+     "lit, modelled and rendered with DX-CAD Architecture"),
+    ("architecture-uk-extension.png",
+     "A brick semi-detached house with a single-storey rear extension opening onto a patio and "
+     "lawn, modelled and rendered with DX-CAD Architecture"),
+]
+# The Stripe links for the add-on, filled in when the owner makes them; until
+# then the buttons go to the pricing table.
+ARCH_BUY = {"with DX-CAD": None, "add-on": None}
+
+
+def arch_sections(text):
+    """[(heading, paragraph)] of website.md's '## ' sections, and its opening paragraph."""
+    parts = re.split(r"(?m)^## ", text)
+    lead = " ".join(parts[0].split("\n", 1)[1].split())
+    out = []
+    for block in parts[1:]:
+        head, _, body = block.partition("\n")
+        out.append((head.strip(), " ".join(body.split())))
+    return lead, out
+
+
+def architecture_launch_page(shell, root):
+    lead, sections = arch_sections(read_text(os.path.join(root, *ARCH_DATA, "website.md")))
+    commands = read_text(os.path.join(root, *ARCH_DATA, "commands.md"))
+    cmds = re.findall(r"(?m)^- ([^:]+): (.+)$", commands.split("## Starters")[0])
+    starters = re.findall(r"(?m)^- examples/([^:]+): (.+)$", commands.split("## Starters")[1])
+    out = ['    <h1>The Architecture add-on</h1>', '    <p class="lead">%s</p>' % esc(lead)]
+    for pic, alt in ARCH_PICTURES:
+        path = os.path.join(root, "img", pic)
+        if os.path.exists(path):
+            out.append('    <figure class="shot">%s</figure>'
+                       % img_tag("/img/" + pic, alt, read_bytes(path), lazy=True))
+    buy = ARCH_BUY["with DX-CAD"] or "/#pricing"
+    out.append('    <p><a class="btn" href="/#download">Download the 30-day free trial</a> '
+               '<a class="btn ghost" href="%s">Buy DX-CAD with Architecture</a></p>' % esc(buy))
+    trial = None
+    for head, body in sections:
+        if head.lower().startswith("trial"):
+            trial = body
+            continue
+        out.append('    <h2>%s</h2>' % esc(head))
+        out.append('    <p>%s</p>' % esc(body))
+    out.append('    <h2>Its commands</h2>')
+    out.append('    <details><summary>The Architecture menu: all %d commands, in order</summary>' % len(cmds))
+    out.append('    <ul>')
+    out += ['      <li><strong>%s</strong> %s</li>' % (esc(c), esc(d)) for c, d in cmds]
+    out.append('    </ul>')
+    out.append('    </details>')
+    out.append('    <h2>Starter projects</h2>')
+    out.append('    <ul>')
+    out += ['      <li>%s: %s</li>' % (" and ".join('<code>%s</code>' % esc(n.strip()) for n in
+                                                 f.replace("examples/", "").split(" and ")), esc(d))
+            for f, d in starters]
+    out.append('    </ul>')
+    out.append('    <h2>Trial and licence</h2>')
+    add_on = ARCH_BUY["add-on"]
+    out.append('    <div class="box"><p>%s</p><p>Architecture is GBP 169 per user for a year, beside a '
+               'DX-CAD licence; DX-CAD Pro includes it. %s</p></div>'
+               % (esc(trial or ""), ('Already have DX-CAD? <a href="%s">Buy the add-on on its own</a>.'
+                                     % esc(add_on)) if add_on else
+                  'See the <a href="/#pricing">pricing</a> for every way to buy it.'))
+    out.append('    <h2>Also an add-on</h2>')
+    out.append('    <p><a href="/fabrication.html">Fabrication</a> does cones, transitions, elbows '
+               'and branches, and <a href="/drafting-pro.html">Drafting Pro</a> does production '
+               'drawings.</p>')
+    title = "Architecture add-on for DX-CAD: walls, roofs, rooms, plans and IFC | DX-CAD by Designmatix"
+    desc = ("DX-CAD Architecture: layered walls, floors and roofs, doors and windows, stairs, "
+            "columns and beams from tables you edit; rooms, quantities, plans, elevations, "
+            "schedules and IFC4 export. Free during the 30-day trial.")
+    return make_page(shell, "architecture.html", title, desc, "\n".join(out), "")
 
 # --------------------------------------------------------------- tutorial ---
 

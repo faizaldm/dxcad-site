@@ -191,3 +191,4 @@
   sizes, so the file stays under its 400 KB limit (339 KB with the 26 new pages). The pack's version line (0.1.3,
   not yet released) is not shown; the pages say "made with DX-CAD Fabrication".
 - 4025 (25 Nov 2026): the Architecture page says only what the home page and the comparison table say of the add-on, since data/ has nothing more that is public; a fuller page waits for a public pack from DX-CAD Architecture, as the flat-pattern pages had from Fabrication.
+- 4027 (25 Nov 2026): DX-CAD with Architecture shown at GBP 418 (DX-CAD 249 + Architecture 169, as the other two bundles are made up), to be confirmed by the owner before merging; the buy button points at the pricing table until the Stripe link exists.

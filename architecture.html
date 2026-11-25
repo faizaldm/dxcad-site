@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Architecture add-on for DX-CAD: walls, rooms, plans and schedules | DX-CAD by Designmatix</title>
-<meta name="description" content="The Architecture add-on for DX-CAD, coming soon: walls, floors and roofs, doors and windows, stairs, columns and beams on levels and grids, rooms and quantities, plans, elevations and schedules on sheets.">
+<title>Architecture add-on for DX-CAD: walls, roofs, rooms, plans and IFC | DX-CAD by Designmatix</title>
+<meta name="description" content="DX-CAD Architecture: layered walls, floors and roofs, doors and windows, stairs, columns and beams from tables you edit; rooms, quantities, plans, elevations, schedules and IFC4 export. Free during the 30-day trial.">
 <link rel="canonical" href="https://dxcad.designmatix.co.uk/architecture.html">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1E2FE0">
@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DX-CAD by Designmatix">
-<meta property="og:title" content="Architecture add-on for DX-CAD: walls, rooms, plans and schedules | DX-CAD by Designmatix">
-<meta property="og:description" content="The Architecture add-on for DX-CAD, coming soon: walls, floors and roofs, doors and windows, stairs, columns and beams on levels and grids, rooms and quantities, plans, elevations and schedules on sheets.">
+<meta property="og:title" content="Architecture add-on for DX-CAD: walls, roofs, rooms, plans and IFC | DX-CAD by Designmatix">
+<meta property="og:description" content="DX-CAD Architecture: layered walls, floors and roofs, doors and windows, stairs, columns and beams from tables you edit; rooms, quantities, plans, elevations, schedules and IFC4 export. Free during the 30-day trial.">
 <meta property="og:url" content="https://dxcad.designmatix.co.uk/architecture.html">
 <meta property="og:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
 <meta property="og:image:width" content="1200">
@@ -23,8 +23,8 @@
 <meta property="og:image:alt" content="DX-CAD: AI-powered 3D CAD for sheet metal, fabrication, industrial design and 3D printing. 30-day free trial.">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Architecture add-on for DX-CAD: walls, rooms, plans and schedules | DX-CAD by Designmatix">
-<meta name="twitter:description" content="The Architecture add-on for DX-CAD, coming soon: walls, floors and roofs, doors and windows, stairs, columns and beams on levels and grids, rooms and quantities, plans, elevations and schedules on sheets.">
+<meta name="twitter:title" content="Architecture add-on for DX-CAD: walls, roofs, rooms, plans and IFC | DX-CAD by Designmatix">
+<meta name="twitter:description" content="DX-CAD Architecture: layered walls, floors and roofs, doors and windows, stairs, columns and beams from tables you edit; rooms, quantities, plans, elevations, schedules and IFC4 export. Free during the 30-day trial.">
 <meta name="twitter:image" content="https://dxcad.designmatix.co.uk/img/og-dxcad.png">
 <style>
 :root{--ink:#14213D;--ink-2:#4A5670;--blue:#1E2FE0;--blue-dark:#1624B8;--red:#C8201F;--line:#C9D1DC;--paper:#FFFFFF;--wash:#F3F5F9;
@@ -105,26 +105,89 @@ svg [stroke="#C8201F"]{stroke:var(--red)}
   <div class="sheet">
   <article class="doc">
     <h1>The Architecture add-on</h1>
-    <p class="lead">Walls, floors and roofs, doors and windows, stairs and railings, and columns and beams, on levels and grids; rooms and quantities; plans and elevations, and schedules on drawing sheets.</p>
-    <div class="box"><p><strong>Coming soon.</strong> A DX-CAD Pro licence switches it on as soon as it is released, at no extra cost.</p></div>
-    <p><a class="btn" href="/#pricing">See DX-CAD Pro</a> <a class="btn ghost" href="/#download">Download the 30-day free trial</a></p>
-    <h2>Built on DX-CAD</h2>
-    <p>DX-CAD itself already has levels, grids, element types and hosted elements in a model, a project browser, and read-only schedules saved as CSV. The Architecture add-on builds on them.</p>
-    <h2>BIM objects</h2>
+    <p class="lead">Model small buildings in DX-CAD: layered walls, floors, roofs, doors, windows, stairs, columns and beams, each built from tables you can edit. Every element is a real solid you can measure, and plans, elevations, schedules and quantities come straight from the model.</p>
+    <p><a class="btn" href="/#download">Download the 30-day free trial</a> <a class="btn ghost" href="/#pricing">Buy DX-CAD with Architecture</a></p>
+    <h2>Walls the way they are built</h2>
+    <p>Each wall is built from a wall type: its layers, from the outside face to the inside face, listed in a table you can edit. Walls run straight or along an arc. Where two walls meet, you choose how each end is finished, butt or mitre, and nothing is joined or trimmed unless you ask.</p>
+    <h2>Floors, ceilings and roofs</h2>
+    <p>Floors and ceilings are built from a boundary you type and a slab type. Roofs are built over a footprint with a slope on each edge, so one command makes a hipped roof, a gabled roof or a mix, with a thickness and an overhang. Cut a hole you draw through a floor, ceiling or roof for a stair or a rooflight.</p>
+    <h2>Doors and windows</h2>
+    <p>Put a door or a window in a wall and the wall is cut by its opening, through every layer. Doors and windows come from type tables (single, double and sliding doors; windows divided by mullions and transoms) or from the sizes you give. They go in straight walls and in curved ones, where the frame sits in an opening with parallel jambs so it fits.</p>
+    <h2>Stairs and railings</h2>
+    <p>Straight, L, U, winder and spiral stairs are laid out from a stair rules table that holds the riser and going limits you work to. Stair railings follow each flight at the handrail height the table gives, with posts no further apart than it allows. Level railings and glass balustrades follow the points you give.</p>
+    <h2>Columns and beams</h2>
+    <p>Columns and beams take their sizes from a sections table: I and H sections, hollow sections, channels, angles, tees and solid rectangles. Place columns one by one or on an array of rows and columns.</p>
+    <h2>Rooms and quantities</h2>
+    <p>Draw a room's boundary and give it a name, a number and a height; its area, perimeter and volume follow from what you drew. Quantities lists lengths, net areas, volumes and counts for walls, slabs, roofs, members, doors, windows and rooms, measured from the solids as built, and saves them as a CSV file.</p>
+    <h2>Drawings</h2>
+    <p>Put plan views cut at a height you choose, elevations of each side, and door, window and room schedules on a drawing sheet. Schedules are read only: they always show the model as it is.</p>
+    <h2>IFC export</h2>
+    <p>Export the model to an IFC4 file for others to open. Walls, floors, ceilings, roofs, doors, windows, stairs, railings, columns and beams go on their levels' storeys, each with its type, its layers and their materials, and the site's survey coordinates and true north. Straight sweeps keep their exact shape, arcs included.</p>
+    <h2>Levels, types and site</h2>
+    <p>Storeys are DX-CAD's levels: change a level's height and everything on it moves with it. Walls, floors, doors, windows, stairs, columns and beams name their types. The project's base point, survey coordinates and true north are kept with the file.</p>
+    <h2>Metric and imperial</h2>
+    <p>Lengths are typed in millimetres or in feet and inches. Starter projects come in both: a small two-storey building, and a single-storey house with a garage. Three more, in millimetres, start a small house, a detached garage or an office extension. A four-bedroom villa shows the whole add-on, stage by stage.</p>
+    <h2>Checked, every time</h2>
+    <p>Accuracy is the product. The add-on's tests check every kind of shape it makes against lengths, areas and volumes worked out by hand, and check every solid it makes for validity.</p>
+    <h2>Its commands</h2>
+    <details><summary>The Architecture menu: all 42 commands, in order</summary>
     <ul>
-      <li>Walls, floors and roofs</li>
-      <li>Doors and windows</li>
-      <li>Stairs and railings</li>
-      <li>Columns and beams</li>
+      <li><strong>Wall...</strong> Makes a layered wall, straight or along an arc, as one part holding a solid per layer.</li>
+      <li><strong>Join Walls...</strong> Joins one end of a wall to another wall with the treatment you choose: butt or mitre.</li>
+      <li><strong>Door...</strong> Puts a door in the picked wall and cuts the wall by the door's opening.</li>
+      <li><strong>Window...</strong> Puts a window in the picked wall at a sill height and cuts the wall by its opening.</li>
+      <li><strong>Opening in Wall...</strong> Cuts a plain rectangular opening, with nothing in it, through the picked wall.</li>
+      <li><strong>Floor...</strong> Makes a floor slab from a closed boundary you type and a slab type.</li>
+      <li><strong>Ceiling...</strong> Makes a ceiling from a closed boundary and a slab type, built as a floor is.</li>
+      <li><strong>Roof...</strong> Makes a roof over a convex footprint with a slope on each edge: hipped, gabled or a mix.</li>
+      <li><strong>Hole in Floor or Roof...</strong> Cuts a hole you draw plumb through the picked floor, ceiling or roof, such as a stair void.</li>
+      <li><strong>Stair...</strong> Makes a straight, L, U or winder stair between two heights from the stair rules table.</li>
+      <li><strong>Spiral Stair...</strong> Makes a spiral stair about a centre, its risers from the stair rules table.</li>
+      <li><strong>Railing...</strong> Makes a level railing along the points you type, on square posts.</li>
+      <li><strong>Balustrade...</strong> Makes a glass balustrade along the points you type: glass panels under a handrail from the sections table.</li>
+      <li><strong>Stair Railing...</strong> Makes a railing that follows the picked stair's flights, its height and post spacing from the stair rules table.</li>
+      <li><strong>Columns...</strong> Makes a column of a section at each point you type, from a base to a top height.</li>
+      <li><strong>Column Array...</strong> Makes columns of a section on an array you type: rows, columns and the two spacings, from a first column and a direction.</li>
+      <li><strong>Beam...</strong> Makes a member of a section between two points, turned about its line.</li>
+      <li><strong>Room...</strong> Makes a room from the boundary you type, with a name, a number and a height; Quantities lists its area, perimeter and volume.</li>
+      <li><strong>Plant...</strong> Makes a tree, palm, cypress, hedge, clipped ball, shrub, lavender or grass clump of a species from the plants table, shaped by a seed that repeats.</li>
+      <li><strong>Plants Along Line...</strong> Plants a row along the line you type, a spacing apart, kept clear of walls, floors and paths.</li>
+      <li><strong>Plants in Area...</strong> Scatters plants over the area you draw, as many as the density asks, a minimum gap apart, kept clear of walls, floors and paths.</li>
+      <li><strong>Hedge...</strong> Makes a clipped hedge along the line you type, at the height and width you give.</li>
+      <li><strong>Ground Area...</strong> Makes a planting bed, a lawn, gravel, paving or asphalt over the boundary you draw, from the ground types table.</li>
+      <li><strong>Room Lights...</strong> Puts a ceiling fitting and its lamp in each room you drew, at its centre or on a grid, at the room's ceiling.</li>
+      <li><strong>Light...</strong> Puts a light fitting and its lamp at a point you type.</li>
+      <li><strong>Lights Along Line...</strong> Puts a light fitting and its lamp every spacing along the line you type.</li>
+      <li><strong>Wall Light...</strong> Puts a wall light or lantern and its lamp on the face of the wall you picked, at a height.</li>
+      <li><strong>Plant Uplight...</strong> Puts an uplight and its lamp on the ground near the foot of a plant, shining up.</li>
+      <li><strong>Pool Light...</strong> Puts a pool light and its lamp on the pool's wall, under the water line, shining into the pool.</li>
+      <li><strong>Quantities...</strong> Shows read-only tables of lengths, areas, volumes and counts, and saves them as CSV if asked.</li>
+      <li><strong>Materials...</strong> Lists the material each wall, floor, ceiling, roof, door, window and ground type in the model names, layer by layer, from the tables, read only.</li>
+      <li><strong>Export IFC...</strong> Writes the model's walls, floors, roofs, doors, windows, stairs, railings, columns and beams to an IFC4 file, on their levels' storeys, with their types and layers.</li>
+      <li><strong>Plan View...</strong> Puts a plan of the model on the drawing in front: what a level cut passes through drawn thick, what lies below it drawn thin, hidden lines removed.</li>
+      <li><strong>Elevation View...</strong> Puts an elevation of the building on the drawing in front: the building seen square to one side, north, east, south or west, hidden lines removed, over a ground line.</li>
+      <li><strong>Schedule View...</strong> Puts a read-only schedule on the drawing in front: the doors and windows by type with their marks, or the rooms by number.</li>
+      <li><strong>Site Coordinates...</strong> Keeps the project base point, its survey coordinates and the true north angle with the file.</li>
+      <li><strong>Named Camera...</strong> Keeps a camera with the file, by name, so pictures before and after a change are taken from the same place.</li>
+      <li><strong>Named Cameras from Table...</strong> Keeps every camera of a named cameras table with the file, so a set of views is ready for Open Named Camera... and Render Preset....</li>
+      <li><strong>Open Named Camera...</strong> Turns DX-CAD's 3D view to a camera kept with Named Camera..., so the model is seen from where a picture is taken.</li>
+      <li><strong>Render Preset...</strong> Works out what a render preset sets for a named camera: the camera, the sky, the sun from the site's location, the exposure and the lights, keeps it with the file, and, given a picture file, draws the picture with DX-CAD's photo-real render.</li>
+      <li><strong>Estate Views...</strong> Adds a table's views to the open project as DX-CAD's own named cameras, says what stands in their way and, given a folder, draws each one with the render presets of its place.</li>
+      <li><strong>Camera Set...</strong> Adds named cameras round the building and one in each room you have drawn, or those of a table, and keeps the render set that pairs each camera with the render presets of its place.</li>
     </ul>
-    <h2>Rooms and building drawings</h2>
+    </details>
+    <h2>Starter projects</h2>
     <ul>
-      <li>Rooms and quantities</li>
-      <li>Plans and elevations</li>
-      <li>Schedules on drawing sheets</li>
+      <li><code>starter_small_house.py</code>: a two-storey house with a stair, a hip roof and a room on each storey.</li>
+      <li><code>starter_garage.py</code>: a detached single garage with a gable roof.</li>
+      <li><code>starter_office_extension.py</code>: an office and a WC against an existing building's wall, under a mono-pitch roof.</li>
+      <li><code>starter_bungalow_metric.py</code> and <code>starter_bungalow_imperial.py</code>: a single-storey house with an attached garage.</li>
+      <li><code>starter_metric.py</code> and <code>starter_imperial.py</code>: a two-storey building on two levels.</li>
     </ul>
+    <h2>Trial and licence</h2>
+    <div class="box"><p>Architecture is free during DX-CAD's 30-day trial while no licence key is held; after that it needs an Architecture licence. It is an add-on for DX-CAD 0.1.7 and later.</p><p>Architecture is GBP 169 per user for a year, beside a DX-CAD licence; DX-CAD Pro includes it. See the <a href="/#pricing">pricing</a> for every way to buy it.</p></div>
     <h2>Also an add-on</h2>
-    <p><a href="/fabrication.html">Fabrication</a> does cones, transitions, elbows and branches, and <a href="/drafting-pro.html">Drafting Pro</a> does production drawings. Both are unlocked during your 30-day trial.</p>
+    <p><a href="/fabrication.html">Fabrication</a> does cones, transitions, elbows and branches, and <a href="/drafting-pro.html">Drafting Pro</a> does production drawings.</p>
   </article>
   </div>
 

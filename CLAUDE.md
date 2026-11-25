@@ -28,6 +28,14 @@ and link to the trial; never prices beyond the site's own pages, never how a sha
 product's name. Every page keeps the site's rules above (title, meta description, canonical link, sitemap, alt
 text, readable without JavaScript; the 3D view is an extra).
 
+## Architecture page (owner, 25 November 2026)
+
+For the Architecture add-on's launch the owner allows its page to say what data/architecture/ holds: the add-on's
+own product text (website.md, from DX-CAD Architecture's docs/marketing) and its command and starter list
+(commands.md, from its docs/guide/index.md), copied by Claude with the owner's approval, and the launch pictures
+rendered with the add-on, in img/. Prices and buy links only as the site's pricing table has them, never invented;
+never another CAD product's name.
+
 ## Working rules
 
 - Build items in BACKLOG.md order, one at a time; tick an item only when its Accept lines are met. If an item is too

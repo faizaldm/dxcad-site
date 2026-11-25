@@ -1,9 +1,11 @@
-"""The Architecture add-on's page (item 4025): coming soon, and saying only what the
-site's own pages already say of it (CLAUDE.md: nothing about the paid add-ons beyond
-what data/ and the site's pages say)."""
+"""The Architecture add-on's page (items 4025 and 4027): made from data/architecture/,
+the add-on's own product text and command list copied with the owner's approval on
+25 November 2026, for its launch; without that folder, the coming-soon page made from
+the home page's words."""
 
 import importlib.util
 import re
+import shutil
 from pathlib import Path
 
 import pagecheck
@@ -13,6 +15,7 @@ SCRIPT = ROOT / "scripts" / "build_pages.py"
 spec = importlib.util.spec_from_file_location("build_pages", SCRIPT)
 bp = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bp)
+DATA = ROOT / "data" / "architecture"
 
 
 def read(name):
@@ -23,32 +26,44 @@ def article(page):
     return page[page.index("<article"):page.index("</article>")]
 
 
-def test_the_page_says_coming_soon_and_offers_dx_cad_pro():
+def test_the_page_has_every_section_of_the_add_ons_own_text():
     body = article(read("architecture.html"))
-    assert "<h1>The Architecture add-on</h1>" in body
-    assert "Coming soon." in body
-    assert 'href="/#pricing"' in body and 'href="/#download"' in body
+    lead, sections = bp.arch_sections((DATA / "website.md").read_text(encoding="ascii"))
+    assert bp.esc(lead) in body
+    for head, text in sections:
+        assert bp.esc(text) in body, head
+    assert "Coming soon" not in body
 
 
-def test_every_feature_it_names_is_on_the_home_page_already():
-    home = " ".join(read("index.html").split())
-    spec = bp.ARCHITECTURE_SOON
-    assert bp.esc(spec["lead"]) in home
-    for _title, items in spec["sections"]:
-        for item in items:
-            assert bp.esc(item) in home, item
-    assert ("Levels, grids, element types and hosted elements in a model" in home
-            and "read-only schedules saved as CSV" in home)
+def test_the_page_lists_every_command_and_starter():
+    body = article(read("architecture.html"))
+    commands = (DATA / "commands.md").read_text(encoding="ascii")
+    for name, _what in re.findall(r"(?m)^- ([^:]+): (.+)$", commands.split("## Starters")[0]):
+        assert "<strong>%s</strong>" % bp.esc(name) in body
+    for name, _what in re.findall(r"(?m)^- examples/([^:]+): (.+)$", commands.split("## Starters")[1]):
+        for one in name.replace("examples/", "").split(" and "):
+            assert "<code>%s</code>" % bp.esc(one.strip()) in body
 
 
-def test_the_page_names_no_price_and_needs_no_javascript():
+def test_the_price_is_the_one_the_release_notes_give_and_nothing_needs_javascript():
     page = read("architecture.html")
     page.encode("ascii")
+    assert "GBP 169" in (ROOT / "data" / "core" / "RELEASE_NOTES.md").read_text(encoding="utf-8")
     body = article(page)
-    assert "&pound;" not in body and "GBP" not in body and "<script" not in body
+    assert "GBP 169" in body and "<script" not in body
+    assert 'href="/#download"' in body
 
 
-def test_the_home_page_card_links_to_it_and_it_is_in_the_sitemap():
-    assert re.search(r'id="architecture">.*?href="/architecture\.html"', read("index.html"), re.S)
+def test_the_home_page_no_longer_says_coming_soon_and_links_to_it():
+    home = read("index.html")
+    assert "coming soon" not in home.lower()
+    assert re.search(r'id="architecture">.*?href="/architecture\.html"', home, re.S)
     assert "https://dxcad.designmatix.co.uk/architecture.html" in pagecheck.sitemap_locs(str(ROOT))
-    assert 'href="/architecture.html"' in read("404.html")
+
+
+def test_without_the_data_the_page_is_the_coming_soon_one(tmp_path):
+    ignore = shutil.ignore_patterns(".git", ".venv", "logs", "__pycache__", ".pytest_cache", "architecture")
+    root = tmp_path / "site"
+    shutil.copytree(ROOT, root, ignore=ignore)
+    files = bp.build_all(str(root))
+    assert "Coming soon." in files["architecture.html"]

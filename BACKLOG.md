@@ -182,3 +182,10 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   fabrication-layout-software.html, the page the owner reaches from search, gets the "Free sample flat patterns"
   button beside See pricing, and the link in its Read more line.
   Accept: both links resolve; the whole suite passes.
+- [ ] 4027. The Architecture add-on's launch: its full page from data/architecture/, and "coming soon" off the site (owner, 25 Nov 19:30) (M)
+  architecture.html from the add-on's own product text and command list (data/architecture/, the owner's approval),
+  with the launch renders as they arrive (img/architecture-uk-*.png); the home page's card, comparison table,
+  trial, pricing and add-on downloads name Architecture as on sale. Waits for the owner: the Stripe links (DX-CAD
+  with Architecture, the add-on alone), the prices confirmed, the add-on's wheel on the downloads release, the
+  renders. On branch architecture-launch until then.
+  Accept: tests/test_architecture_page.py; the buy buttons are the owner's Stripe links; the whole suite passes.
