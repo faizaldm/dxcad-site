@@ -173,3 +173,8 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   The owner could not find the sentence's link; a "Free sample flat patterns" button now sits in the page's button
   row, and the sentence under it gives the number of shapes from the pack.
   Accept: fabrication.html has the button and the sentence; the whole suite passes.
+- [x] 4025. An Architecture add-on page, coming soon, linked from the home page's card (owner, 25 Nov 18:49) (S)
+  architecture.html made by scripts/build_pages.py from what the site already says of the add-on (the home page's
+  card, the comparison table's Building rows, DX-CAD Pro); no price, no commands until data/core/gui.md has an
+  Architecture section, when it joins the other add-on pages.
+  Accept: tests/test_architecture_page.py; pagecheck passes; the whole suite passes.

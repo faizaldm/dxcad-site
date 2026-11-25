@@ -17,7 +17,7 @@ Pages made here:
                       every <img> with its width and height, lazy but the first
     gallery.html, examples/NAME.html, img/gallery/...
                       from data/core/examples and data/core/gallery
-    fabrication.html, drafting-pro.html
+    fabrication.html, drafting-pro.html, architecture.html
                       from data/core/gui.md and the site's own words
     tutorial.html     from the public docs and the bracket example
     docs/NAME.html    one page for each public SDK doc in data/core (index.md is
@@ -908,8 +908,60 @@ def addon_page(root, shell, spec, gui):
 
 def build_addons(root, shell, date):
     gui = read_text(os.path.join(root, "data", "core", "gui.md"))
-    return {spec["file"]: (addon_page(root, shell, spec, gui), date)
+    made = {spec["file"]: (addon_page(root, shell, spec, gui), date)
             for spec in (FABRICATION, DRAFTING_PRO)}
+    made[ARCHITECTURE_SOON["file"]] = (architecture_page(shell), date)
+    return made
+
+
+# ------------------------------------------------------------ architecture ---
+# The Architecture add-on is coming soon (the home page's card and pricing say
+# so). Its page says only what the site's own pages already say of it: the
+# home page's card, the comparison table's Building rows and the DX-CAD Pro
+# licence.  It has no commands or trial words yet, since data/core/gui.md has
+# no Architecture section; when a release brings one, it joins FABRICATION and
+# DRAFTING_PRO.
+
+ARCHITECTURE_SOON = {
+    "file": "architecture.html",
+    "title": "Architecture add-on for DX-CAD: walls, rooms, plans and schedules | DX-CAD by Designmatix",
+    "description": ("The Architecture add-on for DX-CAD, coming soon: walls, floors and roofs, "
+                    "doors and windows, stairs, columns and beams on levels and grids, rooms "
+                    "and quantities, plans, elevations and schedules on sheets."),
+    "lead": ("Walls, floors and roofs, doors and windows, stairs and railings, and columns and "
+             "beams, on levels and grids; rooms and quantities; plans and elevations, and "
+             "schedules on drawing sheets."),
+    "sections": [
+        ("BIM objects", ["Walls, floors and roofs", "Doors and windows", "Stairs and railings",
+                         "Columns and beams"]),
+        ("Rooms and building drawings", ["Rooms and quantities", "Plans and elevations",
+                                         "Schedules on drawing sheets"]),
+    ],
+}
+
+
+def architecture_page(shell):
+    spec = ARCHITECTURE_SOON
+    out = ['    <h1>The Architecture add-on</h1>',
+           '    <p class="lead">%s</p>' % esc(spec["lead"]),
+           '    <div class="box"><p><strong>Coming soon.</strong> A DX-CAD Pro licence switches it '
+           'on as soon as it is released, at no extra cost.</p></div>',
+           '    <p><a class="btn" href="/#pricing">See DX-CAD Pro</a> '
+           '<a class="btn ghost" href="/#download">Download the 30-day free trial</a></p>',
+           '    <h2>Built on DX-CAD</h2>',
+           '    <p>DX-CAD itself already has levels, grids, element types and hosted elements in '
+           'a model, a project browser, and read-only schedules saved as CSV. The Architecture '
+           'add-on builds on them.</p>']
+    for title, items in spec["sections"]:
+        out.append('    <h2>%s</h2>' % esc(title))
+        out.append('    <ul>')
+        out += ['      <li>%s</li>' % esc(i) for i in items]
+        out.append('    </ul>')
+    out.append('    <h2>Also an add-on</h2>')
+    out.append('    <p><a href="/fabrication.html">Fabrication</a> does cones, transitions, elbows '
+               'and branches, and <a href="/drafting-pro.html">Drafting Pro</a> does production '
+               'drawings. Both are unlocked during your 30-day trial.</p>')
+    return make_page(shell, spec["file"], spec["title"], spec["description"], "\n".join(out), "")
 
 
 # --------------------------------------------------------------- tutorial ---
@@ -2266,6 +2318,7 @@ MAIN_PAGES = [
     ("/fabrication.html", "Fabrication", "The add-on for sheet and plate layout."),
     ("/flat-patterns/", "Flat patterns", "Free sample flat patterns and cut files."),
     ("/drafting-pro.html", "Drafting Pro", "The add-on for drawings."),
+    ("/architecture.html", "Architecture", "The add-on for buildings, coming soon."),
 ]
 
 

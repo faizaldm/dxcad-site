@@ -190,3 +190,4 @@
 - 4023 (25 Nov 2026): search.json keeps a flat-pattern page's name, headings and opening words, not its tables of
   sizes, so the file stays under its 400 KB limit (339 KB with the 26 new pages). The pack's version line (0.1.3,
   not yet released) is not shown; the pages say "made with DX-CAD Fabrication".
+- 4025 (25 Nov 2026): the Architecture page says only what the home page and the comparison table say of the add-on, since data/ has nothing more that is public; a fuller page waits for a public pack from DX-CAD Architecture, as the flat-pattern pages had from Fabrication.
