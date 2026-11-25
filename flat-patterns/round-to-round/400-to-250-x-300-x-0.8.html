@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: LicenseRef-DX-CAD-EULA -->
+<!-- Copyright 2026 Designmatix Ltd -->
+<!-- DX-CAD's 3D web page (item 1112): this one file holds the model and its viewer, and loads nothing else. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="A 3D view of a round-to-round transition, 400 mm to 250 mm duct on one centre line, 300 mm long, 0.8 mm sheet, made with DX-CAD Fabrication.">
+<link rel="canonical" href="https://dxcad.designmatix.co.uk/flat-patterns/round-to-round.html">
+<meta name="robots" content="noindex, follow">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="generator" content="DX-CAD 0.1.6">
+<title>Round-to-round transition, 400 mm to 250 mm duct on one centre line, 300 mm long, 0.8 mm sheet: 3D view | DX-CAD by Designmatix</title>
+<style>
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+body { display: flex; flex-direction: column; background: #F4F6F8; color: #1F2933;
+  font: 14px/1.4 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+#dxcad-title { padding: 6px 12px; background: #1F2933; color: #FFFFFF; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#dxcad-tools { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 8px; align-items: center;
+  background: #E4E8EC; border-bottom: 1px solid #C9D0D6; }
+#dxcad-tools button { font: inherit; padding: 4px 10px; border: 1px solid #9AA5B1; border-radius: 4px;
+  background: #FFFFFF; color: #1F2933; cursor: pointer; }
+#dxcad-tools button.dxcad-on { background: #D7E9FB; border-color: #2F7FD1; }
+#dxcad-readout { margin-left: 8px; font-weight: 600; }
+#dxcad-tools .dxcad-control { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; }
+#dxcad-tools input[type=range] { width: 110px; }
+#dxcad-tools select { font: inherit; }
+#dxcad-parts button.dxcad-clear { flex: none; padding: 0 4px; border: 1px solid #C9D0D6; border-radius: 3px;
+  background: #FFFFFF; color: #52606D; cursor: pointer; font: inherit; line-height: 1.2; }
+#dxcad-parts button.dxcad-clear.dxcad-on { background: #D7E9FB; border-color: #2F7FD1; color: #1F2933; }
+#dxcad-main { flex: 1; display: flex; min-height: 0; }
+#dxcad-view { flex: 1; position: relative; min-width: 0; }
+#dxcad-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; touch-action: none;
+  display: block; outline: none; }
+#dxcad-nogl { display: none; padding: 24px; font-size: 16px; }
+#dxcad-side { width: 240px; overflow: auto; border-left: 1px solid #C9D0D6; background: #FFFFFF; }
+#dxcad-side h2 { font-size: 13px; margin: 8px 10px 4px; color: #52606D; text-transform: uppercase; }
+#dxcad-parts { list-style: none; margin: 0; padding: 0 0 8px; }
+#dxcad-parts li { display: flex; align-items: center; gap: 6px; padding: 3px 10px; cursor: pointer; }
+#dxcad-parts li.dxcad-picked { background: #D7E9FB; }
+#dxcad-parts .dxcad-swatch { width: 12px; height: 12px; border: 1px solid #52606D; flex: none; }
+#dxcad-parts label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#dxcad-help { padding: 4px 10px 10px; color: #52606D; font-size: 12px; }
+@media (max-width: 640px) {
+  #dxcad-main { flex-direction: column; }
+  #dxcad-side { width: auto; max-height: 32%; border-left: none; border-top: 1px solid #C9D0D6; }
+}
+</style>
+</head>
+<body>
+<div id="dxcad-title">400-to-250-x-300-x-0.8 - DX-CAD 0.1.6 - 2026-11-24</div>
+<div id="dxcad-tools"><button type="button" id="dxcad-fit">Fit</button><span id="dxcad-views"></span><button type="button" id="dxcad-measure">Measure</button>
+<label class="dxcad-control">Explode <input type="range" id="dxcad-explode" min="0" max="1000" value="0" title="Move the parts apart"></label>
+<label class="dxcad-control">Section <select id="dxcad-section-axis" title="Cut the model along an axis"><option value="">Off</option><option value="x">X</option><option value="y">Y</option><option value="z">Z</option></select></label>
+<input type="range" id="dxcad-section-at" min="0" max="1000" value="500" disabled title="Where the section cuts: what lies above it is cut away">
+<span id="dxcad-readout"></span></div>
+<div id="dxcad-main">
+<div id="dxcad-view"><canvas id="dxcad-canvas" tabindex="0"></canvas><div id="dxcad-nogl">This browser cannot show the model in 3D: WebGL is turned off or not available here. The parts are listed beside.</div></div>
+<div id="dxcad-side"><h2>Parts</h2><ul id="dxcad-parts"></ul>
+<div id="dxcad-help">Turn: drag, or one finger. Pan: right drag, or two fingers. Zoom: the wheel, or pinch. A click on a part picks it here. Measure: click two corners. Explode moves the parts apart; Section cuts the model along X, Y or Z; &#9680; makes a part see-through.</div></div>
+</div>
+<script type="application/json" id="dxcad-page">{"title":"400-to-250-x-300-x-0.8 - DX-CAD 0.1.6 - 2026-11-24","views":[{"name":"Front","toward":[0.0,-1.0,0.0],"up":[0.0,0.0,1.0]},{"name":"Top","toward":[0.0,0.0,1.0],"up":[0.0,1.0,0.0]},{"name":"Right","toward":[1.0,0.0,0.0],"up":[0.0,0.0,1.0]},{"name":"Isometric","toward":[1.0,-1.0,1.0],"up":[0.0,0.0,1.0]}],"explode":{"transition":[0.0,0.0,0.0]}}</script>
+<script type="application/octet-stream" id="dxcad-model">Z2xURgIAAABsSgAAgAUAAEpTT057ImFzc2V0Ijp7InZlcnNpb24iOiIyLjAiLCJnZW5lcmF0b3IiOiJEWC1DQUQgMC4xLjYifSwic2NlbmUiOjAsInNjZW5lcyI6W3sibmFtZSI6IjQwMC10by0yNTAteC0zMDAteC0wLjgiLCJub2RlcyI6WzBdfV0sIm5vZGVzIjpbeyJuYW1lIjoiNDAwLXRvLTI1MC14LTMwMC14LTAuOCIsIm1hdHJpeCI6WzEuMCwwLjAsMC4wLDAuMCwwLjAsMC4wLC0xLjAsMC4wLDAuMCwxLjAsMC4wLDAuMCwwLjAsMC4wLDAuMCwxLjBdLCJjaGlsZHJlbiI6WzFdfSx7Im5hbWUiOiJ0cmFuc2l0aW9uIiwiY2hpbGRyZW4iOlsyXX0seyJuYW1lIjoidHJhbnNpdGlvbiIsIm1lc2giOjAsInRyYW5zbGF0aW9uIjpbNS42ODQzNDE4ODYwODA4MDJlLTE3LC0yLjg0MjE3MDk0MzA0MDQwMWUtMTcsMC4xNV19XSwibWVzaGVzIjpbeyJuYW1lIjoidHJhbnNpdGlvbiIsInByaW1pdGl2ZXMiOlt7ImF0dHJpYnV0ZXMiOnsiUE9TSVRJT04iOjAsIk5PUk1BTCI6MX0sImluZGljZXMiOjIsIm1vZGUiOjQsIm1hdGVyaWFsIjowfV19XSwibWF0ZXJpYWxzIjpbeyJuYW1lIjoiIzlGQjFDNCIsInBick1ldGFsbGljUm91Z2huZXNzIjp7ImJhc2VDb2xvckZhY3RvciI6WzAuMzQ2NzA0MDU2MzU1MDI5NiwwLjQzOTY1NzE3Mzg0MDkxODgsMC41NTIwMTE0MDE1MTIwMDAxLDEuMF0sIm1ldGFsbGljRmFjdG9yIjowLjAsInJvdWdobmVzc0ZhY3RvciI6MC41fX1dLCJhY2Nlc3NvcnMiOlt7ImJ1ZmZlclZpZXciOjAsImNvbXBvbmVudFR5cGUiOjUxMjYsImNvdW50Ijo0NDYsInR5cGUiOiJWRUMzIiwibWluIjpbLTAuMjAwODI0NjE4MzM5NTM4NTcsLTAuMjAwODI0NjE4MzM5NTM4NTcsLTAuMTUwMDAwMDA1OTYwNDY0NDhdLCJtYXgiOlswLjIwMDgyNDYxODMzOTUzODU3LDAuMjAwODI0NjE4MzM5NTM4NTcsMC4xNTAwMDAwMDU5NjA0NjQ0OF19LHsiYnVmZmVyVmlldyI6MSwiY29tcG9uZW50VHlwZSI6NTEyNiwiY291bnQiOjQ0NiwidHlwZSI6IlZFQzMiLCJtaW4iOlstMC45NzAxNDI0ODM3MTEyNDI3LC0wLjk3MDE0MjQ4MzcxMTI0MjcsLTEuMF0sIm1heCI6WzAuOTcwMTQyNDgzNzExMjQyNywwLjk3MDE0MjQ4MzcxMTI0MjcsMS4wXX0seyJidWZmZXJWaWV3IjoyLCJjb21wb25lbnRUeXBlIjo1MTI1LCJjb3VudCI6MTcyOCwidHlwZSI6IlNDQUxBUiIsIm1pbiI6WzBdLCJtYXgiOls0NDVdfV0sImJ1ZmZlclZpZXdzIjpbeyJidWZmZXIiOjAsImJ5dGVPZmZzZXQiOjAsImJ5dGVMZW5ndGgiOjUzNTIsInRhcmdldCI6MzQ5NjJ9LHsiYnVmZmVyIjowLCJieXRlT2Zmc2V0Ijo1MzUyLCJieXRlTGVuZ3RoIjo1MzUyLCJ0YXJnZXQiOjM0OTYyfSx7ImJ1ZmZlciI6MCwiYnl0ZU9mZnNldCI6MTA3MDQsImJ5dGVMZW5ndGgiOjY5MTIsInRhcmdldCI6MzQ5NjN9XSwiYnVmZmVycyI6W3siYnl0ZUxlbmd0aCI6MTc2MTZ9XX0g0EQAAEJJTgD4pE0+bxIDJJqZGb4thUo+0NYOPZqZGb4XPkE+SKuMPZqZGb7iFzI++KTNPZqZGb5jiB0+iS8EPpqZGb6JLwQ+Y4gdPpqZGb74pM094hcyPpqZGb5Iq4w9Fz5BPpqZGb7Q1g49LYVKPpqZGb6iWjej+KRNPpqZGb7Q1g69LYVKPpqZGb5Iq4y9Fz5BPpqZGb74pM294hcyPpqZGb6JLwS+Y4gdPpqZGb5jiB2+iS8EPpqZGb7iFzK++KTNPZqZGb4XPkG+SKuMPZqZGb4thUq+0NYOPZqZGb74pE2+XiifJZqZGb4thUq+0NYOvZqZGb4XPkG+SKuMvZqZGb7iFzK++KTNvZqZGb5jiB2+iS8EvpqZGb6JLwS+Y4gdvpqZGb74pM294hcyvpqZGb5Iq4y9Fz5BvpqZGb7Q1g69LYVKvpqZGb4GdR6m+KRNvpqZGb7Q1g49LYVKvpqZGb5Iq4w9Fz5BvpqZGb74pM094hcyvpqZGb6JLwQ+Y4gdvpqZGb5jiB0+iS8EvpqZGb7iFzI++KTNvZqZGb4XPkE+SKuMvZqZGb4thUo+0NYOvZqZGb74pE0+bxIDJJqZGb7FcTo+bxIDJJqZmb2SPic+bxIDJAAAAABfCxQ+bxIDJJqZmT0r2AA+bxIDJJqZGT4r2AA+bxIDJJqZGT4ixv09If2yPJqZGT72JfI9AEUwPZqZGT5CKt89K9iAPZqZGT6uZsU9oqOlPZqZGT6io6U9rmbFPZqZGT4r2IA9QirfPZqZGT4ARTA99iXyPZqZGT4h/bI8Isb9PZqZGT4f5pqkK9gAPpqZGT4h/bK8Isb9PZqZGT4ARTC99iXyPZqZGT4r2IC9QirfPZqZGT6io6W9rmbFPZqZGT6uZsW9oqOlPZqZGT5CKt+9K9iAPZqZGT72JfK9AEUwPZqZGT4ixv29If2yPJqZGT4r2AC+LTVKJZqZGT4ixv29If2yvJqZGT72JfK9AEUwvZqZGT5CKt+9K9iAvZqZGT6uZsW9oqOlvZqZGT6io6W9rmbFvZqZGT4r2IC9QirfvZqZGT4ARTC99iXyvZqZGT4h/bK8Isb9vZqZGT7r9eSlK9gAvpqZGT4h/bI8Isb9vZqZGT4ARTA99iXyvZqZGT4r2IA9QirfvZqZGT6io6U9rmbFvZqZGT6uZsU9oqOlvZqZGT5CKt89K9iAvZqZGT72JfI9AEUwvZqZGT4ixv09If2yvJqZGT7FcTo+bxIDJJqZmb2SPic+bxIDJAAAAABfCxQ+bxIDJJqZmT1rFzQ+fgVBPZqZmb0xdyE+xXG6PZqZmb2ziyE+5yQtPQAAAAAL1gM+C9YDPpqZmb2B1hA+kj6nPQAAAADFcbo9MXchPpqZmb37/w4+UUQZPZqZmT3yhOw98oTsPQAAAAB+BUE9axc0PpqZmb3RNQA+XwuUPZqZmT2SPqc9gdYQPgAAAACk3hAkxXE6PpqZmb3NXdE9zV3RPZqZmT3nJC09s4shPgAAAAB+BUG9axc0PpqZmb1fC5Q90TUAPpqZmT337gEkkj4nPgAAAADFcbq9MXchPpqZmb1RRBk9+/8OPpqZmT3nJC29s4shPgAAAAAL1gO+C9YDPpqZmb2X/uUjXwsUPpqZmT2SPqe9gdYQPgAAAAAxdyG+xXG6PZqZmb1RRBm9+/8OPpqZmT3yhOy98oTsPQAAAABrFzS+fgVBPZqZmb1fC5S90TUAPpqZmT2B1hC+kj6nPQAAAADFcTq+IUGnpJqZmb3NXdG9zV3RPZqZmT2ziyG+5yQtPQAAAABrFzS+fgVBvZqZmb3RNQC+XwuUPZqZmT2SPie+2Y+UpAAAAAAxdyG+xXG6vZqZmb37/w6+UUQZPZqZmT2ziyG+5yQtvQAAAAAL1gO+C9YDvpqZmb1fCxS+kt6BpJqZmT2B1hC+kj6nvQAAAADFcbq9MXchvpqZmb37/w6+UUQZvZqZmT3yhOy98oTsvQAAAAB+BUG9axc0vpqZmb3RNQC+XwuUvZqZmT2SPqe9gdYQvgAAAAASJnWjxXE6vpqZmb3NXdG9zV3RvZqZmT3nJC29s4shvgAAAAB+BUE9axc0vpqZmb1fC5S90TUAvpqZmT1C+Vujkj4nvgAAAADFcbo9MXchvpqZmb1RRBm9+/8OvpqZmT3nJC09s4shvgAAAAAL1gM+C9YDvpqZmb1xzEKjXwsUvpqZmT2SPqc9gdYQvgAAAAAxdyE+xXG6vZqZmb1RRBk9+/8OvpqZmT3yhOw98oTsvQAAAABrFzQ+fgVBvZqZmb1fC5Q90TUAvpqZmT2B1hA+kj6nvQAAAADNXdE9zV3RvZqZmT2ziyE+5yQtvQAAAADRNQA+XwuUvZqZmT37/w4+UUQZvZqZmT34pE0+bxIDJJqZGb4thUo+0NYOPZqZGb4XPkE+SKuMPZqZGb7iFzI++KTNPZqZGb5jiB0+iS8EPpqZGb6JLwQ+Y4gdPpqZGb74pM094hcyPpqZGb5Iq4w9Fz5BPpqZGb7Q1g49LYVKPpqZGb6iWjej+KRNPpqZGb7Q1g69LYVKPpqZGb5Iq4y9Fz5BPpqZGb74pM294hcyPpqZGb6JLwS+Y4gdPpqZGb5jiB2+iS8EPpqZGb7iFzK++KTNPZqZGb4XPkG+SKuMPZqZGb4thUq+0NYOPZqZGb74pE2+XiifJZqZGb4thUq+0NYOvZqZGb4XPkG+SKuMvZqZGb7iFzK++KTNvZqZGb5jiB2+iS8EvpqZGb6JLwS+Y4gdvpqZGb74pM294hcyvpqZGb5Iq4y9Fz5BvpqZGb7Q1g69LYVKvpqZGb4GdR6m+KRNvpqZGb7Q1g49LYVKvpqZGb5Iq4w9Fz5BvpqZGb74pM094hcyvpqZGb6JLwQ+Y4gdvpqZGb5jiB0+iS8EvpqZGb7iFzI++KTNvZqZGb4XPkE+SKuMvZqZGb4thUo+0NYOvZqZGb74pE0+bxIDJJqZGb7NzEw+bxIDJJqZGb7NzEw+bxIDJJqZGb5KsEk+qkAOPZqZGb71ckA+aReMPZqZGb6sXDE+zczMPZqZGb7K4hw+laQDPpqZGb6VpAM+yuIcPpqZGb7NzMw9rFwxPpqZGb5pF4w99XJAPpqZGb6qQA49SrBJPpqZGb5k9ZqkzcxMPpqZGb6qQA69SrBJPpqZGb5pF4y99XJAPpqZGb7NzMy9rFwxPpqZGb6VpAO+yuIcPpqZGb7K4hy+laQDPpqZGb6sXDG+zczMPZqZGb71ckC+aReMPZqZGb5KsEm+qkAOPZqZGb7NzEy+bQqeJZqZGb5KsEm+qkAOvZqZGb71ckC+aReMvZqZGb6sXDG+zczMvZqZGb7K4hy+laQDvpqZGb6VpAO+yuIcvpqZGb7NzMy9rFwxvpqZGb5pF4y99XJAvpqZGb6qQA69SrBJvpqZGb7LDi6mzcxMvpqZGb6qQA49SrBJvpqZGb5pF4w99XJAvpqZGb7NzMw9rFwxvpqZGb6VpAM+yuIcvpqZGb7K4hw+laQDvpqZGb6sXDE+zczMvZqZGb71ckA+aReMvZqZGb5KsEk+qkAOvZqZGb7NzEw+bxIDJJqZGb5KsEk+qkAOPZqZGb71ckA+aReMPZqZGb6sXDE+zczMPZqZGb7K4hw+laQDPpqZGb6VpAM+yuIcPpqZGb7NzMw9rFwxPpqZGb5pF4w99XJAPpqZGb6qQA49SrBJPpqZGb5k9ZqkzcxMPpqZGb6qQA69SrBJPpqZGb5pF4y99XJAPpqZGb7NzMy9rFwxPpqZGb6VpAO+yuIcPpqZGb7K4hy+laQDPpqZGb6sXDG+zczMPZqZGb71ckC+aReMPZqZGb5KsEm+qkAOPZqZGb7NzEy+bQqeJZqZGb5KsEm+qkAOvZqZGb71ckC+aReMvZqZGb6sXDG+zczMvZqZGb7K4hy+laQDvpqZGb6VpAO+yuIcvpqZGb7NzMy9rFwxvpqZGb5pF4y99XJAvpqZGb6qQA69SrBJvpqZGb7LDi6mzcxMvpqZGb6qQA49SrBJvpqZGb5pF4w99XJAvpqZGb7NzMw9rFwxvpqZGb6VpAM+yuIcvpqZGb7K4hw+laQDvpqZGb6sXDE+zczMvZqZGb71ckA+aReMvZqZGb5KsEk+qkAOvZqZGb7NzEw+bxIDJJqZGb6amTk+bxIDJJqZmb1mZiY+bxIDJAAAAAAzMxM+bxIDJJqZmT0AAAA+bxIDJJqZGT4AAAA+bxIDJJqZGT5cHPw91NCxPJqZGT6yj/A9RB0vPZqZGT7Xs909AACAPZqZGT59G8Q9u42kPZqZGT67jaQ9fRvEPZqZGT4AAIA917PdPZqZGT5EHS89so/wPZqZGT7U0LE8XBz8PZqZGT4otnakAAAAPpqZGT7U0LG8XBz8PZqZGT5EHS+9so/wPZqZGT4AAIC917PdPZqZGT67jaS9fRvEPZqZGT59G8S9u42kPZqZGT7Xs929AACAPZqZGT6yj/C9RB0vPZqZGT5cHPy91NCxPJqZGT4AAAC+WrdHJZqZGT5cHPy91NCxvJqZGT6yj/C9RB0vvZqZGT7Xs929AACAvZqZGT59G8S9u42kvZqZGT67jaS9fRvEvZqZGT4AAIC917PdvZqZGT5EHS+9so/wvZqZGT7U0LG8XBz8vZqZGT44I9ulAAAAvpqZGT7U0LE8XBz8vZqZGT5EHS89so/wvZqZGT4AAIA917PdvZqZGT67jaQ9fRvEvZqZGT59G8Q9u42kvZqZGT7Xs909AACAvZqZGT6yj/A9RB0vvZqZGT5cHPw91NCxvJqZGT6amTk+bxIDJJqZmb1mZiY+bxIDJAAAAAAzMxM+bxIDJJqZmT2dRjM+syVAPZqZmb38uyA+mpm5PZqZmb3luiA+HEUsPQAAAAAwPQM+MD0DPpqZmb1MGxA+ZmamPQAAAACambk9/LsgPpqZmb0tLw4+hWQYPZqZmT08U+s9PFPrPQAAAACzJUA9nUYzPpqZmb049f49MzOTPZqZmT1mZqY9TBsQPgAAAAARpe+jmpk5PpqZmb0YLNA9GCzQPZqZmT0cRSw95bogPgAAAACzJUC9nUYzPpqZmb0zM5M9OPX+PZqZmT0VhwakZmYmPgAAAACambm9/LsgPpqZmb2FZBg9LS8OPpqZmT0cRSy95bogPgAAAAAwPQO+MD0DPpqZmb2iOxWkMzMTPpqZmT1mZqa9TBsQPgAAAAD8uyC+mpm5PZqZmb2FZBi9LS8OPpqZmT08U+u9PFPrPQAAAACdRjO+syVAPZqZmb0zM5O9OPX+PZqZmT1MGxC+ZmamPQAAAACamTm+wD6opJqZmb0YLNC9GCzQPZqZmT3luiC+HEUsPQAAAACdRjO+syVAvZqZmb049f69MzOTPZqZmT1mZia+/nOVpAAAAAD8uyC+mpm5vZqZmb0tLw6+hWQYPZqZmT3luiC+HEUsvQAAAAAwPQO+MD0DvpqZmb0zMxO+PamCpJqZmT1MGxC+ZmamvQAAAACambm9/LsgvpqZmb0tLw6+hWQYvZqZmT08U+u9PFPrvQAAAACzJUC9nUYzvpqZmb049f69MzOTvZqZmT1mZqa9TBsQvgAAAABWmaCkmpk5vpqZmb0YLNC9GCzQvZqZmT0cRSy95bogvgAAAACzJUA9nUYzvpqZmb0zM5O9OPX+vZqZmT0eiZ2kZmYmvgAAAACambk9/LsgvpqZmb2FZBi9LS8OvpqZmT0cRSw95bogvgAAAAAwPQM+MD0DvpqZmb3neJqkMzMTvpqZmT1mZqY9TBsQvgAAAAD8uyA+mpm5vZqZmb2FZBg9LS8OvpqZmT08U+s9PFPrvQAAAACdRjM+syVAvZqZmb0zM5M9OPX+vZqZmT1MGxA+ZmamvQAAAAAYLNA9GCzQvZqZmT3luiA+HEUsvQAAAAA49f49MzOTvZqZmT0tLw4+hWQYvZqZmT0r2AA+bxIDJJqZGT4ixv09If2yPJqZGT72JfI9AEUwPZqZGT5CKt89K9iAPZqZGT6uZsU9oqOlPZqZGT6io6U9rmbFPZqZGT4r2IA9QirfPZqZGT4ARTA99iXyPZqZGT4h/bI8Isb9PZqZGT4f5pqkK9gAPpqZGT4h/bK8Isb9PZqZGT4ARTC99iXyPZqZGT4r2IC9QirfPZqZGT6io6W9rmbFPZqZGT6uZsW9oqOlPZqZGT5CKt+9K9iAPZqZGT72JfK9AEUwPZqZGT4ixv29If2yPJqZGT4r2AC+LTVKJZqZGT4ixv29If2yvJqZGT72JfK9AEUwvZqZGT5CKt+9K9iAvZqZGT6uZsW9oqOlvZqZGT6io6W9rmbFvZqZGT4r2IC9QirfvZqZGT4ARTC99iXyvZqZGT4h/bK8Isb9vZqZGT7r9eSlK9gAvpqZGT4h/bI8Isb9vZqZGT4ARTA99iXyvZqZGT4r2IA9QirfvZqZGT6io6U9rmbFvZqZGT6uZsU9oqOlvZqZGT5CKt89K9iAvZqZGT72JfI9AEUwvZqZGT4ixv09If2yvJqZGT4r2AA+bxIDJJqZGT4AAAA+bxIDJJqZGT4AAAA+bxIDJJqZGT5cHPw91NCxPJqZGT6yj/A9RB0vPZqZGT7Xs909AACAPZqZGT59G8Q9u42kPZqZGT67jaQ9fRvEPZqZGT4AAIA917PdPZqZGT5EHS89so/wPZqZGT7U0LE8XBz8PZqZGT4otnakAAAAPpqZGT7U0LG8XBz8PZqZGT5EHS+9so/wPZqZGT4AAIC917PdPZqZGT67jaS9fRvEPZqZGT59G8S9u42kPZqZGT7Xs929AACAPZqZGT6yj/C9RB0vPZqZGT5cHPy91NCxPJqZGT4AAAC+WrdHJZqZGT5cHPy91NCxvJqZGT6yj/C9RB0vvZqZGT7Xs929AACAvZqZGT59G8S9u42kvZqZGT67jaS9fRvEvZqZGT4AAIC917PdvZqZGT5EHS+9so/wvZqZGT7U0LG8XBz8vZqZGT44I9ulAAAAvpqZGT7U0LE8XBz8vZqZGT5EHS89so/wvZqZGT4AAIA917PdvZqZGT67jaQ9fRvEvZqZGT59G8Q9u42kvZqZGT7Xs909AACAvZqZGT6yj/A9RB0vvZqZGT5cHPw91NCxvJqZGT5CW3g/2rH3JEJbeD5ZlXQ/sYEsPkJbeD72YGk/xuKpPkJbeD5BFVc/Qlv4PkJbeD6KQD4/9qMfP0JbeD72ox8/ikA+P0JbeD5CW/g+QRVXP0JbeD7G4qk+9mBpP0JbeD6xgSw+WZV0P0JbeD7qfF2kQlt4P0JbeD6xgSy+WZV0P0JbeD7G4qm+9mBpP0JbeD5CW/i+QRVXP0JbeD72ox+/ikA+P0JbeD6KQD6/9qMfP0JbeD5BFVe/Qlv4PkJbeD72YGm/xuKpPkJbeD5ZlXS/sYEsPkJbeD5CW3i/lOi7JkJbeD5ZlXS/sYEsvkJbeD72YGm/xuKpvkJbeD5BFVe/Qlv4vkJbeD6KQD6/9qMfv0JbeD72ox+/ikA+v0JbeD5CW/i+QRVXv0JbeD7G4qm+9mBpv0JbeD6xgSy+WZV0v0JbeD6HXj+nQlt4v0JbeD6xgSw+WZV0v0JbeD7G4qk+9mBpv0JbeD5CW/g+QRVXv0JbeD72ox8/ikA+v0JbeD6KQD4/9qMfv0JbeD5BFVc/Qlv4vkJbeD72YGk/xuKpvkJbeD5ZlXQ/sYEsvkJbeD5CW3g/DRsWpUJbeD5CW3g/DRsWpUJbeD5CW3g/DRsWpUJbeD5CW3g/DRsWpUJbeD5CW3g/DRsWpUJbeD5CW3g/2rH3JEJbeD5ZlXQ/sYEsPkJbeD72YGk/xuKpPkJbeD5BFVc/Qlv4PkJbeD6KQD4/9qMfP0JbeD72ox8/ikA+P0JbeD5CW/g+QRVXP0JbeD7G4qk+9mBpP0JbeD6xgSw+WZV0P0JbeD7qfF2kQlt4P0JbeD6xgSy+WZV0P0JbeD7G4qm+9mBpP0JbeD5CW/i+QRVXP0JbeD72ox+/ikA+P0JbeD6KQD6/9qMfP0JbeD5BFVe/Qlv4PkJbeD72YGm/xuKpPkJbeD5ZlXS/sYEsPkJbeD5CW3i/lOi7JkJbeD5ZlXS/sYEsvkJbeD72YGm/xuKpvkJbeD5BFVe/Qlv4vkJbeD6KQD6/9qMfv0JbeD72ox+/ikA+v0JbeD5CW/i+QRVXv0JbeD7G4qm+9mBpv0JbeD6xgSy+WZV0v0JbeD6HXj+nQlt4v0JbeD6xgSw+WZV0v0JbeD7G4qk+9mBpv0JbeD5CW/g+QRVXv0JbeD72ox8/ikA+v0JbeD6KQD4/9qMfv0JbeD5BFVc/Qlv4vkJbeD72YGk/xuKpvkJbeD5ZlXQ/sYEsvkJbeD5CW3g/2rH3JEJbeD5CW3g/2rH3JEJbeD5CW3g/2rH3JEJbeD7Z5G8/DI+APkJbeD5BFVc/Qlv4PkJbeD7Z5G8/DI+APkJbeD5TnS8/U50vP0JbeD5BFVc/Qlv4PkJbeD5CW/g+QRVXP0JbeD7Z5G8/DI+APkJbeD5TnS8/U50vP0JbeD4Mj4A+2eRvP0JbeD5BFVc/Qlv4PkJbeD5CW/g+QRVXP0JbeD4I/EAlQlt4P0JbeD5TnS8/U50vP0JbeD4Mj4A+2eRvP0JbeD4Mj4C+2eRvP0JbeD5CW/g+QRVXP0JbeD4I/EAlQlt4P0JbeD5CW/i+QRVXP0JbeD4Mj4A+2eRvP0JbeD4Mj4C+2eRvP0JbeD5TnS+/U50vP0JbeD4I/EAlQlt4P0JbeD5CW/i+QRVXP0JbeD5BFVe/Qlv4PkJbeD4Mj4C+2eRvP0JbeD5TnS+/U50vP0JbeD7Z5G+/DI+APkJbeD5CW/i+QRVXP0JbeD5BFVe/Qlv4PkJbeD5CW3i/usrxpUJbeD5TnS+/U50vP0JbeD7Z5G+/DI+APkJbeD7Z5G+/DI+AvkJbeD5BFVe/Qlv4PkJbeD5CW3i/usrxpUJbeD5BFVe/Qlv4vkJbeD7Z5G+/DI+APkJbeD7Z5G+/DI+AvkJbeD5TnS+/U50vv0JbeD5CW3i/usrxpUJbeD5BFVe/Qlv4vkJbeD5CW/i+QRVXv0JbeD7Z5G+/DI+AvkJbeD5TnS+/U50vv0JbeD4Mj4C+2eRvv0JbeD5BFVe/Qlv4vkJbeD5CW/i+QRVXv0JbeD62QqOkQlt4v0JbeD5TnS+/U50vv0JbeD4Mj4C+2eRvv0JbeD4Mj4A+2eRvv0JbeD5CW/i+QRVXv0JbeD62QqOkQlt4v0JbeD5CW/g+QRVXv0JbeD4Mj4C+2eRvv0JbeD4Mj4A+2eRvv0JbeD5TnS8/U50vv0JbeD62QqOkQlt4v0JbeD5CW/g+QRVXv0JbeD5BFVc/Qlv4vkJbeD4Mj4A+2eRvv0JbeD5TnS8/U50vv0JbeD7Z5G8/DI+AvkJbeD5CW/g+QRVXv0JbeD5BFVc/Qlv4vkJbeD5TnS8/U50vv0JbeD7Z5G8/DI+AvkJbeD5BFVc/Qlv4vkJbeD7Z5G8/DI+AvkJbeD4AAAAAfr1IigAAgL+9WsWgTWCenwAAgL873bqhmvkMoQAAgL8sQT+iV8TgoQAAgL+MqpOiaap6ogAAgL95Fr2iIl/jogAAgL9isM2ilZozowAAgL81zbiiHBqAowAAgL/WSWqi0H+oowAAgL9rjlkft/bOowAAgL/mXaoixCPvowAAgL8Fvj4jaW4CpAAAgL+fipsju1UGpAAAgL+my9ojOR8CpAAAgL/MFQwk97vqowAAgL9OSCckcurAowAAgL+OpDwkgyqJowAAgL8VR0okqIQOowAAgL+39k4kULGPjgAAgL8VR0okqIQOIwAAgL+OpDwkgyqJIwAAgL9OSCckcurAIwAAgL/MFQwk97vqIwAAgL+my9ojOR8CJAAAgL+fipsju1UGJAAAgL8Fvj4jaW4CJAAAgL/mXaoixCPvIwAAgL9rjlkft/bOIwAAgL/WSWqi0H+oIwAAgL81zbiiHBqAIwAAgL9isM2ilZozIwAAgL95Fr2iIl/jIgAAgL+MqpOiaap6IgAAgL8sQT+iV8TgIQAAgL873bqhmvkMIQAAgL+9WsWgTWCeHwAAgL8AAACAPdfBCgAAgL8AAAAAj0LEigAAgL8AAACALlZeCgAAgL90/8aguTBynwAAgL9DdbyhgjcEoQAAgL8u9UCi9t3aoQAAgL/YEpWipE93ogAAgL8xFr+iv7HhogAAgL9lPtCiyd0yowAAgL85z7uiF6h/owAAgL9J5XCiiFqoowAAgL8OdFqft/bOowAAgL8sEKciDEnvowAAgL8EPT0jcpECpAAAgL8e55oj7oQGpAAAgL+4S9oj5lQCpAAAgL/C6AskUCfrowAAgL8OLSck2EjBowAAgL/NlzwklHCJowAAgL/LQ0okOM8OowAAgL+39k4kr6IVjgAAgL/LQ0okOM8OIwAAgL/NlzwklHCJIwAAgL8OLSck2EjBIwAAgL/C6AskUCfrIwAAgL+4S9oj5lQCJAAAgL8e55oj7oQGJAAAgL8EPT0jcpECJAAAgL8sEKciDEnvIwAAgL8OdFqft/bOIwAAgL9J5XCiiFqoIwAAgL85z7uiF6h/IwAAgL9lPtCiyd0yIwAAgL8xFr+iv7HhIgAAgL/YEpWipE93IgAAgL8u9UCi9t3aIQAAgL9DdbyhgjcEIQAAgL90/8aguTByHwAAgL9CW3i/59f8pEJbeL5ZlXS/sYEsvkJbeL72YGm/xuKpvkJbeL5BFVe/Qlv4vkJbeL6KQD6/9qMfv0JbeL72ox+/ikA+v0JbeL5CW/i+QRVXv0JbeL7G4qm+9mBpv0JbeL6xgSy+WZV0v0JbeL6VrmckQlt4v0JbeL6xgSw+WZV0v0JbeL7G4qk+9mBpv0JbeL5CW/g+QRVXv0JbeL72ox8/ikA+v0JbeL6KQD4/9qMfv0JbeL5BFVc/Qlv4vkJbeL72YGk/xuKpvkJbeL5ZlXQ/sYEsvkJbeL5CW3g/M5a7pkJbeL5ZlXQ/sYEsPkJbeL72YGk/xuKpPkJbeL5BFVc/Qlv4PkJbeL6KQD4/9qMfP0JbeL72ox8/ikA+P0JbeL5CW/g+QRVXP0JbeL7G4qk+9mBpP0JbeL6xgSw+WZV0P0JbeL7tND8nQlt4P0JbeL6xgSy+WZV0P0JbeL7G4qm+9mBpP0JbeL5CW/i+QRVXP0JbeL72ox+/ikA+P0JbeL6KQD6/9qMfP0JbeL5BFVe/Qlv4PkJbeL72YGm/xuKpPkJbeL5ZlXS/sYEsPkJbeL5CW3i/B4gTJUJbeL5CW3i/B4gTJUJbeL5CW3i/B4gTJUJbeL5CW3i/B4gTJUJbeL5CW3i/B4gTJUJbeL5CW3i/59f8pEJbeL5ZlXS/sYEsvkJbeL72YGm/xuKpvkJbeL5BFVe/Qlv4vkJbeL6KQD6/9qMfv0JbeL72ox+/ikA+v0JbeL5CW/i+QRVXv0JbeL7G4qm+9mBpv0JbeL6xgSy+WZV0v0JbeL6VrmckQlt4v0JbeL6xgSw+WZV0v0JbeL7G4qk+9mBpv0JbeL5CW/g+QRVXv0JbeL72ox8/ikA+v0JbeL6KQD4/9qMfv0JbeL5BFVc/Qlv4vkJbeL72YGk/xuKpvkJbeL5ZlXQ/sYEsvkJbeL5CW3g/M5a7pkJbeL5ZlXQ/sYEsPkJbeL72YGk/xuKpPkJbeL5BFVc/Qlv4PkJbeL6KQD4/9qMfP0JbeL72ox8/ikA+P0JbeL5CW/g+QRVXP0JbeL7G4qk+9mBpP0JbeL6xgSw+WZV0P0JbeL7tND8nQlt4P0JbeL6xgSy+WZV0P0JbeL7G4qm+9mBpP0JbeL5CW/i+QRVXP0JbeL72ox+/ikA+P0JbeL6KQD6/9qMfP0JbeL5BFVe/Qlv4PkJbeL72YGm/xuKpPkJbeL5ZlXS/sYEsPkJbeL5CW3i/59f8pEJbeL5CW3i/59f8pEJbeL5CW3i/59f8pEJbeL7Z5G+/DI+AvkJbeL5BFVe/Qlv4vkJbeL7Z5G+/DI+AvkJbeL5TnS+/U50vv0JbeL5BFVe/Qlv4vkJbeL5CW/i+QRVXv0JbeL7Z5G+/DI+AvkJbeL5TnS+/U50vv0JbeL4Mj4C+2eRvv0JbeL5BFVe/Qlv4vkJbeL5CW/i+QRVXv0JbeL6dbz6lQlt4v0JbeL5TnS+/U50vv0JbeL4Mj4C+2eRvv0JbeL4Mj4A+2eRvv0JbeL5CW/i+QRVXv0JbeL6dbz6lQlt4v0JbeL5CW/g+QRVXv0JbeL4Mj4C+2eRvv0JbeL4Mj4A+2eRvv0JbeL5TnS8/U50vv0JbeL6dbz6lQlt4v0JbeL5CW/g+QRVXv0JbeL5BFVc/Qlv4vkJbeL4Mj4A+2eRvv0JbeL5TnS8/U50vv0JbeL7Z5G8/DI+AvkJbeL5CW/g+QRVXv0JbeL5BFVc/Qlv4vkJbeL5CW3g/PRTzJUJbeL5TnS8/U50vv0JbeL7Z5G8/DI+AvkJbeL7Z5G8/DI+APkJbeL5BFVc/Qlv4vkJbeL5CW3g/PRTzJUJbeL5BFVc/Qlv4PkJbeL7Z5G8/DI+AvkJbeL7Z5G8/DI+APkJbeL5TnS8/U50vP0JbeL5CW3g/PRTzJUJbeL5BFVc/Qlv4PkJbeL5CW/g+QRVXP0JbeL7Z5G8/DI+APkJbeL5TnS8/U50vP0JbeL4Mj4A+2eRvP0JbeL5BFVc/Qlv4PkJbeL5CW/g+QRVXP0JbeL5xD54kQlt4P0JbeL5TnS8/U50vP0JbeL4Mj4A+2eRvP0JbeL4Mj4C+2eRvP0JbeL5CW/g+QRVXP0JbeL5xD54kQlt4P0JbeL5CW/i+QRVXP0JbeL4Mj4A+2eRvP0JbeL4Mj4C+2eRvP0JbeL5TnS+/U50vP0JbeL5xD54kQlt4P0JbeL5CW/i+QRVXP0JbeL5BFVe/Qlv4PkJbeL4Mj4C+2eRvP0JbeL5TnS+/U50vP0JbeL7Z5G+/DI+APkJbeL5CW/i+QRVXP0JbeL5BFVe/Qlv4PkJbeL5TnS+/U50vP0JbeL7Z5G+/DI+APkJbeL5BFVe/Qlv4PkJbeL7Z5G+/DI+APkJbeL439hoUzJH/KgAAgD9TCKcod9LsqQAAgD+OChkoGT3SqAAAgD8+iFKohFO2KAAAgD8rVdanh27/JwAAgD/QZ6InQEaIpwAAgD+AR5EnC8EnpwAAgD8LfXGmCsqvJQAAgD+6Z9OmEhuVJQAAgD9yOr0lDmOLDgAAgD91JgymuLLFpAAAgD9OaCan+URypgAAgD8zVJ6ljtI2pQAAgD+3DGYn2whBJwAAgD8jMcEkuDzmJAAAgD9L/MmnsuwuqAAAgD9plK8nYDNxKAAAgD/l1sEoLWoJKgAAgD/EEr2VYrKMKQAAgD81j+woC7MnqgAAgD/xTWMo4yAcqQAAgD8CGQCoKN9dKAAAgD8GYumnRRELKAAAgD88y5sgAbqCoAAAgD+2EuomZSSHpgAAgD86DJkmv9HepQAAgD+VGdEm1nqTpQAAgD/G/TQmWa4WjwAAgD9VIEenA3IMpgAAgD8tFqqnOaD3pgAAgD9e89amITR4pgAAgD8IJ0cn2BsnJwAAgD+8AUUmlchqJgAAgD+m2XOnMy7TpwAAgD834ZAn4wZHKAAAgD8FnCQo/GJpKQAAgD+EuoEUa86LqgAAgD+blYIUh7qMqgAAgD/r+xsUtKAAKwAAgD9qIqgoamLuqQAAgD8EDRooJ6DTqAAAgD/L61Oob4e3KAAAgD8jv9en9I4AKAAAgD8XeqMnZSyJpwAAgD/aPJInWtwopwAAgD/gFHOm6/KwJQAAgD/AzNSm4haWJQAAgD8Fer4ldU6MDgAAgD8lEw2mmQDHpAAAgD9XgSenH95zpgAAgD+XX5+lTwc4pQAAgD86kWcn205CJwAAgD9nd8IkjcHnJAAAgD9qUcunHRQwqAAAgD/vvLAnuMpyKAAAgD9BHsMoP1IKKgAAgD8UUr6V/5+NKQAAgD+3Hu4oQs4oqgAAgD/SzWQokCgdqQAAgD9Y8QCo3FVfKAAAgD8q7OqnIfwLKAAAgD9X0pwgyJaDoAAAgD8FnusmoAiIpgAAgD+yDpomDErgpQAAgD+3etIm6HOUpQAAgD9wLzYm0qwXjwAAgD+fcEinM18NpgAAgD9sNauna0L5pgAAgD9hXtimTdd5pgAAgD9ed0gnDzYoJwAAgD9xTkYmF1VsJgAAgD94dXWn2JLUpwAAgD/k1ZEnAldIKAAAgD8FsiUoIu1qKQAAgD9NAAAAAAAAAAEAAAAqAAAAKQAAAE8AAAAlAAAAIwAAACQAAAAoAAAATAAAACcAAABQAAAAAQAAAAIAAABQAAAATQAAAAEAAABRAAAAAgAAAAMAAABRAAAAAwAAAAQAAABRAAAAUAAAAAIAAABSAAAATQAAAFAAAABSAAAATgAAAE0AAABTAAAABAAAAAUAAABTAAAAUQAAAAQAAABUAAAAUAAAAFEAAABUAAAAUgAAAFAAAABVAAAABQAAAAYAAABVAAAABgAAAAcAAABVAAAAUwAAAAUAAABWAAAATgAAAFIAAABWAAAAKgAAAE8AAABWAAAAKwAAACoAAABWAAAATwAAAE4AAABXAAAAUQAAAFMAAABXAAAAVAAAAFEAAABYAAAAVQAAAAcAAABYAAAABwAAAAgAAABZAAAAVgAAAFIAAABZAAAALAAAACsAAABZAAAALQAAACwAAABZAAAAUgAAAFQAAABZAAAAKwAAAFYAAABaAAAAUwAAAFUAAABaAAAAVwAAAFMAAABbAAAACAAAAAkAAABbAAAACQAAAAoAAABbAAAAWAAAAAgAAABcAAAALQAAAFkAAABcAAAAVAAAAFcAAABcAAAALgAAAC0AAABcAAAAWQAAAFQAAABdAAAAWgAAAFUAAABdAAAAWAAAAFsAAABdAAAAVQAAAFgAAABeAAAACgAAAAsAAABeAAAAWwAAAAoAAABfAAAALgAAAFwAAABfAAAAWgAAAF0AAABfAAAAXAAAAFcAAABfAAAAVwAAAFoAAABfAAAALwAAAC4AAABfAAAAMAAAAC8AAABgAAAAXQAAAFsAAABhAAAAXgAAAAsAAABhAAAACwAAAAwAAABhAAAADAAAAA0AAABiAAAAXQAAAGAAAABiAAAAMAAAAF8AAABiAAAAXwAAAF0AAABiAAAAMQAAADAAAABjAAAAYAAAAFsAAABjAAAAWwAAAF4AAABkAAAADQAAAA4AAABkAAAAYQAAAA0AAABlAAAAMgAAADEAAABlAAAAMwAAADIAAABlAAAAMQAAAGIAAABlAAAAYgAAAGAAAABmAAAAYQAAAGQAAABmAAAAXgAAAGEAAABmAAAAYwAAAF4AAABnAAAADgAAAA8AAABnAAAADwAAABAAAABnAAAAZAAAAA4AAABoAAAAZQAAAGAAAABoAAAANAAAADMAAABoAAAAYAAAAGMAAABoAAAAMwAAAGUAAABpAAAAZAAAAGcAAABpAAAAZgAAAGQAAABqAAAAEAAAABEAAABqAAAAZwAAABAAAABrAAAANAAAAGgAAABrAAAAaAAAAGMAAABrAAAAYwAAAGYAAABrAAAANQAAADQAAABrAAAANgAAADUAAABsAAAAaQAAAGcAAABtAAAAagAAABEAAABtAAAAEQAAABIAAABtAAAAEgAAABMAAABuAAAANgAAAGsAAABuAAAAZgAAAGkAAABuAAAANwAAADYAAABuAAAAawAAAGYAAABuAAAAaQAAAGwAAABvAAAAZwAAAGoAAABvAAAAagAAAG0AAABvAAAAbAAAAGcAAABwAAAAEwAAABQAAABwAAAAbQAAABMAAABxAAAANwAAAG4AAABxAAAAOAAAADcAAABxAAAAOQAAADgAAABxAAAAbgAAAGwAAAByAAAAbwAAAG0AAABzAAAAFAAAABUAAABzAAAAFQAAABYAAABzAAAAcAAAABQAAAB0AAAAbwAAAHIAAAB0AAAAcQAAAGwAAAB0AAAAbAAAAG8AAAB0AAAAOQAAAHEAAAB0AAAAOgAAADkAAAB1AAAAcgAAAG0AAAB1AAAAbQAAAHAAAAB2AAAAcwAAABYAAAB2AAAAFgAAABcAAAB3AAAAOwAAADoAAAB3AAAAPAAAADsAAAB3AAAAOgAAAHQAAAB3AAAAdAAAAHIAAAB4AAAAdQAAAHAAAAB4AAAAcAAAAHMAAAB5AAAAFwAAABgAAAB5AAAAGAAAABkAAAB5AAAAdgAAABcAAAB6AAAAcgAAAHUAAAB6AAAAPQAAADwAAAB6AAAAdwAAAHIAAAB6AAAAPAAAAHcAAAB7AAAAcwAAAHYAAAB7AAAAeAAAAHMAAAB8AAAAeQAAABkAAAB8AAAAGQAAABoAAAB9AAAAdQAAAHgAAAB9AAAAegAAAHUAAAB9AAAAPgAAAD0AAAB9AAAAPwAAAD4AAAB9AAAAPQAAAHoAAAB9AAAAeAAAAHsAAAB+AAAAdgAAAHkAAAB+AAAAewAAAHYAAAB/AAAAGgAAABsAAAB/AAAAGwAAABwAAAB/AAAAfAAAABoAAACAAAAAQAAAAD8AAACAAAAAfQAAAHsAAACAAAAAPwAAAH0AAACBAAAAfgAAAHkAAACBAAAAeQAAAHwAAACCAAAAfwAAABwAAACCAAAAHAAAAB0AAACDAAAAgAAAAHsAAACDAAAAfgAAAIEAAACDAAAAQQAAAEAAAACDAAAAQgAAAEEAAACDAAAAewAAAH4AAACDAAAAQAAAAIAAAACEAAAAgQAAAHwAAACEAAAAfwAAAIIAAACEAAAAfAAAAH8AAACFAAAAggAAAB0AAACFAAAAHQAAAB4AAACFAAAAHgAAAB8AAACGAAAAgwAAAIEAAACGAAAAQgAAAIMAAACGAAAAQwAAAEIAAACHAAAAhAAAAIIAAACIAAAAhQAAAB8AAACIAAAAHwAAACAAAACJAAAAgQAAAIQAAACJAAAAhgAAAIEAAACJAAAAhAAAAIcAAACJAAAAQwAAAIYAAACJAAAARAAAAEMAAACJAAAARQAAAEQAAACKAAAAggAAAIUAAACKAAAAhQAAAIgAAACKAAAAhwAAAIIAAACLAAAAiAAAACAAAACLAAAAIAAAACEAAACLAAAAIQAAACIAAACMAAAAiQAAAIcAAACMAAAARQAAAIkAAACMAAAARgAAAEUAAACNAAAAigAAAIgAAACOAAAAIwAAACUAAACOAAAAiwAAACIAAACOAAAAIgAAACMAAACOAAAAJQAAACYAAACPAAAAhwAAAIoAAACPAAAAigAAAI0AAACPAAAARgAAAIwAAACPAAAARwAAAEYAAACPAAAASAAAAEcAAACPAAAAjAAAAIcAAACQAAAAiAAAAIsAAACQAAAAjQAAAIgAAACRAAAAjQAAAJAAAACRAAAAjwAAAI0AAACRAAAASAAAAI8AAACRAAAASQAAAEgAAACSAAAAkAAAAIsAAACSAAAAJgAAACcAAACSAAAAiwAAAI4AAACSAAAAjgAAACYAAACTAAAAkQAAAJAAAACTAAAASQAAAJEAAACTAAAASgAAAEkAAACTAAAASwAAAEoAAACUAAAAJwAAAEwAAACUAAAASwAAAJMAAACUAAAAkAAAAJIAAACUAAAAkwAAAJAAAACUAAAAkgAAACcAAACUAAAATAAAAEsAAACWAAAAlQAAALsAAAC8AAAAlgAAALsAAAC9AAAAlwAAAJYAAAC9AAAAlgAAALwAAAC+AAAAmAAAAJcAAAC+AAAAlwAAAL0AAAC/AAAAmQAAAJgAAAC/AAAAmAAAAL4AAADAAAAAmgAAAJkAAADAAAAAmQAAAL8AAADBAAAAmwAAAJoAAADBAAAAmgAAAMAAAADCAAAAmwAAAMEAAADCAAAAnAAAAJsAAADDAAAAnAAAAMIAAADDAAAAnQAAAJwAAADEAAAAnQAAAMMAAADEAAAAngAAAJ0AAADFAAAAnwAAAJ4AAADFAAAAngAAAMQAAACgAAAAnwAAAMUAAADGAAAAoAAAAMUAAADHAAAAoQAAAKAAAADHAAAAoAAAAMYAAADIAAAAogAAAKEAAADIAAAAoQAAAMcAAACjAAAAogAAAMgAAADJAAAAowAAAMgAAADKAAAApAAAAKMAAADKAAAAowAAAMkAAADLAAAApQAAAKQAAADLAAAApAAAAMoAAACmAAAApQAAAMsAAADMAAAApgAAAMsAAACnAAAApgAAAMwAAADNAAAApwAAAMwAAADOAAAAqAAAAKcAAADOAAAApwAAAM0AAACpAAAAqAAAAM4AAADPAAAAqQAAAM4AAADQAAAAqgAAAKkAAADQAAAAqQAAAM8AAADRAAAAqwAAAKoAAADRAAAAqgAAANAAAADSAAAArAAAAKsAAADSAAAAqwAAANEAAADTAAAArQAAAKwAAADTAAAArAAAANIAAADUAAAArgAAAK0AAADUAAAArQAAANMAAACvAAAArgAAANQAAADVAAAArwAAANQAAADWAAAAsAAAAK8AAADWAAAArwAAANUAAADXAAAAsQAAALAAAADXAAAAsAAAANYAAADYAAAAsgAAALEAAADYAAAAsQAAANcAAACzAAAAsgAAANgAAADZAAAAswAAANgAAADaAAAAswAAANkAAADaAAAAtAAAALMAAAC1AAAAtAAAANoAAADbAAAAtQAAANoAAADcAAAAtQAAANsAAADcAAAAtgAAALUAAAC3AAAAtgAAANwAAADdAAAAtwAAANwAAADeAAAAtwAAAN0AAADeAAAAuAAAALcAAAC5AAAAuAAAAN4AAAC6AAAAuQAAAN4AAAAsAQAA4AAAAN8AAAAJAQAALgEAAAgBAAAEAQAAAwEAAAIBAAAHAQAABgEAACsBAAAvAQAA4QAAAOAAAAAvAQAA4AAAACwBAAAwAQAA4gAAAOEAAAAwAQAA4wAAAOIAAAAwAQAA4QAAAC8BAAAxAQAALwEAACwBAAAxAQAAMAEAAC8BAAAxAQAALAEAAC0BAAAyAQAA5AAAAOMAAAAyAQAA4wAAADABAAAzAQAAMAEAADEBAAA0AQAA5QAAAOQAAAA0AQAA5gAAAOUAAAA0AQAA5AAAADIBAAA1AQAAMQEAAC0BAAA1AQAALgEAAAkBAAA1AQAACQEAAAoBAAA1AQAALQEAAC4BAAA2AQAAMgEAADABAAA2AQAAMAEAADMBAAA3AQAA5wAAAOYAAAA3AQAA5gAAADQBAAA4AQAAMQEAADUBAAA4AQAANgEAADMBAAA4AQAACgEAAAsBAAA4AQAACwEAAAwBAAA4AQAAMwEAADEBAAA4AQAANQEAAAoBAAA5AQAANAEAADIBAAA5AQAAMgEAADYBAAA6AQAA6AAAAOcAAAA6AQAA6QAAAOgAAAA6AQAA5wAAADcBAAA7AQAAOAEAAAwBAAA7AQAADAEAAA0BAAA7AQAANgEAADgBAAA8AQAANAEAADkBAAA8AQAANwEAADQBAAA9AQAA6gAAAOkAAAA9AQAA6QAAADoBAAA+AQAAOwEAAA0BAAA+AQAAOQEAADYBAAA+AQAADQEAAA4BAAA+AQAADgEAAA8BAAA+AQAANgEAADsBAAA/AQAANwEAADwBAAA/AQAAOgEAADcBAABAAQAA6gAAAD0BAABAAQAA6wAAAOoAAABAAQAA7AAAAOsAAABBAQAAOQEAAD4BAABBAQAAPAEAADkBAABBAQAADwEAABABAABBAQAAPgEAAA8BAABCAQAAOgEAAD8BAABCAQAAPQEAADoBAABCAQAAQAEAAD0BAABDAQAA7QAAAOwAAABDAQAA7AAAAEABAABEAQAAQQEAABABAABEAQAAEAEAABEBAABEAQAAEQEAABIBAABEAQAAPAEAAEEBAABEAQAAQgEAAD8BAABEAQAAPwEAADwBAABFAQAAQAEAAEIBAABGAQAA7gAAAO0AAABGAQAA7wAAAO4AAABGAQAA7QAAAEMBAABHAQAAQgEAAEQBAABHAQAARAEAABIBAABHAQAAEgEAABMBAABIAQAAQwEAAEABAABIAQAAQAEAAEUBAABJAQAA8AAAAO8AAABJAQAA7wAAAEYBAABKAQAARwEAABMBAABKAQAARQEAAEIBAABKAQAAEwEAABQBAABKAQAAQgEAAEcBAABKAQAAFAEAABUBAABLAQAAQwEAAEgBAABLAQAARgEAAEMBAABMAQAA8AAAAEkBAABMAQAA8QAAAPAAAABMAQAA8gAAAPEAAABNAQAAFQEAABYBAABNAQAASwEAAEgBAABNAQAASAEAAEUBAABNAQAASgEAABUBAABNAQAARQEAAEoBAABOAQAASQEAAEYBAABOAQAARgEAAEsBAABPAQAA8wAAAPIAAABPAQAA8gAAAEwBAABQAQAATQEAABYBAABQAQAATgEAAEsBAABQAQAAFgEAABcBAABQAQAAFwEAABgBAABQAQAASwEAAE0BAABRAQAATAEAAEkBAABRAQAASQEAAE4BAABSAQAA8wAAAE8BAABSAQAA9AAAAPMAAABSAQAA9QAAAPQAAABTAQAATgEAAFABAABTAQAAUAEAABgBAABTAQAAGAEAABkBAABUAQAATAEAAFEBAABUAQAATwEAAEwBAABVAQAA9gAAAPUAAABVAQAA9QAAAFIBAABWAQAAUQEAAE4BAABWAQAATgEAAFMBAABWAQAAGQEAABoBAABWAQAAGgEAABsBAABWAQAAUwEAABkBAABXAQAATwEAAFQBAABXAQAAUgEAAE8BAABYAQAA9wAAAPYAAABYAQAA+AAAAPcAAABYAQAA9gAAAFUBAABZAQAAVAEAAFEBAABZAQAAUQEAAFYBAABZAQAAGwEAABwBAABZAQAAVwEAAFQBAABZAQAAVgEAABsBAABaAQAAVQEAAFIBAABaAQAAUgEAAFcBAABbAQAA+AAAAFgBAABbAQAA+QAAAPgAAABcAQAAHAEAAB0BAABcAQAAHQEAAB4BAABcAQAAWQEAABwBAABcAQAAVwEAAFkBAABdAQAAWAEAAFUBAABdAQAAVQEAAFoBAABeAQAA+gAAAPkAAABeAQAA+wAAAPoAAABeAQAA+QAAAFsBAABfAQAAHgEAAB8BAABfAQAAXAEAAB4BAABfAQAAWgEAAFcBAABfAQAAVwEAAFwBAABgAQAAWAEAAF0BAABgAQAAWwEAAFgBAABhAQAA/AAAAPsAAABhAQAA+wAAAF4BAABiAQAAWgEAAF8BAABiAQAAHwEAACABAABiAQAAIAEAACEBAABiAQAAXQEAAFoBAABiAQAAXwEAAB8BAABiAQAAYAEAAF0BAABjAQAAYQEAAF4BAABjAQAAXgEAAFsBAABjAQAAWwEAAGABAABkAQAA/QAAAPwAAABkAQAA/gAAAP0AAABkAQAA/AAAAGEBAABlAQAAYAEAAGIBAABlAQAAIQEAACIBAABlAQAAYgEAACEBAABmAQAAYQEAAGMBAABnAQAA/gAAAGQBAABnAQAA/wAAAP4AAABoAQAAYwEAAGABAABoAQAAYAEAAGUBAABoAQAAZQEAACIBAABoAQAAIgEAACMBAABoAQAAIwEAACQBAABpAQAAZAEAAGEBAABpAQAAYQEAAGYBAABqAQAA/wAAAGcBAABqAQAAAAEAAP8AAABqAQAAAQEAAAABAABrAQAAZgEAAGMBAABrAQAAYwEAAGgBAABrAQAAaAEAACQBAABrAQAAJAEAACUBAABsAQAAZAEAAGkBAABsAQAAZwEAAGQBAABtAQAABAEAAAIBAABtAQAAAgEAAAEBAABtAQAABQEAAAQBAABtAQAAAQEAAGoBAABuAQAAZgEAAGsBAABuAQAAaQEAAGYBAABuAQAAawEAACUBAABuAQAAJQEAACYBAABuAQAAJgEAACcBAABvAQAAbQEAAGoBAABvAQAAZwEAAGwBAABvAQAAagEAAGcBAABwAQAAbAEAAGkBAABwAQAAaQEAAG4BAABwAQAAbgEAACcBAABwAQAAJwEAACgBAABxAQAAbQEAAG8BAABxAQAABQEAAG0BAAByAQAAbAEAAHABAAByAQAAbwEAAGwBAAByAQAAcQEAAG8BAAByAQAAcAEAACgBAAByAQAAKAEAACkBAAByAQAAKQEAACoBAABzAQAAcQEAAHIBAABzAQAAKwEAAAYBAABzAQAABgEAAAUBAABzAQAABQEAAHEBAABzAQAAcgEAACoBAABzAQAAKgEAACsBAAB1AQAAmgEAAHQBAACbAQAAmgEAAHUBAACcAQAAdQEAAHYBAACcAQAAmwEAAHUBAACdAQAAdgEAAHcBAACdAQAAnAEAAHYBAACeAQAAdwEAAHgBAACeAQAAnQEAAHcBAAB5AQAAngEAAHgBAACfAQAAngEAAHkBAACgAQAAnwEAAHkBAACgAQAAeQEAAHoBAAChAQAAoAEAAHoBAAChAQAAegEAAHsBAACiAQAAoQEAAHsBAACiAQAAewEAAHwBAACjAQAAogEAAHwBAACjAQAAfAEAAH0BAACkAQAAfQEAAH4BAACkAQAAowEAAH0BAAClAQAAfgEAAH8BAAClAQAApAEAAH4BAACAAQAApQEAAH8BAACmAQAApQEAAIABAACnAQAAgAEAAIEBAACnAQAApgEAAIABAACCAQAApwEAAIEBAACoAQAApwEAAIIBAACDAQAAqAEAAIIBAACpAQAAqAEAAIMBAACqAQAAgwEAAIQBAACqAQAAqQEAAIMBAACFAQAAqgEAAIQBAACrAQAAqgEAAIUBAACGAQAAqwEAAIUBAACsAQAAqwEAAIYBAACHAQAArAEAAIYBAACtAQAArAEAAIcBAACuAQAAhwEAAIgBAACuAQAArQEAAIcBAACJAQAArgEAAIgBAACvAQAArgEAAIkBAACwAQAAiQEAAIoBAACwAQAArwEAAIkBAACLAQAAsAEAAIoBAACxAQAAsAEAAIsBAACyAQAAiwEAAIwBAACyAQAAsQEAAIsBAACzAQAAjAEAAI0BAACzAQAAsgEAAIwBAAC0AQAAjQEAAI4BAAC0AQAAswEAAI0BAAC1AQAAjgEAAI8BAAC1AQAAtAEAAI4BAAC2AQAAjwEAAJABAAC2AQAAtQEAAI8BAAC3AQAAkAEAAJEBAAC3AQAAtgEAAJABAACSAQAAtwEAAJEBAAC4AQAAtwEAAJIBAAC5AQAAuAEAAJIBAAC5AQAAkgEAAJMBAAC6AQAAkwEAAJQBAAC6AQAAuQEAAJMBAAC7AQAAugEAAJQBAAC7AQAAlAEAAJUBAAC8AQAAuwEAAJUBAAC8AQAAlQEAAJYBAAC9AQAAvAEAAJYBAAC9AQAAlgEAAJcBAACZAQAAvQEAAJcBAACZAQAAlwEAAJgBAAA=</script>
+<script>
+// SPDX-License-Identifier: LicenseRef-DX-CAD-EULA
+// Copyright 2026 Designmatix Ltd
+//
+// DX-CAD's 3D web page viewer (item 1112): plain JavaScript and WebGL 1, no
+// library and nothing loaded from anywhere. The page carries the model as the
+// glTF binary dxcad.gltf writes, in base64, and this reads the part of glTF
+// that writer writes: one scene, a root node turning Z up into Y up, a node per
+// part with its placement and a child holding its mesh, float32 positions and
+// normals, uint32 indices and a colour per material.
+//
+// Everything is worked in DX-CAD's own frame (Z up) and millimetres. The page
+// answers window.dxcadParts(), the parts by name, and window.dxcadMeasure(a,
+// b), the distance in mm between the mesh corners nearest the points a and b
+// ([x, y, z] in mm), which is also what two clicks in Measure show;
+// window.dxcadWebGL() says whether it draws, window.dxcadFrames() how often.
+// Item 1115 adds the Explode slider (the assembly's own exploded offsets,
+// from the page's data), a section plane along X, Y or Z and see-through
+// parts, and window.dxcadExplode, dxcadSection, dxcadPlaced and
+// dxcadSeeThrough. The slider shows the assembly coming apart, never a
+// feature change before and after.
+(function () {
+  "use strict";
+
+  var MM_PER_METRE = 1000;
+  var FLOAT = 5126;
+  var UNSIGNED_INT = 5125;
+  var GLB_MAGIC = 0x46546C67;
+  var JSON_CHUNK = 0x4E4F534A;
+  var BIN_CHUNK = 0x004E4942;
+  // A press that moves less than this many pixels is a click.
+  var CLICK_PIXELS = 5;
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  // Reading the model.
+
+  function decodeBase64(text) {
+    var binary = window.atob(text.replace(/\s+/g, ""));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  function utf8(bytes) {
+    if (typeof TextDecoder !== "undefined") {
+      return new TextDecoder("utf-8").decode(bytes);
+    }
+    var out = "";
+    var i = 0;
+    while (i < bytes.length) {
+      var c = bytes[i++];
+      if (c >= 0xF0) {
+        c = ((c & 7) << 18) | ((bytes[i++] & 63) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63);
+        c -= 0x10000;
+        out += String.fromCharCode(0xD800 + (c >> 10), 0xDC00 + (c & 1023));
+        continue;
+      }
+      if (c >= 0xE0) {
+        c = ((c & 15) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63);
+      } else if (c >= 0xC0) {
+        c = ((c & 31) << 6) | (bytes[i++] & 63);
+      }
+      out += String.fromCharCode(c);
+    }
+    return out;
+  }
+
+  function parseGlb(bytes) {
+    var data = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    if (data.getUint32(0, true) !== GLB_MAGIC) {
+      throw new Error("the model is not a glTF binary");
+    }
+    var length = data.getUint32(8, true);
+    var at = 12;
+    var json = null;
+    var binary = null;
+    while (at + 8 <= length) {
+      var size = data.getUint32(at, true);
+      var kind = data.getUint32(at + 4, true);
+      at += 8;
+      if (kind === JSON_CHUNK) {
+        json = JSON.parse(utf8(bytes.subarray(at, at + size)));
+      } else if (kind === BIN_CHUNK) {
+        binary = bytes.subarray(at, at + size);
+      }
+      at += size;
+    }
+    if (json === null) {
+      throw new Error("the model has no JSON chunk");
+    }
+    return { json: json, binary: binary };
+  }
+
+  function accessor(glb, index) {
+    var found = glb.json.accessors[index];
+    var view = glb.json.bufferViews[found.bufferView];
+    var width = found.type === "VEC3" ? 3 : 1;
+    var count = found.count * width;
+    var start = glb.binary.byteOffset + (view.byteOffset || 0) + (found.byteOffset || 0);
+    var copy = glb.binary.buffer.slice(start, start + count * 4);
+    if (found.componentType === FLOAT) {
+      return new Float32Array(copy);
+    }
+    if (found.componentType === UNSIGNED_INT) {
+      return new Uint32Array(copy);
+    }
+    throw new Error("an accessor of a kind this page does not read");
+  }
+
+  // 4 x 4 matrices as 16 numbers, column-major as glTF and WebGL write them.
+
+  function identity() {
+    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  }
+
+  function times(a, b) {
+    var out = new Array(16);
+    for (var column = 0; column < 4; column++) {
+      for (var row = 0; row < 4; row++) {
+        var sum = 0;
+        for (var k = 0; k < 4; k++) {
+          sum += a[k * 4 + row] * b[column * 4 + k];
+        }
+        out[column * 4 + row] = sum;
+      }
+    }
+    return out;
+  }
+
+  function nodeMatrix(node) {
+    if (node.matrix) {
+      return node.matrix.slice();
+    }
+    var t = node.translation || [0, 0, 0];
+    var q = node.rotation || [0, 0, 0, 1];
+    var s = node.scale || [1, 1, 1];
+    var x = q[0], y = q[1], z = q[2], w = q[3];
+    return [
+      (1 - 2 * (y * y + z * z)) * s[0], 2 * (x * y + z * w) * s[0], 2 * (x * z - y * w) * s[0], 0,
+      2 * (x * y - z * w) * s[1], (1 - 2 * (x * x + z * z)) * s[1], 2 * (y * z + x * w) * s[1], 0,
+      2 * (x * z + y * w) * s[2], 2 * (y * z - x * w) * s[2], (1 - 2 * (x * x + y * y)) * s[2], 0,
+      t[0], t[1], t[2], 1
+    ];
+  }
+
+  // glTF's Y up back to DX-CAD's Z up, metres to millimetres: (x, y, z) in
+  // glTF is (x, -z, y) in DX-CAD.
+  var Z_UP = [
+    MM_PER_METRE, 0, 0, 0,
+    0, 0, MM_PER_METRE, 0,
+    0, -MM_PER_METRE, 0, 0,
+    0, 0, 0, 1
+  ];
+
+  function srgb(linear) {
+    var value = linear <= 0.0031308 ? linear * 12.92 : 1.055 * Math.pow(linear, 1 / 2.4) - 0.055;
+    return Math.min(Math.max(value, 0), 1);
+  }
+
+  function hex(color) {
+    var text = "#";
+    for (var i = 0; i < 3; i++) {
+      var part = Math.round(color[i] * 255).toString(16).toUpperCase();
+      text += part.length < 2 ? "0" + part : part;
+    }
+    return text;
+  }
+
+  // One part: its name, colour, corners (mm, where it stands, three numbers
+  // each) and triangles (three corners each), and its normals.
+  function readPart(glb, node, above) {
+    var json = glb.json;
+    var placed = times(Z_UP, times(above, nodeMatrix(node)));
+    var holders = node.mesh !== undefined ? [node] : [];
+    var children = node.children || [];
+    for (var c = 0; c < children.length; c++) {
+      holders.push(json.nodes[children[c]]);
+    }
+    var corners = [];
+    var normals = [];
+    var triangles = [];
+    var color = null;
+    for (var h = 0; h < holders.length; h++) {
+      var holder = holders[h];
+      if (holder.mesh === undefined) {
+        continue;
+      }
+      var full = holder === node ? placed : times(placed, nodeMatrix(holder));
+      var primitives = json.meshes[holder.mesh].primitives;
+      for (var p = 0; p < primitives.length; p++) {
+        var primitive = primitives[p];
+        var first = corners.length / 3;
+        var points = accessor(glb, primitive.attributes.POSITION);
+        var turned = primitive.attributes.NORMAL !== undefined ?
+          accessor(glb, primitive.attributes.NORMAL) : null;
+        for (var i = 0; i < points.length; i += 3) {
+          var x = points[i], y = points[i + 1], z = points[i + 2];
+          for (var r = 0; r < 3; r++) {
+            corners.push(full[r] * x + full[4 + r] * y + full[8 + r] * z + full[12 + r]);
+          }
+          if (turned !== null) {
+            var nx = turned[i], ny = turned[i + 1], nz = turned[i + 2];
+            var n = [0, 0, 0];
+            for (var s = 0; s < 3; s++) {
+              n[s] = full[s] * nx + full[4 + s] * ny + full[8 + s] * nz;
+            }
+            var size = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]) || 1;
+            normals.push(n[0] / size, n[1] / size, n[2] / size);
+          }
+        }
+        var indices = accessor(glb, primitive.indices);
+        for (var k = 0; k < indices.length; k++) {
+          triangles.push(first + indices[k]);
+        }
+        if (color === null && primitive.material !== undefined) {
+          var factor = (json.materials[primitive.material].pbrMetallicRoughness || {}).baseColorFactor;
+          factor = factor || [1, 1, 1, 1];
+          color = [srgb(factor[0]), srgb(factor[1]), srgb(factor[2])];
+        }
+      }
+    }
+    return {
+      name: String(node.name || ""),
+      color: color || [0.62, 0.69, 0.77],
+      corners: corners,
+      normals: normals,
+      triangles: triangles,
+      shown: true,
+      // Item 1115: where the Explode slider's end moves it (mm), and see-through.
+      offset: [0, 0, 0],
+      clear: false
+    };
+  }
+
+  function readParts(glb) {
+    var json = glb.json;
+    var scene = json.scenes[json.scene || 0];
+    var found = [];
+    for (var i = 0; i < scene.nodes.length; i++) {
+      var root = json.nodes[scene.nodes[i]];
+      if (root.mesh !== undefined) {
+        found.push(readPart(glb, root, identity()));
+        continue;
+      }
+      var above = nodeMatrix(root);
+      var children = root.children || [];
+      for (var c = 0; c < children.length; c++) {
+        found.push(readPart(glb, json.nodes[children[c]], above));
+      }
+    }
+    return found;
+  }
+
+  // Small vector sums, in doubles.
+
+  function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function add(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+  function scale(a, k) { return [a[0] * k, a[1] * k, a[2] * k]; }
+  function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function cross(a, b) {
+    return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  }
+  function unit(a) {
+    var size = Math.sqrt(dot(a, a));
+    return size > 0 ? scale(a, 1 / size) : [0, 0, 1];
+  }
+  function turned(v, axis, angle) {
+    // v turned `angle` radians about the unit `axis` (Rodrigues).
+    var c = Math.cos(angle), s = Math.sin(angle);
+    return add(add(scale(v, c), scale(cross(axis, v), s)), scale(axis, dot(axis, v) * (1 - c)));
+  }
+
+  // The page.
+
+  var page = JSON.parse(byId("dxcad-page").textContent);
+  var parts = readParts(parseGlb(decodeBase64(byId("dxcad-model").textContent)));
+  var offsets = page.explode || {};
+  parts.forEach(function (part) {
+    var offset = offsets[part.name];
+    if (offset && offset.length === 3) {
+      part.offset = [Number(offset[0]) || 0, Number(offset[1]) || 0, Number(offset[2]) || 0];
+    }
+  });
+
+  // The middle of everything, assembled and exploded, which the GPU's float32
+  // coordinates count from.
+  var low = [Infinity, Infinity, Infinity];
+  var high = [-Infinity, -Infinity, -Infinity];
+  parts.forEach(function (part) {
+    for (var i = 0; i < part.corners.length; i++) {
+      var k = i % 3;
+      var apart = part.corners[i] + part.offset[k];
+      low[k] = Math.min(low[k], part.corners[i], apart);
+      high[k] = Math.max(high[k], part.corners[i], apart);
+    }
+  });
+  var middle = parts.length ? scale(add(low, high), 0.5) : [0, 0, 0];
+  var radius = parts.length ? Math.max(Math.sqrt(dot(sub(high, low), sub(high, low))) / 2, 1e-3) : 1;
+
+  var camera = { target: middle.slice(), toward: [0, 0, 1], up: [0, 1, 0], half: radius };
+  var picked = -1;
+  var measuring = false;
+  var marks = [];
+  var listed = [];
+  var canvas = byId("dxcad-canvas");
+  var gl = null;
+  var drawn = null;
+  var asked = false;
+  var frames = 0;
+  // How far apart the Explode slider has the parts, 0 assembled and 1 at its
+  // end; and the section, {axis: 0, 1 or 2, at: mm} or null, which keeps what
+  // lies at or below `at` along its axis.
+  var exploded = 0;
+  var section = null;
+  var AXES = ["x", "y", "z"];
+
+  // Where the slider has moved `part` from where it stands, in mm.
+  function shiftOf(part) {
+    return scale(part.offset, exploded);
+  }
+
+  // Whether the section keeps `point` (mm, where it is drawn).
+  function kept(point) {
+    return section === null || point[section.axis] <= section.at + 1e-9;
+  }
+
+  // A corner of `part` where it is drawn: moved by the slider.
+  function corner(part, index) {
+    var shift = shiftOf(part);
+    return [
+      part.corners[index * 3] + shift[0],
+      part.corners[index * 3 + 1] + shift[1],
+      part.corners[index * 3 + 2] + shift[2]
+    ];
+  }
+
+  function nearestCorner(point, only) {
+    var best = null;
+    var bestDistance = Infinity;
+    for (var p = 0; p < parts.length; p++) {
+      if (!parts[p].shown || (only !== undefined && only !== p)) {
+        continue;
+      }
+      var count = parts[p].corners.length / 3;
+      for (var i = 0; i < count; i++) {
+        var c = corner(parts[p], i);
+        if (!kept(c)) {
+          continue;
+        }
+        var dx = c[0] - point[0], dy = c[1] - point[1], dz = c[2] - point[2];
+        var distance = dx * dx + dy * dy + dz * dz;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = c;
+        }
+      }
+    }
+    return best;
+  }
+
+  function millimetres(value) {
+    return value.toFixed(3) + " mm";
+  }
+
+  function say(text) {
+    byId("dxcad-readout").textContent = text;
+  }
+
+  function showMeasure() {
+    if (marks.length === 2) {
+      var d = sub(marks[1], marks[0]);
+      say("Distance " + millimetres(Math.sqrt(dot(d, d))) + "  (dx " + millimetres(Math.abs(d[0])) +
+        ", dy " + millimetres(Math.abs(d[1])) + ", dz " + millimetres(Math.abs(d[2])) + ")");
+    } else if (measuring) {
+      say(marks.length === 0 ? "Measure: click the first corner" : "Measure: click the second corner");
+    } else {
+      say("");
+    }
+  }
+
+  // The camera: an orthographic view along `toward`, `half` the height seen.
+
+  function axes() {
+    var z = unit(camera.toward);
+    var x = unit(cross(camera.up, z));
+    var y = cross(z, x);
+    return { x: x, y: y, z: z };
+  }
+
+  function aspect() {
+    return canvas.clientHeight > 0 ? canvas.clientWidth / canvas.clientHeight : 1;
+  }
+
+  function depth() {
+    var away = sub(camera.target, middle);
+    return radius + Math.sqrt(dot(away, away));
+  }
+
+  function look(toward, up) {
+    camera.toward = unit(toward);
+    camera.up = unit(sub(up, scale(camera.toward, dot(up, camera.toward))));
+    fit();
+  }
+
+  function fit() {
+    var shown = parts.filter(function (part) { return part.shown; });
+    if (!shown.length) {
+      shown = parts;
+    }
+    var a = axes();
+    var lo = [Infinity, Infinity, Infinity];
+    var hi = [-Infinity, -Infinity, -Infinity];
+    shown.forEach(function (part) {
+      var count = part.corners.length / 3;
+      for (var i = 0; i < count; i++) {
+        var p = corner(part, i);
+        var along = [dot(p, a.x), dot(p, a.y), dot(p, a.z)];
+        for (var k = 0; k < 3; k++) {
+          lo[k] = Math.min(lo[k], along[k]);
+          hi[k] = Math.max(hi[k], along[k]);
+        }
+      }
+    });
+    if (lo[0] === Infinity) {
+      draw();
+      return;
+    }
+    var mid = scale(add(lo, hi), 0.5);
+    camera.target = add(add(scale(a.x, mid[0]), scale(a.y, mid[1])), scale(a.z, mid[2]));
+    var across = (hi[0] - lo[0]) / 2 / aspect();
+    var down = (hi[1] - lo[1]) / 2;
+    camera.half = Math.max(across, down, radius * 1e-3) * 1.1;
+    draw();
+  }
+
+  // The ray under a point of the canvas (pixels from its top left).
+  function ray(px, py) {
+    var a = axes();
+    var nx = (px / canvas.clientWidth) * 2 - 1;
+    var ny = 1 - (py / canvas.clientHeight) * 2;
+    var reach = depth() * 2;
+    var origin = add(add(camera.target, scale(a.x, nx * camera.half * aspect())),
+      scale(a.y, ny * camera.half));
+    return { origin: add(origin, scale(a.z, reach)), direction: scale(a.z, -1) };
+  }
+
+  // The nearest shown part under a point, and where: {part, point} or null.
+  function hit(px, py) {
+    var r = ray(px, py);
+    var best = null;
+    var bestT = Infinity;
+    for (var p = 0; p < parts.length; p++) {
+      var part = parts[p];
+      if (!part.shown) {
+        continue;
+      }
+      var t = part.triangles;
+      for (var i = 0; i < t.length; i += 3) {
+        var a = corner(part, t[i]), b = corner(part, t[i + 1]), c = corner(part, t[i + 2]);
+        var e1 = sub(b, a), e2 = sub(c, a);
+        var q = cross(r.direction, e2);
+        var det = dot(e1, q);
+        if (Math.abs(det) < 1e-18) {
+          continue;
+        }
+        var f = 1 / det;
+        var s = sub(r.origin, a);
+        var u = f * dot(s, q);
+        if (u < 0 || u > 1) {
+          continue;
+        }
+        var w = cross(s, e1);
+        var v = f * dot(r.direction, w);
+        if (v < 0 || u + v > 1) {
+          continue;
+        }
+        var along = f * dot(e2, w);
+        if (along > 0 && along < bestT) {
+          var point = add(r.origin, scale(r.direction, along));
+          if (!kept(point)) {
+            // Cut away by the section: not there to pick.
+            continue;
+          }
+          bestT = along;
+          best = { part: p, point: point };
+        }
+      }
+    }
+    return best;
+  }
+
+  // The parts list.
+
+  function pick(index) {
+    picked = index;
+    for (var i = 0; i < listed.length; i++) {
+      listed[i].className = i === index ? "dxcad-picked" : "";
+    }
+    if (index >= 0 && listed[index].scrollIntoView) {
+      listed[index].scrollIntoView({ block: "nearest" });
+    }
+    draw();
+  }
+
+  // Make part `index` see-through, or solid again.
+  function seeThrough(index, on) {
+    parts[index].clear = !!on;
+    var button = listed[index] ? listed[index].querySelector(".dxcad-clear") : null;
+    if (button) {
+      button.className = on ? "dxcad-clear dxcad-on" : "dxcad-clear";
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    draw();
+  }
+
+  function list() {
+    var holder = byId("dxcad-parts");
+    parts.forEach(function (part, index) {
+      var row = document.createElement("li");
+      var box = document.createElement("input");
+      box.type = "checkbox";
+      box.checked = true;
+      box.id = "dxcad-part-" + index;
+      box.title = "Show or hide " + part.name;
+      box.addEventListener("change", function () {
+        part.shown = box.checked;
+        if (!part.shown && picked === index) {
+          pick(-1);
+        }
+        draw();
+      });
+      var swatch = document.createElement("span");
+      swatch.className = "dxcad-swatch";
+      swatch.style.background = hex(part.color);
+      var label = document.createElement("label");
+      label.textContent = part.name;
+      label.title = part.name;
+      label.addEventListener("click", function (event) {
+        event.preventDefault();
+        pick(picked === index ? -1 : index);
+      });
+      var clear = document.createElement("button");
+      clear.type = "button";
+      clear.className = "dxcad-clear";
+      clear.textContent = "\u25D0";
+      clear.title = "See-through: " + part.name;
+      clear.setAttribute("aria-pressed", "false");
+      clear.addEventListener("click", function (event) {
+        event.stopPropagation();
+        seeThrough(index, !part.clear);
+      });
+      row.appendChild(box);
+      row.appendChild(swatch);
+      row.appendChild(label);
+      row.appendChild(clear);
+      holder.appendChild(row);
+      listed.push(row);
+    });
+  }
+
+  // Drawing.
+
+  // A part's corners are counted from the middle; uShift is where the Explode
+  // slider moves it, and the section keeps a point p (from the middle) where
+  // dot(uPlane.xyz, p) <= uPlane.w (no section: a plane that keeps all).
+  var SOLID_VERTEX = [
+    "attribute vec3 aPosition;",
+    "attribute vec3 aNormal;",
+    "uniform mat4 uView;",
+    "uniform mat4 uProjection;",
+    "uniform mat3 uTurn;",
+    "uniform vec3 uShift;",
+    "varying vec3 vNormal;",
+    "varying vec3 vWhere;",
+    "void main() {",
+    "  vNormal = uTurn * aNormal;",
+    "  vWhere = aPosition + uShift;",
+    "  gl_Position = uProjection * uView * vec4(vWhere, 1.0);",
+    "}"
+  ].join("\n");
+
+  var SOLID_FRAGMENT = [
+    "#ifdef GL_FRAGMENT_PRECISION_HIGH",
+    "precision highp float;",
+    "#else",
+    "precision mediump float;",
+    "#endif",
+    "uniform vec3 uColor;",
+    "uniform vec4 uPlane;",
+    "uniform float uAlpha;",
+    "varying vec3 vNormal;",
+    "varying vec3 vWhere;",
+    "void main() {",
+    "  if (dot(uPlane.xyz, vWhere) > uPlane.w) { discard; }",
+    "  vec3 n = normalize(vNormal);",
+    "  if (!gl_FrontFacing) { n = -n; }",
+    "  vec3 light = normalize(vec3(0.35, 0.45, 1.0));",
+    "  float diffuse = max(dot(n, light), 0.0);",
+    "  float shine = pow(max(dot(n, normalize(light + vec3(0.0, 0.0, 1.0))), 0.0), 40.0);",
+    "  gl_FragColor = vec4(uColor * (0.42 + 0.58 * diffuse) + vec3(0.18 * shine), uAlpha);",
+    "}"
+  ].join("\n");
+
+  // How much of a see-through part shows.
+  var CLEAR_ALPHA = 0.3;
+
+  var MARK_VERTEX = [
+    "attribute vec3 aPosition;",
+    "uniform mat4 uView;",
+    "uniform mat4 uProjection;",
+    "uniform float uSize;",
+    "void main() {",
+    "  gl_PointSize = uSize;",
+    "  gl_Position = uProjection * uView * vec4(aPosition, 1.0);",
+    "}"
+  ].join("\n");
+
+  var MARK_FRAGMENT = [
+    "precision mediump float;",
+    "uniform vec3 uColor;",
+    "void main() { gl_FragColor = vec4(uColor, 1.0); }"
+  ].join("\n");
+
+  function program(vertex, fragment) {
+    function compiled(kind, source) {
+      var shader = gl.createShader(kind);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw new Error("a shader did not compile: " + gl.getShaderInfoLog(shader));
+      }
+      return shader;
+    }
+    var made = gl.createProgram();
+    gl.attachShader(made, compiled(gl.VERTEX_SHADER, vertex));
+    gl.attachShader(made, compiled(gl.FRAGMENT_SHADER, fragment));
+    gl.linkProgram(made);
+    if (!gl.getProgramParameter(made, gl.LINK_STATUS)) {
+      throw new Error("the shaders did not link: " + gl.getProgramInfoLog(made));
+    }
+    var names = {};
+    ["aPosition", "aNormal"].forEach(function (name) {
+      names[name] = gl.getAttribLocation(made, name);
+    });
+    ["uView", "uProjection", "uTurn", "uColor", "uSize", "uShift", "uPlane", "uAlpha"].forEach(function (name) {
+      names[name] = gl.getUniformLocation(made, name);
+    });
+    names.program = made;
+    return names;
+  }
+
+  function buffer(values) {
+    var made = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, made);
+    gl.bufferData(gl.ARRAY_BUFFER, values, gl.STATIC_DRAW);
+    return made;
+  }
+
+  // Each part's triangles as WebGL 1 draws them without an extension: every
+  // corner of every triangle once, counted from the middle.
+  function upload() {
+    drawn = {
+      solid: program(SOLID_VERTEX, SOLID_FRAGMENT),
+      mark: program(MARK_VERTEX, MARK_FRAGMENT),
+      parts: [],
+      marks: gl.createBuffer()
+    };
+    parts.forEach(function (part) {
+      var t = part.triangles;
+      var positions = new Float32Array(t.length * 3);
+      var normals = new Float32Array(t.length * 3);
+      var plain = part.normals.length !== part.corners.length;
+      for (var i = 0; i < t.length; i++) {
+        for (var k = 0; k < 3; k++) {
+          positions[i * 3 + k] = part.corners[t[i] * 3 + k] - middle[k];
+        }
+        if (!plain) {
+          for (var m = 0; m < 3; m++) {
+            normals[i * 3 + m] = part.normals[t[i] * 3 + m];
+          }
+        }
+      }
+      if (plain) {
+        for (var f = 0; f < t.length; f += 3) {
+          var a = corner(part, t[f]), b = corner(part, t[f + 1]), c = corner(part, t[f + 2]);
+          var n = unit(cross(sub(b, a), sub(c, a)));
+          for (var j = 0; j < 9; j++) {
+            normals[f * 3 + j] = n[j % 3];
+          }
+        }
+      }
+      drawn.parts.push({ positions: buffer(positions), normals: buffer(normals), count: t.length });
+    });
+  }
+
+  function matrices() {
+    var a = axes();
+    var eye = sub(camera.target, middle);
+    var reach = depth() * 2;
+    var view = [
+      a.x[0], a.y[0], a.z[0], 0,
+      a.x[1], a.y[1], a.z[1], 0,
+      a.x[2], a.y[2], a.z[2], 0,
+      -dot(a.x, eye), -dot(a.y, eye), -dot(a.z, eye) - reach, 1
+    ];
+    var w = camera.half * aspect();
+    var h = camera.half;
+    var near = 0;
+    var far = reach * 2;
+    var projection = [
+      1 / w, 0, 0, 0,
+      0, 1 / h, 0, 0,
+      0, 0, -2 / (far - near), 0,
+      0, 0, -(far + near) / (far - near), 1
+    ];
+    var turn = [a.x[0], a.y[0], a.z[0], a.x[1], a.y[1], a.z[1], a.x[2], a.y[2], a.z[2]];
+    return { view: new Float32Array(view), projection: new Float32Array(projection), turn: new Float32Array(turn) };
+  }
+
+  function render() {
+    asked = false;
+    if (gl === null) {
+      return;
+    }
+    var ratio = window.devicePixelRatio || 1;
+    var width = Math.max(1, Math.round(canvas.clientWidth * ratio));
+    var height = Math.max(1, Math.round(canvas.clientHeight * ratio));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    gl.viewport(0, 0, width, height);
+    gl.clearColor(0.96, 0.97, 0.98, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    var m = matrices();
+    var solid = drawn.solid;
+    gl.useProgram(solid.program);
+    gl.uniformMatrix4fv(solid.uView, false, m.view);
+    gl.uniformMatrix4fv(solid.uProjection, false, m.projection);
+    gl.uniformMatrix3fv(solid.uTurn, false, m.turn);
+    if (section === null) {
+      gl.uniform4f(solid.uPlane, 0, 0, 0, 1);
+    } else {
+      var normal = [0, 0, 0];
+      normal[section.axis] = 1;
+      gl.uniform4f(solid.uPlane, normal[0], normal[1], normal[2], section.at - middle[section.axis]);
+    }
+    gl.enableVertexAttribArray(solid.aPosition);
+    gl.enableVertexAttribArray(solid.aNormal);
+    function drawPart(part, index) {
+      var held = drawn.parts[index];
+      var color = part.color;
+      if (index === picked) {
+        color = [color[0] * 0.5 + 0.09, color[1] * 0.5 + 0.25, color[2] * 0.5 + 0.45];
+      }
+      var shift = shiftOf(part);
+      gl.uniform3f(solid.uShift, shift[0], shift[1], shift[2]);
+      gl.uniform3f(solid.uColor, color[0], color[1], color[2]);
+      gl.uniform1f(solid.uAlpha, part.clear ? CLEAR_ALPHA : 1.0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, held.positions);
+      gl.vertexAttribPointer(solid.aPosition, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, held.normals);
+      gl.vertexAttribPointer(solid.aNormal, 3, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, held.count);
+    }
+    // The solid parts first, then the see-through ones blended over them,
+    // writing no depth, so what lies behind a see-through part still shows.
+    parts.forEach(function (part, index) {
+      if (part.shown && !part.clear) {
+        drawPart(part, index);
+      }
+    });
+    gl.enable(gl.BLEND);
+    // The canvas's own alpha stays as cleared, so the page never shows through.
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+    gl.depthMask(false);
+    parts.forEach(function (part, index) {
+      if (part.shown && part.clear) {
+        drawPart(part, index);
+      }
+    });
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
+    gl.disableVertexAttribArray(solid.aNormal);
+    if (marks.length) {
+      var mark = drawn.mark;
+      gl.disable(gl.DEPTH_TEST);
+      gl.useProgram(mark.program);
+      gl.uniformMatrix4fv(mark.uView, false, m.view);
+      gl.uniformMatrix4fv(mark.uProjection, false, m.projection);
+      var points = new Float32Array(marks.length * 3);
+      for (var i = 0; i < marks.length; i++) {
+        for (var k = 0; k < 3; k++) {
+          points[i * 3 + k] = marks[i][k] - middle[k];
+        }
+      }
+      gl.bindBuffer(gl.ARRAY_BUFFER, drawn.marks);
+      gl.bufferData(gl.ARRAY_BUFFER, points, gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(mark.aPosition);
+      gl.vertexAttribPointer(mark.aPosition, 3, gl.FLOAT, false, 0, 0);
+      gl.uniform3f(mark.uColor, 0.85, 0.15, 0.16);
+      gl.uniform1f(mark.uSize, 9 * ratio);
+      if (marks.length === 2) {
+        gl.drawArrays(gl.LINES, 0, 2);
+      }
+      gl.drawArrays(gl.POINTS, 0, marks.length);
+    }
+    frames += 1;
+  }
+
+  function draw() {
+    if (gl !== null && !asked) {
+      asked = true;
+      window.requestAnimationFrame(render);
+    }
+  }
+
+  // Turning, panning and zooming, by mouse, pen or fingers.
+
+  var pointers = {};
+  var gesture = null;
+
+  function turnBy(dx, dy) {
+    var a = axes();
+    var perPixel = Math.PI / Math.max(canvas.clientHeight, 1);
+    var toward = turned(camera.toward, a.y, -dx * perPixel);
+    var up = camera.up;
+    var side = unit(cross(up, toward));
+    camera.toward = unit(turned(toward, side, dy * perPixel));
+    camera.up = unit(turned(up, side, dy * perPixel));
+    draw();
+  }
+
+  function panBy(dx, dy) {
+    var a = axes();
+    var perPixel = (2 * camera.half) / Math.max(canvas.clientHeight, 1);
+    camera.target = add(camera.target, add(scale(a.x, -dx * perPixel), scale(a.y, dy * perPixel)));
+    draw();
+  }
+
+  function zoomBy(factor, px, py) {
+    var a = axes();
+    var nx = (px / canvas.clientWidth) * 2 - 1;
+    var ny = 1 - (py / canvas.clientHeight) * 2;
+    var was = camera.half;
+    camera.half = Math.min(Math.max(was * factor, radius * 1e-5), radius * 1e3);
+    var moved = was - camera.half;
+    camera.target = add(camera.target, add(scale(a.x, nx * aspect() * moved), scale(a.y, ny * moved)));
+    draw();
+  }
+
+  function place(event) {
+    var box = canvas.getBoundingClientRect();
+    return [event.clientX - box.left, event.clientY - box.top];
+  }
+
+  function twoFingers() {
+    var keys = Object.keys(pointers);
+    var a = pointers[keys[0]], b = pointers[keys[1]];
+    var dx = a[0] - b[0], dy = a[1] - b[1];
+    return { middle: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], apart: Math.sqrt(dx * dx + dy * dy) };
+  }
+
+  function clicked(px, py) {
+    var found = hit(px, py);
+    if (measuring) {
+      if (found === null) {
+        return;
+      }
+      var snapped = nearestCorner(found.point, found.part);
+      if (marks.length >= 2) {
+        marks = [];
+      }
+      marks.push(snapped);
+      showMeasure();
+      draw();
+      return;
+    }
+    pick(found === null ? -1 : found.part);
+  }
+
+  canvas.addEventListener("contextmenu", function (event) { event.preventDefault(); });
+
+  canvas.addEventListener("pointerdown", function (event) {
+    event.preventDefault();
+    if (canvas.setPointerCapture) {
+      canvas.setPointerCapture(event.pointerId);
+    }
+    pointers[event.pointerId] = place(event);
+    var count = Object.keys(pointers).length;
+    if (count === 1) {
+      var panning = event.button === 2 || event.button === 1 || event.shiftKey;
+      gesture = { kind: panning ? "pan" : "turn", start: place(event), last: place(event), moved: 0 };
+    } else if (count === 2) {
+      var two = twoFingers();
+      gesture = { kind: "pinch", last: two.middle, apart: two.apart, moved: CLICK_PIXELS };
+    }
+  });
+
+  canvas.addEventListener("pointermove", function (event) {
+    if (!(event.pointerId in pointers) || gesture === null) {
+      return;
+    }
+    event.preventDefault();
+    var now = place(event);
+    pointers[event.pointerId] = now;
+    if (gesture.kind === "pinch") {
+      if (Object.keys(pointers).length < 2) {
+        return;
+      }
+      var two = twoFingers();
+      panBy(two.middle[0] - gesture.last[0], two.middle[1] - gesture.last[1]);
+      if (two.apart > 0 && gesture.apart > 0) {
+        zoomBy(gesture.apart / two.apart, two.middle[0], two.middle[1]);
+      }
+      gesture.last = two.middle;
+      gesture.apart = two.apart;
+      return;
+    }
+    var dx = now[0] - gesture.last[0];
+    var dy = now[1] - gesture.last[1];
+    gesture.moved = Math.max(gesture.moved, Math.abs(now[0] - gesture.start[0]) + Math.abs(now[1] - gesture.start[1]));
+    gesture.last = now;
+    if (gesture.moved < CLICK_PIXELS) {
+      return;
+    }
+    if (gesture.kind === "pan") {
+      panBy(dx, dy);
+    } else {
+      turnBy(dx, dy);
+    }
+  });
+
+  function lifted(event) {
+    if (!(event.pointerId in pointers)) {
+      return;
+    }
+    var at = place(event);
+    delete pointers[event.pointerId];
+    var left = Object.keys(pointers).length;
+    if (gesture !== null && left === 0) {
+      if (gesture.kind !== "pinch" && gesture.moved < CLICK_PIXELS && event.type === "pointerup") {
+        clicked(at[0], at[1]);
+      }
+      gesture = null;
+    } else if (left === 1 && gesture !== null && gesture.kind === "pinch") {
+      var key = Object.keys(pointers)[0];
+      gesture = { kind: "pan", start: pointers[key], last: pointers[key], moved: CLICK_PIXELS };
+    }
+  }
+
+  canvas.addEventListener("pointerup", lifted);
+  canvas.addEventListener("pointercancel", lifted);
+
+  canvas.addEventListener("wheel", function (event) {
+    event.preventDefault();
+    var at = place(event);
+    var step = event.deltaMode === 1 ? event.deltaY * 33 : event.deltaY;
+    zoomBy(Math.exp(step * 0.0015), at[0], at[1]);
+  }, { passive: false });
+
+  window.addEventListener("resize", draw);
+
+  // The buttons.
+
+  function views() {
+    var holder = byId("dxcad-views");
+    (page.views || []).forEach(function (named) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.textContent = named.name;
+      button.addEventListener("click", function () { look(named.toward, named.up); });
+      holder.appendChild(button);
+    });
+  }
+
+  byId("dxcad-fit").addEventListener("click", fit);
+  byId("dxcad-measure").addEventListener("click", function () {
+    measuring = !measuring;
+    marks = [];
+    byId("dxcad-measure").className = measuring ? "dxcad-on" : "";
+    showMeasure();
+    draw();
+  });
+
+  // Item 1115: the Explode slider, 0 assembled and its end each part moved by
+  // its whole offset; the section's axis and where along it, the slider's
+  // ends the ends of everything along that axis, assembled or apart.
+
+  var SLIDER_STEPS = 1000;
+  var explodeSlider = byId("dxcad-explode");
+  var sectionAxis = byId("dxcad-section-axis");
+  var sectionSlider = byId("dxcad-section-at");
+
+  function explodeTo(value) {
+    exploded = Math.min(Math.max(Number(value) || 0, 0), 1);
+    explodeSlider.value = String(Math.round(exploded * SLIDER_STEPS));
+    if (marks.length) {
+      marks = [];
+      showMeasure();
+    }
+    draw();
+  }
+
+  function sectionTo(axis, at) {
+    var index = AXES.indexOf(String(axis || "").toLowerCase());
+    if (index < 0) {
+      section = null;
+      sectionAxis.value = "";
+      sectionSlider.disabled = true;
+    } else {
+      var place = Number(at);
+      if (!isFinite(place)) {
+        place = (low[index] + high[index]) / 2;
+      }
+      section = { axis: index, at: place };
+      sectionAxis.value = AXES[index];
+      sectionSlider.disabled = false;
+      var span = high[index] - low[index];
+      var step = span > 0 ? (place - low[index]) / span : 0.5;
+      sectionSlider.value = String(Math.round(Math.min(Math.max(step, 0), 1) * SLIDER_STEPS));
+    }
+    draw();
+  }
+
+  explodeSlider.addEventListener("input", function () {
+    explodeTo(Number(explodeSlider.value) / SLIDER_STEPS);
+  });
+  sectionAxis.addEventListener("change", function () {
+    sectionTo(sectionAxis.value, NaN);
+  });
+  sectionSlider.addEventListener("input", function () {
+    if (section === null) {
+      return;
+    }
+    var step = Number(sectionSlider.value) / SLIDER_STEPS;
+    section.at = low[section.axis] + step * (high[section.axis] - low[section.axis]);
+    draw();
+  });
+
+  // What a test, or a reader at the console, can ask the page.
+
+  // Set the Explode slider: 0 assembled, 1 at its end.
+  window.dxcadExplode = function (value) {
+    explodeTo(value);
+    return exploded;
+  };
+
+  // Set the section: axis "x", "y" or "z" and `at` in mm; no axis turns it off.
+  window.dxcadSection = function (axis, at) {
+    sectionTo(axis, at);
+    return section === null ? null : { axis: AXES[section.axis], at: section.at };
+  };
+
+  // Each part where it is drawn: its name and the box ([low, high], mm) of
+  // the corners the section keeps, null when it keeps none or it is hidden.
+  window.dxcadPlaced = function () {
+    return parts.map(function (part) {
+      var lo = [Infinity, Infinity, Infinity];
+      var hi = [-Infinity, -Infinity, -Infinity];
+      var count = part.shown ? part.corners.length / 3 : 0;
+      for (var i = 0; i < count; i++) {
+        var c = corner(part, i);
+        if (!kept(c)) {
+          continue;
+        }
+        for (var k = 0; k < 3; k++) {
+          lo[k] = Math.min(lo[k], c[k]);
+          hi[k] = Math.max(hi[k], c[k]);
+        }
+      }
+      return { name: part.name, box: lo[0] === Infinity ? null : [lo, hi] };
+    });
+  };
+
+  // The see-through parts' names; with a name, makes that part see-through
+  // (on) or solid again first.
+  window.dxcadSeeThrough = function (name, on) {
+    if (name !== undefined) {
+      for (var i = 0; i < parts.length; i++) {
+        if (parts[i].name === name) {
+          seeThrough(i, on === undefined ? true : on);
+        }
+      }
+    }
+    return parts.filter(function (part) { return part.clear; }).map(function (part) {
+      return part.name;
+    });
+  };
+
+  window.dxcadParts = function () {
+    return parts.map(function (part) { return part.name; });
+  };
+
+  window.dxcadMeasure = function (from, to) {
+    var a = nearestCorner(from);
+    var b = nearestCorner(to);
+    if (a === null || b === null) {
+      return null;
+    }
+    marks = [a, b];
+    showMeasure();
+    draw();
+    var d = sub(b, a);
+    return Math.sqrt(dot(d, d));
+  };
+
+  window.dxcadWebGL = function () {
+    return gl !== null;
+  };
+
+  window.dxcadFrames = function () {
+    return frames;
+  };
+
+  // Start.
+
+  list();
+  views();
+  try {
+    gl = canvas.getContext("webgl", { antialias: true }) || canvas.getContext("experimental-webgl");
+  } catch (error) {
+    gl = null;
+  }
+  if (gl === null) {
+    canvas.style.display = "none";
+    byId("dxcad-nogl").style.display = "block";
+  } else {
+    upload();
+  }
+  var first = (page.views || [])[0];
+  if (first) {
+    look(first.toward, first.up);
+  } else {
+    fit();
+  }
+})();
+
+</script>
+</body>
+</html>

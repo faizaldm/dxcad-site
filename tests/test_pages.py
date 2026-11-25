@@ -210,6 +210,8 @@ def test_copy_of_real_site_with_a_link_broken_fails(tmp_path):
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / name, dest)
     shutil.copytree(ROOT / "img", tmp_path / "img")
+    if (ROOT / "flat-patterns").is_dir():
+        shutil.copytree(ROOT / "flat-patterns", tmp_path / "flat-patterns", dirs_exist_ok=True)
     assert pagecheck.check_site(str(tmp_path)) == []
     os.rename(tmp_path / "img" / "channel.png", tmp_path / "img" / "channel-old.png")
     found = reasons(str(tmp_path))

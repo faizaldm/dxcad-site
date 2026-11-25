@@ -162,3 +162,10 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   15 November 2026); build it once that endpoint is live, with its exact address and answers.
   Accept: tests/test_pages.py: the form is on the home page, posts to the endpoint's https address, has a labelled
   email field, needs no script, and links /privacy.html; every other check still passes.
+- [x] 4023. Flat-pattern pages, one per shape family, from data/fabrication/ (owner, 24 Nov 2026) (M)
+  The public pack from DX-CAD Fabrication's docs/site-pack copied into data/fabrication/ (owner's approval, 24
+  November); scripts/build_pages.py makes flat-patterns/index.html and a page per family: name, what it is, both
+  sizes with their inputs, every piece's flat as a picture with its developed sizes, its DXF, DXF R12 and SVG, and a
+  3D view; a link to the trial and to the Fabrication page; no price, no method, no other product's name.
+  Accept: tests/test_flat_patterns.py; every page passes pagecheck; the 3D views carry noindex and a canonical link
+  to their family page and stay out of the sitemap and the search; the whole suite passes.

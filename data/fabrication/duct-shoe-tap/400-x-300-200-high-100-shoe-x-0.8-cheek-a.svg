@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ascii"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="520.966mm" height="220.000mm" viewBox="-10.0 -210.0 520.9656854249492 220.00000000000003">
+<style>path, circle { vector-effect: non-scaling-stroke; }</style>
+<g transform="scale(1,-1)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+<g id="cut" stroke="#c0392b" stroke-width="1.5">
+<path d="M 0.0,0.0 L 500.96568542494924,-2.7809181925295092e-14 L 500.96568542494924,199.99999999999997 L 100.16568542494925,200.0 L 100.16568542494923,100.16568542494923 Z"/>
+</g>
+<g id="bend" stroke="#2e6da4" stroke-width="1" stroke-dasharray="6 3">
+</g>
+</g>
+</svg>

@@ -788,6 +788,7 @@ FABRICATION = {
     ],
     "other": ("drafting-pro.html", "Drafting Pro", "production drawings"),
     "more": ("/fabrication-layout-software.html", "Fabrication layout software"),
+    "flats": True,
 }
 
 DRAFTING_PRO = {
@@ -867,6 +868,9 @@ def addon_page(root, shell, spec, gui):
                    % img_tag("/img/" + pic, alt, data, lazy=True))
     out.append('    <p><a class="btn" href="/#download">Download the 30-day free trial</a> '
                '<a class="btn ghost" href="/#pricing">See pricing</a></p>')
+    if spec.get("flats") and flat_pack(root):
+        out.append('    <p>See the shapes for yourself: <a href="/%s/">free sample flat patterns</a>, '
+                   'each with its DXF and SVG cut files and a 3D view.</p>' % FLATS)
     for title, items in spec["sections"]:
         out.append('    <h2>%s</h2>' % esc(title))
         out.append('    <ul>')
@@ -1743,6 +1747,12 @@ def search_files(root, made):
         pages.pop(rel, None)
     entries = sorted((search_entry(rel, text) for rel, text in pages.items()),
                      key=lambda e: e["url"])
+    for e in entries:
+        # A flat-pattern page is found by its shape: its name, headings and
+        # opening words are kept, not its tables of sizes, so the search file
+        # stays small.
+        if e["url"].startswith("/%s/" % FLATS) and e["url"] != "/%s/" % FLATS:
+            e["text"] = "\n".join(e["text"].split("\n")[:3])[:900]
     body = "[\n" + ",\n".join(json.dumps(e, ensure_ascii=True, separators=(",", ":"))
                               for e in entries) + "\n]\n"
     return {SEARCH_JSON: body}
@@ -2250,6 +2260,7 @@ MAIN_PAGES = [
     ("/shortcuts.html", "Shortcuts", "Every keyboard shortcut of the window."),
     ("/search.html", "Search", "Find a word anywhere on the site."),
     ("/fabrication.html", "Fabrication", "The add-on for sheet and plate layout."),
+    ("/flat-patterns/", "Flat patterns", "Free sample flat patterns and cut files."),
     ("/drafting-pro.html", "Drafting Pro", "The add-on for drawings."),
 ]
 
@@ -2296,8 +2307,9 @@ def page_files(root):
         dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d not in SKIP_DIRS)
         for name in sorted(files):
             if name.endswith(".html"):
-                rel = os.path.relpath(os.path.join(folder, name), root)
-                found.append(rel.replace(os.sep, "/"))
+                rel = os.path.relpath(os.path.join(folder, name), root).replace(os.sep, "/")
+                if not VIEW_RE.match(rel):
+                    found.append(rel)
     return found
 
 
@@ -2346,6 +2358,198 @@ def build_sitemap(root, made):
     return "\n".join(lines)
 
 
+
+# ---------------------------------------------------------- flat patterns ---
+# Pages about DX-CAD Fabrication's shapes (owner, 24 November 2026), one per
+# shape family, made from data/fabrication/: the public pack copied from DX-CAD
+# Fabrication's docs/site-pack.  They say what a shape is, show its flat
+# patterns and their developed sizes, and offer the sample files; never how a
+# shape is developed and never a price.
+
+FLATS = "flat-patterns"
+FLAT_DATA = ("data", "fabrication")
+# A family's 3D views are single-file pages DX-CAD wrote (its own viewer, which
+# loads nothing else).  They are files offered from a family page, not pages of
+# the site: they carry noindex and a canonical link to their family page, and
+# stay out of the sitemap and the search (pagecheck holds them to that).
+VIEW_RE = re.compile(r"^%s/[a-z0-9-]+/[^/]+\.html$" % FLATS)
+
+FLAT_STYLE = """
+.doc .lead{font-size:19px;max-width:62ch;margin:0 0 24px}
+.doc .facts{border-collapse:collapse;margin:0 0 16px}
+.doc .facts th,.doc .facts td{border:1px solid var(--ink);padding:6px 10px;text-align:left;vertical-align:top}
+.doc figure.flat{margin:0 0 20px;max-width:none}
+.doc figure.flat img{max-width:100%;height:auto;background:#FFFFFF;border:1px solid var(--ink)}
+.doc figure.flat figcaption{font-size:14px;margin-top:6px}
+.doc .shapes{list-style:none;padding:0;margin:24px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.doc .shapes li{margin:0;max-width:none;border:1px solid var(--ink);padding:12px 14px}
+.doc .shapes img{display:block;width:100%;height:150px;object-fit:contain;background:#FFFFFF;margin:0 0 8px}
+.doc .shapes a{font-family:var(--cond);font-weight:700;font-size:18px}
+"""
+
+
+def flat_pack(root):
+    path = os.path.join(root, *FLAT_DATA, "pack.json")
+    if not os.path.exists(path):
+        return None
+    pack = json.loads(read_text(path))
+    for e in pack["entries"]:
+        for s in e["sizes"]:
+            folder = s["web_page"].split("/")[0]
+            if not re.match(r"^[a-z0-9-]+$", folder):
+                raise SystemExit("data/fabrication/pack.json: odd folder %r" % folder)
+            e["slug"] = folder
+    return pack
+
+
+def num(x, places=1):
+    text = ("%%.%df" % places) % x
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+def mm_in(mm, inch):
+    return "%s mm (%s in)" % (num(mm), num(inch, 2))
+
+
+def svg_box(data):
+    m = re.search(rb'viewBox="\s*([-\d.e]+)[ ,]+([-\d.e]+)[ ,]+([-\d.e]+)[ ,]+([-\d.e]+)"', data)
+    if not m:
+        raise SystemExit("data/fabrication: an SVG without a viewBox")
+    w, h = float(m.group(3)), float(m.group(4))
+    if w >= h:
+        return 720, max(1, round(720 * h / w))
+    return max(1, round(480 * w / h)), 480
+
+
+def piece_name(name):
+    return name.replace("_", " ")
+
+
+def flat_view(content, title, description, canonical):
+    """A 3D view as DX-CAD wrote it, with the site's title, a description, a
+    canonical link to its family page and noindex."""
+    text = content.decode("ascii")
+    text, n = re.subn(r"<title>.*?</title>", "<title>%s</title>" % html.escape(title),
+                      text, count=1, flags=re.S)
+    extra = ('<meta name="description" content="%s">\n<link rel="canonical" href="%s">\n'
+             '<meta name="robots" content="noindex, follow">\n'
+             % (html.escape(description), canonical))
+    text, m = re.subn(r'(<meta charset="utf-8">\n)', lambda g: g.group(1) + extra, text, count=1)
+    if n != 1 or m != 1:
+        raise SystemExit("data/fabrication: a 3D view without a title or a charset line")
+    return text.encode("ascii")
+
+
+def flat_family_page(root, shell, e, made):
+    name, slug = e["name"], e["slug"]
+    rel = "%s/%s.html" % (FLATS, slug)
+    out = ['    <p><a href="/%s/">Flat patterns</a></p>' % FLATS,
+           '    <h1>%s flat pattern</h1>' % esc(name),
+           '    <p class="lead">%s</p>' % esc(e["description"]),
+           '    <p><a class="btn" href="/#download">Make any size: download the 30-day free trial</a> '
+           '<a class="btn ghost" href="/fabrication.html">The Fabrication add-on</a></p>',
+           '    <p>Two common sizes follow, each with its flat patterns as pictures, its cut '
+           'files as DXF (and as DXF R12 for older cutting tables) and a 3D view to turn in your '
+           'browser. Sizes are in millimetres, with inches beside them.</p>']
+    for s in e["sizes"]:
+        out.append('    <h2 id="%s">%s</h2>' % (esc(s["slug"]), esc(s["label"])))
+        out.append('    <table class="facts"><tbody>')
+        for i in s["inputs"]:
+            val = i["value"]
+            if isinstance(val, (int, float)):
+                unit = i["unit"]
+                if unit == "pieces" and val == 1:
+                    unit = "piece"
+                words = "%s %s" % (num(val, 3), unit)
+                if "inches" in i and i["unit"] == "mm":
+                    words += " (%s in)" % num(i["inches"], 3)
+            else:
+                words = str(val)
+            out.append('      <tr><th scope="row">%s</th><td>%s</td></tr>'
+                       % (esc(i["label"]), esc(words.strip())))
+        out.append('    </tbody></table>')
+        for pc in s["pieces"]:
+            src = pc["svg"]
+            data = read_bytes(os.path.join(root, *FLAT_DATA, *src.split("/")))
+            w, h = svg_box(data)
+            made["%s/%s" % (FLATS, src)] = (data, None)
+            alt = "Flat pattern of the %s of a %s, %s" % (piece_name(pc["name"]), name.lower(),
+                                                          s["label"])
+            cap = ["Flat %s by %s" % (mm_in(pc["flat_width_mm"], pc["flat_width_in"]),
+                                      mm_in(pc["flat_height_mm"], pc["flat_height_in"]))]
+            if pc["fold_lines"]:
+                cap.append("%d fold lines" % pc["fold_lines"])
+            for a in pc["arcs"]:
+                cap.append("arc of radius %s over %s degrees"
+                           % (mm_in(a["radius_mm"], a["radius_in"]), num(a["angle_degrees"], 3)))
+            files = []
+            for key, label in (("dxf", "DXF"), ("dxf_r12", "DXF R12"), ("svg", "SVG")):
+                f = pc[key]
+                if key != "svg":
+                    made["%s/%s" % (FLATS, f)] = (
+                        read_bytes(os.path.join(root, *FLAT_DATA, *f.split("/"))), None)
+                files.append('<a href="/%s/%s" download>%s</a>' % (FLATS, f, label))
+            out.append('    <figure class="flat"><img src="/%s/%s" alt="%s" width="%d" height="%d">'
+                       '<figcaption><strong>%s.</strong> %s. Download: %s.</figcaption></figure>'
+                       % (FLATS, src, esc(alt), w, h, esc(piece_name(pc["name"]).capitalize()),
+                          esc("; ".join(cap)), ", ".join(files)))
+        view = s["web_page"]
+        title = "%s, %s: 3D view | DX-CAD by Designmatix" % (name, s["label"])
+        made["%s/%s" % (FLATS, view)] = (flat_view(
+            read_bytes(os.path.join(root, *FLAT_DATA, *view.split("/"))), title,
+            "A 3D view of a %s, %s, made with DX-CAD Fabrication." % (name.lower(), s["label"]),
+            address(rel)), None)
+        out.append('    <p><a href="/%s/%s">Open the 3D view of this size</a> (it needs '
+                   'JavaScript). Checked by folding the flat back up: within %s mm of the 3D '
+                   'shape.</p>' % (FLATS, view, num(max(s["refold_worst_mm"], 0.001), 3)))
+    out.append('    <h2>Your own sizes</h2>')
+    out.append('    <p>These files are samples. With the Fabrication add-on you type your own '
+               'sizes and thickness and get the flat patterns, the cut files and a marking table '
+               'in seconds. It is free during the 30-day trial of DX-CAD.</p>')
+    out.append('    <p><a class="btn" href="/#download">Download the 30-day free trial</a></p>')
+    title = "%s flat pattern: free DXF and SVG samples | DX-CAD by Designmatix" % name
+    desc = ("%s flat pattern in two common sizes: the flats with their developed sizes, "
+            "sample DXF and SVG cut files and a 3D view, made with DX-CAD Fabrication." % name)
+    return rel, make_page(shell, rel, title, desc, "\n".join(out), FLAT_STYLE)
+
+
+def flat_index_page(root, shell, pack):
+    out = ['    <h1>Flat patterns</h1>',
+           '    <p class="lead">Flat patterns for the shapes plate and duct fabricators cut every '
+           'day, each in two common sizes with free sample DXF and SVG cut files and a 3D view. '
+           'All of them are made with the Fabrication add-on for DX-CAD.</p>',
+           '    <p><a class="btn" href="/#download">Download the 30-day free trial</a> '
+           '<a class="btn ghost" href="/fabrication.html">The Fabrication add-on</a></p>',
+           '    <ul class="shapes">']
+    for e in pack["entries"]:
+        first = e["sizes"][0]["pieces"][0]["svg"]
+        w, h = svg_box(read_bytes(os.path.join(root, *FLAT_DATA, *first.split("/"))))
+        out.append('      <li><img src="/%s/%s" alt="Flat pattern of a %s" width="%d" height="%d">'
+                   '<a href="/%s/%s.html">%s</a></li>'
+                   % (FLATS, first, esc(e["name"].lower()), w, h, FLATS, e["slug"], esc(e["name"])))
+    out.append('    </ul>')
+    title = "Flat patterns: free DXF samples for sheet and plate | DX-CAD by Designmatix"
+    desc = ("Flat patterns for cones, transitions, elbows, branches and rectangular duct, "
+            "each with free sample DXF and SVG cut files, made with DX-CAD Fabrication.")
+    rel = "%s/index.html" % FLATS
+    return rel, make_page(shell, rel, title, desc, "\n".join(out), FLAT_STYLE)
+
+
+def build_flat_patterns(root, shell, date):
+    """({page: (text, date)}, {file: bytes}): the family pages and the index, and
+    the files they offer (flats, cut files and 3D views), which are not pages."""
+    pack = flat_pack(root)
+    if pack is None:
+        return {}, {}
+    pages, files = {}, {}
+    for e in pack["entries"]:
+        rel, page = flat_family_page(root, shell, e, files)
+        pages[rel] = (page, date)
+    rel, page = flat_index_page(root, shell, pack)
+    pages[rel] = (page, date)
+    return pages, {k: v for k, (v, _) in files.items()}
+
+
 # ------------------------------------------------------------------- main ---
 
 def build_all(root):
@@ -2361,15 +2565,18 @@ def build_all(root):
     made.update(build_download(root, shell, date))
     made.update(build_faq(root, shell, date))
     made.update(build_shortcuts(root, shell, date))
+    flat_pages, flat_files = build_flat_patterns(root, shell, date)
+    made.update(flat_pages)
     made["search.html"] = (search_page(shell), date)
     made["404.html"] = (not_found_page(shell), date)
-    lookup = picture_lookup(root, made)
+    lookup = picture_lookup(root, dict(made, **{k: (v, date) for k, v in flat_files.items()}))
     for rel, (content, d) in list(made.items()):
         if rel.endswith(".html"):
             made[rel] = (finish_images(content, rel, lookup), d)
     files = {rel: content for rel, (content, _) in made.items()}
     files.update(build_footers(root, made, lookup))
     files.update(search_files(root, made))
+    files.update(flat_files)
     files["sitemap.xml"] = build_sitemap(root, made)
     return files
 

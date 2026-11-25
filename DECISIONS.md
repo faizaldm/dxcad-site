@@ -181,3 +181,12 @@
 - 4021 (15 Nov 2026): download counts come from GitHub's running totals once a day, kept on a branch "stats" so
   the site's main is never rebuilt by them; the counts are public through GitHub's API anyway. The bot's commits
   carry an empty email, as this repository names no email address. pip installs are not counted here.
+- 4023 (25 Nov 2026): the pack's 3D views (single-file pages DX-CAD wrote) are files offered from a family page,
+  not pages of the site: pagecheck leaves them out of page_files and holds them to check_view instead (noindex,
+  canonical to the family page, title, description, DX-CAD as generator, nothing loaded from outside, under 300
+  KB, out of the sitemap). Only their head is changed; the rest is DX-CAD's file as the pack holds it.
+- 4023 (25 Nov 2026): a flat's SVG is sized in mm, far larger than a page; the site shows it 720 pixels wide, or 480
+  high when taller than wide, and pagecheck.picture_dimensions reads an SVG's viewBox by the same rule.
+- 4023 (25 Nov 2026): search.json keeps a flat-pattern page's name, headings and opening words, not its tables of
+  sizes, so the file stays under its 400 KB limit (339 KB with the 26 new pages). The pack's version line (0.1.3,
+  not yet released) is not shown; the pages say "made with DX-CAD Fabrication".

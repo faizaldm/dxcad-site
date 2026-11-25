@@ -1,0 +1,242 @@
+  0
+SECTION
+  2
+HEADER
+  9
+$ACADVER
+  1
+AC1009
+  9
+$INSUNITS
+ 70
+4
+  0
+ENDSEC
+  0
+SECTION
+  2
+TABLES
+  0
+TABLE
+  2
+LTYPE
+ 70
+2
+  0
+LTYPE
+  2
+CONTINUOUS
+ 70
+0
+  3
+Solid line
+ 72
+65
+ 73
+0
+ 40
+0.0
+  0
+LTYPE
+  2
+DASHED
+ 70
+0
+  3
+Dashed
+ 72
+65
+ 73
+2
+ 40
+19.049999999999997
+ 49
+12.7
+ 49
+-6.35
+  0
+ENDTAB
+  0
+TABLE
+  2
+LAYER
+ 70
+3
+  0
+LAYER
+  2
+CUT
+ 70
+0
+ 62
+7
+  6
+CONTINUOUS
+  0
+LAYER
+  2
+BEND
+ 70
+0
+ 62
+7
+  6
+DASHED
+  0
+LAYER
+  2
+NOTES
+ 70
+0
+ 62
+7
+  6
+CONTINUOUS
+  0
+ENDTAB
+  0
+TABLE
+  2
+STYLE
+ 70
+1
+  0
+STYLE
+  2
+STANDARD
+ 70
+0
+ 40
+0.0
+ 41
+1.0
+ 50
+0.0
+ 71
+0
+ 42
+2.5
+  3
+txt
+  4
+
+  0
+ENDTAB
+  0
+ENDSEC
+  0
+SECTION
+  2
+ENTITIES
+  0
+LINE
+  8
+CUT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 11
+454.0
+ 21
+-2.7799482340644916e-14
+ 31
+0.0
+  0
+LINE
+  8
+CUT
+ 10
+454.0
+ 20
+-2.7799482340644916e-14
+ 30
+0.0
+ 11
+454.0
+ 21
+454.0
+ 31
+0.0
+  0
+LINE
+  8
+CUT
+ 10
+454.0
+ 20
+454.0
+ 30
+0.0
+ 11
+2.7799482340644916e-14
+ 21
+454.0
+ 31
+0.0
+  0
+LINE
+  8
+CUT
+ 10
+2.7799482340644916e-14
+ 20
+454.0
+ 30
+0.0
+ 11
+0.0
+ 21
+0.0
+ 31
+0.0
+  0
+CIRCLE
+  8
+CUT
+ 10
+227.0
+ 20
+227.0
+ 30
+0.0
+ 40
+77.0
+  0
+TEXT
+  8
+NOTES
+ 10
+21.870031249999982
+ 20
+319.631517578125
+ 30
+0.0
+ 40
+4.309453125
+  1
+hole for the vertical 150 mm pipe through the plate sloping 0 degrees, at the plate's centre: a round hole 154.000 mm across on the mean
+ 50
+0.0
+  0
+TEXT
+  8
+NOTES
+ 10
+104.82700390625
+ 20
+312.736392578125
+ 30
+0.0
+ 40
+4.309453125
+  1
+the round hole goes to DX-CAD's flat pattern as a hole, and the flat writes whole
+ 50
+0.0
+  0
+ENDSEC
+  0
+EOF
