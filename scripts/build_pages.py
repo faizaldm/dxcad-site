@@ -1040,6 +1040,10 @@ def architecture_launch_page(shell, root):
                % (esc(trial or ""), ('Already have DX-CAD? <a href="%s">Buy the add-on on its own</a>.'
                                      % esc(add_on)) if add_on else
                   'See the <a href="/#pricing">pricing</a> for every way to buy it.'))
+    out.append('    <h2>See it on LinkedIn</h2>')
+    out.append('    <p><a href="https://lnkd.in/p/epYJexVZ" rel="noopener">From a prompt to an '
+               'architectural design</a>: the model, engineering drawings, bill of materials, renders '
+               'and a walkthrough, made in DX-CAD.</p>')
     out.append('    <h2>Also an add-on</h2>')
     out.append('    <p><a href="/fabrication.html">Fabrication</a> does cones, transitions, elbows '
                'and branches, and <a href="/drafting-pro.html">Drafting Pro</a> does production '

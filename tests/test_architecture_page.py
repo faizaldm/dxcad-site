@@ -67,3 +67,12 @@ def test_without_the_data_the_page_is_the_coming_soon_one(tmp_path):
     shutil.copytree(ROOT, root, ignore=ignore)
     files = bp.build_all(str(root))
     assert "Coming soon." in files["architecture.html"]
+
+
+def test_the_owners_linkedin_posts_are_plain_links_with_no_embed():
+    arch, ai = read("architecture.html"), read("ai-cad-software.html")
+    assert 'href="https://lnkd.in/p/epYJexVZ"' in arch
+    for post in ("epYJexVZ", "edcrid7u", "eQbnks_7"):
+        assert 'href="https://lnkd.in/p/%s"' % post in ai
+    for page in (arch, ai):
+        assert "linkedin.com/embed" not in page and "<iframe" not in page
