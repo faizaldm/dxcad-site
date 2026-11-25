@@ -76,3 +76,12 @@ def test_the_owners_linkedin_posts_are_plain_links_with_no_embed():
         assert 'href="https://lnkd.in/p/%s"' % post in ai
     for page in (arch, ai):
         assert "linkedin.com/embed" not in page and "<iframe" not in page
+
+
+def test_the_launch_renders_are_shown_with_alt_text_and_their_sizes():
+    body = article(read("architecture.html"))
+    for pic, alt in bp.ARCH_PICTURES:
+        data = (ROOT / "img" / pic).read_bytes()
+        w, h = bp.picture_size(data)
+        assert '<img src="/img/%s" alt="%s" width="%d" height="%d"' % (pic, bp.esc(alt), w, h) in body
+        assert len(data) < 200 * 1024

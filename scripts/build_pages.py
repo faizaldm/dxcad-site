@@ -974,15 +974,16 @@ ARCH_DATA = ("data", "architecture")
 # The launch pictures, rendered with the add-on in DX-CAD; each is shown once its
 # file is in img/.
 ARCH_PICTURES = [
-    ("architecture-uk-detached.png",
-     "A red-brick detached house with a slate hipped roof, chimneys, a box hedge and a gravel "
-     "drive, modelled and rendered with DX-CAD Architecture"),
-    ("architecture-uk-new-build.png",
-     "A contemporary rendered house with a slate gable roof and its garage at dusk, the rooms "
-     "lit, modelled and rendered with DX-CAD Architecture"),
-    ("architecture-uk-extension.png",
-     "A brick semi-detached house with a single-storey rear extension opening onto a patio and "
-     "lawn, modelled and rendered with DX-CAD Architecture"),
+    ("architecture-uk-detached.jpg",
+     "A red-brick detached house with a slate hipped roof, two chimney stacks, a slate canopy "
+     "over the front door, clipped box balls and lavender, modelled and rendered with DX-CAD "
+     "Architecture"),
+    ("architecture-uk-new-build.jpg",
+     "A contemporary white-rendered house with a steep gable roof, tall glazing and a garage at "
+     "dusk, its rooms lit and its path lights on, modelled and rendered with DX-CAD Architecture"),
+    ("architecture-uk-extension.jpg",
+     "A brick house with a single-storey rear extension, its sliding glass doors opening onto a "
+     "paved patio and a lawn, modelled and rendered with DX-CAD Architecture"),
 ]
 # The Stripe links for the add-on, filled in when the owner makes them; until
 # then the buttons go to the pricing table.
@@ -1006,11 +1007,21 @@ def architecture_launch_page(shell, root):
     cmds = re.findall(r"(?m)^- ([^:]+): (.+)$", commands.split("## Starters")[0])
     starters = re.findall(r"(?m)^- examples/([^:]+): (.+)$", commands.split("## Starters")[1])
     out = ['    <h1>The Architecture add-on</h1>', '    <p class="lead">%s</p>' % esc(lead)]
+    shown = []
     for pic, alt in ARCH_PICTURES:
         path = os.path.join(root, "img", pic)
         if os.path.exists(path):
-            out.append('    <figure class="shot">%s</figure>'
-                       % img_tag("/img/" + pic, alt, read_bytes(path), lazy=True))
+            w, h = picture_size(read_bytes(path))
+            shown.append('<figure class="shot"><img src="/img/%s" alt="%s" width="%d" height="%d">'
+                         '</figure>' % (pic, esc(alt), w, h))
+    if shown:
+        out.append('    ' + shown[0])
+    if len(shown) > 1:
+        out.append('    <div class="pair">%s</div>' % "".join(shown[1:]))
+    if shown:
+        out.append('    <p class="small">Modelled and rendered in DX-CAD with the Architecture add-on: '
+                   'walls, roofs, windows, doors, planting and lights from its tables, the sun placed '
+                   'for a London site.</p>')
     buy = ARCH_BUY["with DX-CAD"] or "/#pricing"
     out.append('    <p><a class="btn" href="/#download">Download the 30-day free trial</a> '
                '<a class="btn ghost" href="%s">Buy DX-CAD with Architecture</a></p>' % esc(buy))
@@ -1052,7 +1063,10 @@ def architecture_launch_page(shell, root):
     desc = ("DX-CAD Architecture: layered walls, floors and roofs, doors and windows, stairs, "
             "columns and beams from tables you edit; rooms, quantities, plans, elevations, "
             "schedules and IFC4 export. Free during the 30-day trial.")
-    return make_page(shell, "architecture.html", title, desc, "\n".join(out), "")
+    style = (".doc figure.shot{margin:0 0 12px;max-width:none}.doc figure.shot img{width:100%;height:auto}"
+             ".doc .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}"
+             "@media (max-width:700px){.doc .pair{grid-template-columns:1fr}}")
+    return make_page(shell, "architecture.html", title, desc, "\n".join(out), style)
 
 # --------------------------------------------------------------- tutorial ---
 
