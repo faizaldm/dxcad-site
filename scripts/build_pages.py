@@ -987,7 +987,8 @@ ARCH_PICTURES = [
 ]
 # The Stripe links for the add-on, filled in when the owner makes them; until
 # then the buttons go to the pricing table.
-ARCH_BUY = {"with DX-CAD": None, "add-on": None}
+ARCH_BUY = {"with DX-CAD": "https://buy.stripe.com/fZu7sKbek6Oq9uS3iycV206",
+            "add-on": "https://buy.stripe.com/dRm9AS3LS1u636ucT8cV205"}
 
 
 def arch_sections(text):
@@ -1048,7 +1049,8 @@ def architecture_launch_page(shell, root):
     add_on = ARCH_BUY["add-on"]
     out.append('    <div class="box"><p>%s</p><p>Architecture is GBP 169 per user for a year, beside a '
                'DX-CAD licence; DX-CAD Pro includes it. %s</p></div>'
-               % (esc(trial or ""), ('Already have DX-CAD? <a href="%s">Buy the add-on on its own</a>.'
+               % (esc(trial or ""), ('Already have DX-CAD? <a href="%s">Buy the add-on on its own</a>, paying with the '
+                                     'email address your DX-CAD licence is under.'
                                      % esc(add_on)) if add_on else
                   'See the <a href="/#pricing">pricing</a> for every way to buy it.'))
     out.append('    <h2>See it on LinkedIn</h2>')

@@ -85,3 +85,10 @@ def test_the_launch_renders_are_shown_with_alt_text_and_their_sizes():
         w, h = bp.picture_size(data)
         assert '<img src="/img/%s" alt="%s" width="%d" height="%d"' % (pic, bp.esc(alt), w, h) in body
         assert len(data) < 200 * 1024
+
+
+def test_the_buy_buttons_are_the_owners_stripe_links():
+    arch, home = read("architecture.html"), read("index.html")
+    assert 'href="https://buy.stripe.com/fZu7sKbek6Oq9uS3iycV206"' in arch
+    assert 'href="https://buy.stripe.com/dRm9AS3LS1u636ucT8cV205"' in arch
+    assert 'href="https://buy.stripe.com/fZu7sKbek6Oq9uS3iycV206">Buy DX-CAD+Architecture' in home
