@@ -182,3 +182,10 @@ Written by the owner. Each item: what to build, then the Accept line its tests c
   fabrication-layout-software.html, the page the owner reaches from search, gets the "Free sample flat patterns"
   button beside See pricing, and the link in its Read more line.
   Accept: both links resolve; the whole suite passes.
+
+- [x] 4028. The release tests read the newest release from the notes, so a new release copied into data/ passes (28 Nov 2026)
+  DX-CAD 0.1.9's dry run 9 failed in its website job on four tests of test_build_pages.py that named 0.1.7, its date
+  and one of its lines. They now take the newest release from data/core/RELEASE_NOTES.md, and the two that add a
+  release add a made-up 9.9.9 of 31 December 2099 above it, so the release workflow's copy of a new release's notes
+  never collides with them.
+  Accept: the suite passes on today's data and with 0.1.9's notes copied into data/core and the pages made again.
